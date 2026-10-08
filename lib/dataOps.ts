@@ -1,4 +1,5 @@
 import { defaultSettings, type AppData } from './types'
+import { runScheduling } from './scheduling'
 
 /** 확정 취소: 상태를 '제안'으로 되돌리고 보강 교사의 누적 보강 횟수를 1 줄인다 */
 export function cancelConfirm(d: AppData, slotId: string): AppData {
@@ -70,5 +71,26 @@ export function parseBackup(text: string): { data?: AppData; error?: string } {
         weights: { ...defaultSettings.weights, ...(raw.settings?.weights ?? {}) },
       },
     },
+  }
+}
+
+/**
+ * 가중치 등을 바꾼 뒤, 자동으로 추천된 미확정 배정(제안·배정불가)을 현재 설정으로 다시 추천한다.
+ * 확정된 배정과 사람이 직접 고른 수동 배정은 건드리지 않는다.
+ */
+export function recomputeProposals(d: AppData): { data: AppData; total: number; changed: number } {
+  const targets = d.assignments.filter((a) => a.status !== '확정' && !a.isManual)
+  const targetIds = new Set(targets.map((a) => a.slotId))
+  const slots = d.slots.filter((s) => targetIds.has(s.id))
+  if (!slots.length) return { data: d, total: 0, changed: 0 }
+  const result = runScheduling(d, slots)
+  const redone = new Map(result.filter((a) => targetIds.has(a.slotId)).map((a) => [a.slotId, a]))
+  const changed = targets.filter(
+    (a) => redone.get(a.slotId)?.substituteTeacherId !== a.substituteTeacherId,
+  ).length
+  return {
+    data: { ...d, assignments: d.assignments.map((a) => redone.get(a.slotId) ?? a) },
+    total: slots.length,
+    changed,
   }
 }
