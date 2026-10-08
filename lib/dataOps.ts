@@ -1,4 +1,4 @@
-import { defaultSettings, type AppData } from './types'
+import { normalizeData, type AppData } from './types'
 import { runScheduling } from './scheduling'
 
 /** 확정 취소: 상태를 '제안'으로 되돌리고 보강 교사의 누적 보강 횟수를 1 줄인다 */
@@ -57,21 +57,7 @@ export function parseBackup(text: string): { data?: AppData; error?: string } {
     (t: any) => !t || typeof t.id !== 'string' || typeof t.name !== 'string',
   )
   if (badTeacher) return { error: '교사 정보 형식이 올바르지 않습니다.' }
-  return {
-    data: {
-      teachers: raw.teachers,
-      timetable: raw.timetable,
-      absences: raw.absences,
-      slots: raw.slots,
-      assignments: raw.assignments,
-      // 예전 백업에 없는 설정 항목은 기본값으로 채운다
-      settings: {
-        ...defaultSettings,
-        ...(raw.settings ?? {}),
-        weights: { ...defaultSettings.weights, ...(raw.settings?.weights ?? {}) },
-      },
-    },
-  }
+  return { data: normalizeData(raw) }
 }
 
 /**

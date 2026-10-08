@@ -69,7 +69,11 @@ export type AppData = {
   slots: Slot[]
   assignments: Assignment[]
   settings: Settings
+  /** 학사일정 PDF에서 읽은 날짜별 행사 */
+  events: CalendarEvent[]
 }
+export type EventKind = '공휴일' | '휴업일' | '방학' | '행사'
+export type CalendarEvent = { date: string; title: string; kind: EventKind }
 export const days: Day[] = ['월', '화', '수', '목', '금']
 export const defaultSettings: Settings = {
   semester: '2026학년도 2학기',
@@ -129,7 +133,7 @@ export function uid(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 export function emptyData(): AppData {
-  return { teachers: [], timetable: [], absences: [], slots: [], assignments: [], settings: defaultSettings }
+  return { teachers: [], timetable: [], absences: [], slots: [], assignments: [], settings: defaultSettings, events: [] }
 }
 export function seedData(): AppData {
   // 샘플용 가상 이름 (실명 사용 안 함). 21번째 '가상E'는 자동 제외 규칙 확인용으로 유지
@@ -221,7 +225,32 @@ export function seedData(): AppData {
       reasons: ['같은 학년 담당', '그날 수업 1개', '연속 1교시', '누적 보강 1회'],
     },
   ]
-  return { teachers, timetable, absences, slots, assignments, settings: defaultSettings }
+  // 대시보드 예시용 행사 (실제 학사일정 PDF를 올리면 교체됨)
+  const plus = (n: number) => {
+    const d = new Date()
+    d.setDate(d.getDate() + n)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+  const events: CalendarEvent[] = [
+    { date: plus(0), title: '교직원 회의 (예시)', kind: '행사' },
+    { date: plus(2), title: '전국연합학력평가 (예시)', kind: '행사' },
+    { date: plus(6), title: '재량휴업일 (예시)', kind: '휴업일' },
+  ]
+  return { teachers, timetable, absences, slots, assignments, settings: defaultSettings, events }
+}
+
+/** 예전 버전에서 저장된 데이터에 새 항목(학사일정 등)이 없으면 기본값으로 채운다 */
+export function normalizeData(raw: Partial<AppData> & Record<string, unknown>): AppData {
+  return {
+    ...emptyData(),
+    ...raw,
+    settings: {
+      ...defaultSettings,
+      ...(raw.settings ?? {}),
+      weights: { ...defaultSettings.weights, ...(raw.settings?.weights ?? {}) },
+    },
+    events: Array.isArray(raw.events) ? raw.events : [],
+  } as AppData
 }
 export function parseTimetable(text: string, existing: Teacher[] = []) {
   const entries: TimetableEntry[] = []

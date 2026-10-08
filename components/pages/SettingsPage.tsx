@@ -75,7 +75,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               </label>
             </div>
             <p className="text-xs text-subtle">
-              휴업일은 결강 슬롯 자동 추출에서 제외됩니다. (다음 업데이트에서 관리 UI 제공)
+              휴업일은 결강 슬롯 자동 추출에서 제외됩니다. 휴업일은 학사일정 메뉴에서 관리합니다.
             </p>
           </div>
         </Card>

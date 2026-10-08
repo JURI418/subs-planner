@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   BookOpen,
   CalendarDays,
+  CalendarRange,
   ClipboardCheck,
   ClipboardList,
   LayoutDashboard,
@@ -23,12 +24,14 @@ import { TimetablePage } from '@/components/pages/TimetablePage'
 import { TeachersPage } from '@/components/pages/TeachersPage'
 import { StatsPage } from '@/components/pages/StatsPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
+import { CalendarPage } from '@/components/pages/CalendarPage'
 
 const nav = [
   ['/dashboard', '대시보드', LayoutDashboard],
   ['/absence', '결강 등록', CalendarDays],
   ['/assignments', '배정 확인', ClipboardCheck],
   ['/timetable', '시간표', BookOpen],
+  ['/calendar', '학사일정', CalendarRange],
   ['/teachers', '교사 관리', Users],
   ['/stats', '통계', ClipboardList],
   ['/settings', '설정', Settings],
@@ -52,6 +55,8 @@ export function AppShell() {
         return <AssignmentsPage data={data} setData={setData} />
       case 'timetable':
         return <TimetablePage data={data} setData={setData} />
+      case 'calendar':
+        return <CalendarPage data={data} setData={setData} />
       case 'teachers':
         return <TeachersPage data={data} setData={setData} />
       case 'stats':

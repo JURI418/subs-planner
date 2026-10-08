@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { emptyData, seedData, type AppData } from '@/lib/types'
+import { emptyData, normalizeData, seedData, type AppData } from '@/lib/types'
 
 export const STORAGE_KEY = 'school-cover-data'
 
@@ -10,7 +10,7 @@ export function useAppData() {
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY)
-    setData(raw ? JSON.parse(raw) : seedData())
+    setData(raw ? normalizeData(JSON.parse(raw)) : seedData())
     setReady(true)
   }, [])
 
