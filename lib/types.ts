@@ -110,6 +110,12 @@ export function formatKoreanDate(date: string) {
   const day = ['일', '월', '화', '수', '목', '금', '토'][new Date(y, m - 1, d).getDay()]
   return `${y}년 ${m}월 ${d}일 ${day}요일`
 }
+/** '2026.10.08(목)' */
+export function formatDotDate(date: string) {
+  const [y, m, d] = date.split('-').map(Number)
+  const day = ['일', '월', '화', '수', '목', '금', '토'][new Date(y, m - 1, d).getDay()]
+  return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}(${day})`
+}
 /** 학기 시작일 기준 몇 주차인지 (시작 전이면 0) */
 export function weekOfSemester(date: string, startDate: string) {
   const toTime = (x: string) => {

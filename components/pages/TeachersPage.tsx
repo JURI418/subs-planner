@@ -23,12 +23,12 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="이름 검색"
-              className="w-32 rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              className="w-32 rounded-md border border-line px-3 py-2 text-sm"
             />
             <select
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
-              className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              className="rounded-md border border-line px-3 py-2 text-sm"
             >
               <option value="all">전체 학년</option>
               <option value="1">1학년</option>
@@ -42,7 +42,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
-              <tr className="border-b text-xs text-slate-400">
+              <tr className="border-b text-xs text-subtle">
                 <th className="p-3">이름</th>
                 <th className="p-3">교과</th>
                 <th className="p-3">담당 학년</th>
@@ -53,12 +53,12 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
             </thead>
             <tbody>
               {list.map((t) => (
-                <tr className="border-b border-slate-100" key={t.id}>
+                <tr className="border-b border-line" key={t.id}>
                   <td className="p-3 font-semibold">
                     {t.name}
                     {t.name.startsWith('가상') && <Badge tone="red">임시</Badge>}
                   </td>
-                  <td className="p-3 text-slate-500">{t.subject}</td>
+                  <td className="p-3 text-subtle">{t.subject}</td>
                   <td className="p-3">
                     {t.grades.map((g) => (
                       <Badge key={g} tone="blue">
@@ -77,7 +77,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                           ),
                         }))
                       }
-                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+                      className="rounded border border-line px-2 py-1 text-xs"
                     >
                       <option>정규</option>
                       <option>기간제</option>
@@ -95,7 +95,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                           ),
                         }))
                       }
-                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+                      className="rounded border border-line px-2 py-1 text-xs"
                     >
                       <option>기본</option>
                       <option>제외</option>

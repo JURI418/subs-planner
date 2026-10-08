@@ -48,8 +48,8 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
     <Card className="mt-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-bold">추천 가중치</h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <h2 className="font-display text-lg font-semibold">추천 가중치</h2>
+          <p className="mt-1 text-xs text-subtle">
             점수가 높은 교사부터 보강 후보로 추천됩니다. 중요하게 여기는 항목의 점수를 높이세요.
           </p>
         </div>
@@ -59,7 +59,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
             setData((d) => ({ ...d, settings: { ...d.settings, weights: { ...defaultSettings.weights } } }))
           }}
           disabled={isDefault}
-          className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 disabled:opacity-40"
+          className="rounded border border-line px-3 py-2 text-xs font-semibold text-ink-2 disabled:opacity-40"
         >
           기본값으로
         </button>
@@ -69,7 +69,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
           <label key={key} htmlFor={`weight-${key}`} className="flex flex-col gap-2 text-sm font-semibold">
             <span className="flex items-baseline justify-between">
               {label}
-              <span className="text-lg font-bold tabular-nums text-sky-700">{w[key]}점</span>
+              <span className="text-lg font-bold tabular-nums text-iris-deep">{w[key]}점</span>
             </span>
             <input
               id={`weight-${key}`}
@@ -79,26 +79,26 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
               step={5}
               value={w[key]}
               onChange={(e) => setWeight(key, Number(e.target.value))}
-              className="w-full accent-sky-600"
+              className="w-full accent-iris"
             />
-            <span className="text-xs font-normal leading-5 text-slate-500">{help(w[key])}</span>
+            <span className="text-xs font-normal leading-5 text-subtle">{help(w[key])}</span>
           </label>
         ))}
       </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 p-4">
-        <p className="min-w-0 flex-1 text-xs leading-5 text-slate-600">
+      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-md bg-wash p-4">
+        <p className="min-w-0 flex-1 text-xs leading-5 text-ink-2">
           바꾼 가중치는 앞으로 등록하는 결강부터 적용됩니다. 이미 만들어진 미확정 배정({pending}건)에도
           적용하려면 다시 추천하세요. 확정된 배정과 직접 고른 수동 배정은 바뀌지 않습니다.
         </p>
         <button
           onClick={recompute}
           disabled={pending === 0}
-          className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          className="rounded-md bg-iris-deep px-4 py-3 text-sm font-semibold text-paper disabled:opacity-40"
         >
           미확정 배정 다시 추천
         </button>
       </div>
-      {msg && <p className="mt-3 text-sm text-emerald-700">{msg}</p>}
+      {msg && <p className="mt-3 text-sm text-ok">{msg}</p>}
     </Card>
   )
 }

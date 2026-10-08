@@ -1,16 +1,18 @@
 import type { ReactNode } from 'react'
 
 const toneClass: Record<string, string> = {
-  green: 'bg-emerald-50 text-emerald-700',
-  yellow: 'bg-amber-50 text-amber-700',
-  red: 'bg-rose-50 text-rose-700',
-  blue: 'bg-sky-50 text-sky-700',
-  slate: 'bg-slate-100 text-slate-600',
+  green: 'bg-ok-soft text-ok',
+  yellow: 'bg-warn-soft text-warn',
+  red: 'bg-bad-soft text-bad',
+  blue: 'bg-iris-soft text-iris-deep',
+  slate: 'bg-wash-2 text-ink-2',
 }
 
 export function Badge({ children, tone = 'slate' }: { children: ReactNode; tone?: string }) {
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${toneClass[tone] ?? toneClass.slate}`}>
+    <span
+      className={`inline-flex items-center rounded-sm px-2 py-0.5 text-[11px] font-medium tracking-wide ${toneClass[tone] ?? toneClass.slate}`}
+    >
       {children}
     </span>
   )

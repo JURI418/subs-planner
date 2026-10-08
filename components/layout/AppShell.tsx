@@ -10,11 +10,10 @@ import {
   Menu,
   RotateCcw,
   Settings,
-  Sparkles,
   Users,
   X,
 } from 'lucide-react'
-import { formatKoreanDate, seedData, todayISO } from '@/lib/types'
+import { seedData } from '@/lib/types'
 import { useAppData } from '@/hooks/useAppData'
 import { DashboardPage } from '@/components/pages/DashboardPage'
 import { AbsencePage } from '@/components/pages/AbsencePage'
@@ -39,7 +38,7 @@ export function AppShell() {
   const router = useRouter()
   const { data, setData, ready } = useAppData()
   const [mobile, setMobile] = useState(false)
-  if (!ready) return <div className="min-h-screen bg-slate-50" />
+  if (!ready) return <div className="min-h-screen bg-wash" />
   const page = path.replace('/', '') || 'dashboard'
 
   const content = (() => {
@@ -63,76 +62,84 @@ export function AppShell() {
     }
   })()
   return (
-    <div className="min-h-screen bg-[#f5f7fb] text-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
+      {mobile && (
+        <button
+          aria-label="메뉴 닫기"
+          onClick={() => setMobile(false)}
+          className="fixed inset-0 z-10 bg-ink/20 lg:hidden"
+        />
+      )}
       <aside
-        className={`fixed inset-y-0 left-0 z-20 w-64 border-r border-slate-200 bg-white p-5 transition-transform lg:translate-x-0 ${mobile ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-line bg-surface px-5 py-6 transition-transform lg:translate-x-0 ${mobile ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-slate-900 text-white">
-              <Sparkles />
+            <div className="grid size-10 place-items-center rounded-sm bg-iris-deep font-display text-lg font-semibold text-paper">
+              결
             </div>
             <div>
-              <p className="font-bold">결보강 매니저</p>
-              <p className="text-xs text-slate-500">{data.settings.semester}</p>
+              <p className="font-display text-[17px] font-semibold leading-tight">결보강 매니저</p>
+              <p className="mt-0.5 text-xs text-subtle">{data.settings.semester}</p>
             </div>
           </div>
-          <button className="lg:hidden" onClick={() => setMobile(false)}>
-            <X />
+          <button className="text-subtle lg:hidden" aria-label="메뉴 닫기" onClick={() => setMobile(false)}>
+            <X size={18} strokeWidth={1.5} />
           </button>
         </div>
-        <nav className="mt-10 flex flex-col gap-1">
-          {nav.map(([href, label, Icon]) => (
-            <button
-              key={href}
-              onClick={() => {
-                router.push(href)
-                setMobile(false)
-              }}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium ${path === href ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
-            >
-              <Icon />
-              {label}
-            </button>
-          ))}
+        <nav className="mt-10 flex flex-col gap-0.5">
+          {nav.map(([href, label, Icon]) => {
+            const active = path === href || (href === '/dashboard' && page === 'dashboard')
+            return (
+              <button
+                key={href}
+                onClick={() => {
+                  router.push(href)
+                  setMobile(false)
+                }}
+                aria-current={active ? 'page' : undefined}
+                className={`flex items-center gap-3 rounded-sm px-3 py-2.5 text-left text-sm transition-colors ${active ? 'bg-iris-soft font-semibold text-iris-deep' : 'text-ink-2 hover:bg-wash'}`}
+              >
+                <Icon size={18} strokeWidth={1.5} />
+                {label}
+              </button>
+            )
+          })}
         </nav>
-        <div className="mt-auto hidden rounded-xl bg-slate-50 p-3 text-xs text-slate-500 lg:block">
-          <p className="font-semibold text-slate-700">운영 원칙</p>
-          <p className="mt-1 leading-5">보강 횟수와 당일 부담을 함께 고려해 공정하게 추천합니다.</p>
+        <div className="mt-auto hidden border-t border-line pt-4 text-xs leading-5 text-subtle lg:block">
+          <p className="font-semibold text-ink-2">운영 원칙</p>
+          <p className="mt-1">보강 횟수와 당일 부담을 함께 고려해 공정하게 추천합니다.</p>
         </div>
       </aside>
       <main className="lg:pl-64">
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-5 backdrop-blur lg:px-8">
-          <button className="lg:hidden" onClick={() => setMobile(true)}>
-            <Menu />
+        <header className="sticky top-0 z-[5] flex h-14 items-center justify-between border-b border-line bg-paper/90 px-5 backdrop-blur lg:px-10">
+          <button className="text-ink-2 lg:hidden" aria-label="메뉴 열기" onClick={() => setMobile(true)}>
+            <Menu size={20} strokeWidth={1.5} />
           </button>
-          <div className="hidden text-sm text-slate-500 lg:block">
-            {data.settings.semester} <span className="mx-2">/</span> 오늘은 {formatKoreanDate(todayISO())}
-          </div>
+          <div className="hidden text-xs tracking-wide text-subtle lg:block">{data.settings.semester}</div>
           <div className="ml-auto flex items-center gap-2">
             <button
               title="샘플 데이터로 초기화"
+              aria-label="샘플 데이터로 초기화"
               onClick={() => {
                 if (confirm('모든 데이터를 샘플 데이터로 덮어씁니다. 되돌릴 수 없습니다. 계속할까요?')) setData(seedData())
               }}
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
+              className="rounded-sm p-2 text-subtle hover:bg-wash-2 hover:text-ink"
             >
-              <RotateCcw />
+              <RotateCcw size={16} strokeWidth={1.5} />
             </button>
             <button
               onClick={() => {
                 navigator.clipboard?.writeText(JSON.stringify(data))
                 alert('JSON 데이터를 클립보드에 복사했습니다.')
               }}
-              className="hidden rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold sm:block"
+              className="hidden rounded-sm border border-line-strong px-3 py-1.5 text-xs font-medium text-ink-2 hover:bg-surface sm:block"
             >
               백업
             </button>
           </div>
         </header>
-        <div className="mx-auto max-w-[1500px] p-5 lg:p-8">
-          {content}
-        </div>
+        <div className="mx-auto max-w-[1440px] px-5 py-8 lg:px-10 lg:py-10">{content}</div>
       </main>
     </div>
   )

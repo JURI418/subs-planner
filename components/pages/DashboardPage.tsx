@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { formatKoreanDate, todayISO, weekOfSemester, type AppData } from '@/lib/types'
+import { formatDotDate, todayISO, type AppData } from '@/lib/types'
 
 export function DashboardPage({ data }: { data: AppData }) {
   const router = useRouter()
@@ -11,51 +11,57 @@ export function DashboardPage({ data }: { data: AppData }) {
   const done = data.assignments.filter((a) => a.status === '확정').length
   const today = todayISO()
   const todayAbsences = data.absences.filter((a) => a.startDate <= today && today <= a.endDate).length
-  const week = weekOfSemester(today, data.settings.startDate)
+  const stats: { label: string; value: number; unit: string; mark: string }[] = [
+    { label: '오늘 결강', value: todayAbsences, unit: '건', mark: 'bg-iris' },
+    { label: '미확정 배정', value: pending, unit: '건', mark: pending ? 'bg-warn' : 'bg-faint' },
+    { label: '확정 완료', value: done, unit: '건', mark: 'bg-ok' },
+    { label: '등록 교사', value: data.teachers.length, unit: '명', mark: 'bg-faint' },
+  ]
   return (
     <>
       <PageHeader
         eyebrow="운영 현황"
-        title="안녕하세요, 오늘의 결보강을 확인하세요"
-        desc={`${formatKoreanDate(today)} · ${data.settings.semester}${week ? ` ${week}주차` : ''}`}
+        title="결보강 확인"
+        desc={formatDotDate(today)}
         action={
           <button
             onClick={() => router.push('/absence')}
-            className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+            className="rounded-sm bg-iris-deep px-5 py-2.5 text-sm font-medium text-paper hover:bg-ink"
           >
-            + 결강 등록
+            결강 등록
           </button>
         }
       />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          ['오늘 결강', todayAbsences, '건', 'sky'],
-          ['미확정 배정', pending, '건', 'yellow'],
-          ['확정 완료', done, '건', 'green'],
-          ['등록 교사', data.teachers.length, '명', 'slate'],
-        ].map(([l, v, u, t]) => (
-          <Card key={l}>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-slate-500">{l}</p>
-              <Badge tone={t as string}>{t === 'green' ? '완료' : '실시간'}</Badge>
-            </div>
-            <p className="mt-5 text-3xl font-bold">
-              {v}
-              <span className="ml-1 text-sm font-medium text-slate-400">{u}</span>
+
+      {/* 요약: 하나의 띠를 네 칸으로 나눈 장부 형식 */}
+      <div className="grid grid-cols-2 overflow-hidden rounded-md border border-line bg-surface xl:grid-cols-4">
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className={`px-6 py-5 ${i % 2 ? 'border-l border-line' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''} ${i === 2 ? 'xl:border-l' : ''}`}
+          >
+            <p className="flex items-center gap-2 text-xs tracking-wide text-subtle">
+              <span className={`size-2 rounded-[1px] ${s.mark}`} aria-hidden />
+              {s.label}
             </p>
-          </Card>
+            <p className="mt-3 font-display text-4xl font-semibold tabular-nums text-ink">
+              {s.value}
+              <span className="ml-1.5 font-sans text-sm font-normal text-subtle">{s.unit}</span>
+            </p>
+          </div>
         ))}
       </div>
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card>
-          <div className="flex items-center justify-between">
+          <div className="flex items-baseline justify-between border-b border-line pb-4">
             <div>
-              <h2 className="font-bold">최근 배정</h2>
-              <p className="mt-1 text-xs text-slate-500">이번 주 결보강 처리 현황</p>
+              <h2 className="font-display text-lg font-semibold">최근 배정</h2>
+              <p className="mt-1 text-xs text-subtle">가장 최근에 처리한 결보강 4건</p>
             </div>
             <button
               onClick={() => router.push('/assignments')}
-              className="text-sm font-semibold text-sky-600"
+              className="text-sm text-iris-deep underline decoration-line-strong underline-offset-4 hover:decoration-iris"
             >
               전체 보기
             </button>
@@ -63,58 +69,59 @@ export function DashboardPage({ data }: { data: AppData }) {
           <AssignmentMini data={data} />
         </Card>
         <Card>
-          <h2 className="font-bold">운영 체크리스트</h2>
-          <div className="mt-5 flex flex-col gap-4">
+          <h2 className="border-b border-line pb-4 font-display text-lg font-semibold">운영 체크리스트</h2>
+          <ol className="mt-2 flex flex-col">
             {[
-              ['시간표 등록', '교사별 주간 시간표가 준비됐습니다.', true],
+              ['시간표 등록', '교사별 주간 시간표가 준비됐습니다.', data.timetable.length > 0],
               ['결강 슬롯 확인', '수업이 없는 시간은 자동으로 제외됩니다.', true],
               ['배정 확정', '제안된 배정을 확인하고 확정하세요.', pending === 0],
-            ].map(([a, b, c]) => (
-              <div className="flex gap-3" key={a as string}>
-                <div
-                  className={`mt-0.5 grid size-5 place-items-center rounded-full text-xs ${c ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
-                >
-                  {c ? '✓' : '!'}
-                </div>
-                <div>
+            ].map(([a, b, c], i) => (
+              <li className="flex items-start gap-4 border-b border-line py-4 last:border-b-0" key={a as string}>
+                <span className="w-5 pt-0.5 font-mono text-xs text-faint">{String(i + 1).padStart(2, '0')}</span>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold">{a}</p>
-                  <p className="mt-1 text-xs text-slate-500">{b}</p>
+                  <p className="mt-1 text-xs text-subtle">{b}</p>
                 </div>
-              </div>
+                <Badge tone={c ? 'green' : 'yellow'}>{c ? '완료' : '확인 필요'}</Badge>
+              </li>
             ))}
-          </div>
+          </ol>
         </Card>
       </div>
     </>
   )
 }
+
 function AssignmentMini({ data }: { data: AppData }) {
+  const recent = data.assignments.slice(-4).reverse()
+  if (!recent.length) return <p className="py-8 text-sm text-subtle">아직 처리한 결보강이 없습니다.</p>
   return (
-    <div className="mt-4 flex flex-col divide-y divide-slate-100">
-      {data.assignments
-        .slice(-4)
-        .reverse()
-        .map((a) => {
-          const s = data.slots.find((x) => x.id === a.slotId)
-          const absent = data.teachers.find((t) => t.id === s?.absentTeacherId)?.name
-          const sub = data.teachers.find((t) => t.id === a.substituteTeacherId)?.name
-          return (
-            <div className="flex items-center justify-between gap-3 py-3" key={a.slotId}>
-              <div>
-                <p className="text-sm font-semibold">
-                  {s?.date.slice(5)} · {s?.period}교시{' '}
-                  <span className="font-normal text-slate-500">{absent} 결강</span>
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  {s?.grade}학년 {s?.room} · {s?.subject}
-                </p>
-              </div>
-              <Badge tone={a.status === '확정' ? 'green' : a.status === '배정불가' ? 'red' : 'yellow'}>
-                {sub || a.status}
-              </Badge>
-            </div>
-          )
-        })}
-    </div>
+    <ul className="flex flex-col divide-y divide-line">
+      {recent.map((a) => {
+        const s = data.slots.find((x) => x.id === a.slotId)
+        const absent = data.teachers.find((t) => t.id === s?.absentTeacherId)?.name
+        const sub = data.teachers.find((t) => t.id === a.substituteTeacherId)?.name
+        return (
+          <li className="grid grid-cols-[5.5rem_1fr_auto] items-center gap-4 py-4" key={a.slotId}>
+            <span className="font-mono text-sm text-ink">
+              {s?.date.slice(5).replace('-', '.')}
+              <span className="block text-xs text-subtle">{s?.period}교시</span>
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm">
+                {absent} <span className="text-subtle">결강</span>
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-subtle">
+                {s?.grade}학년 {s?.room} · {s?.subject}
+              </span>
+            </span>
+            <span className="flex flex-col items-end gap-1">
+              <span className="text-sm font-medium">{sub ?? '—'}</span>
+              <Badge tone={a.status === '확정' ? 'green' : a.status === '배정불가' ? 'red' : 'yellow'}>{a.status}</Badge>
+            </span>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

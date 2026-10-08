@@ -38,7 +38,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
       />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <h2 className="font-bold">학기 설정</h2>
+          <h2 className="font-display text-lg font-semibold">학기 설정</h2>
           <div className="mt-5 flex flex-col gap-4">
             <label className="text-sm font-semibold">
               학기명
@@ -47,7 +47,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
                 onChange={(e) =>
                   setData((d) => ({ ...d, settings: { ...d.settings, semester: e.target.value } }))
                 }
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
               />
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -59,7 +59,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
                   onChange={(e) =>
                     setData((d) => ({ ...d, settings: { ...d.settings, startDate: e.target.value } }))
                   }
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
                 />
               </label>
               <label className="text-sm font-semibold">
@@ -70,17 +70,17 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
                   onChange={(e) =>
                     setData((d) => ({ ...d, settings: { ...d.settings, endDate: e.target.value } }))
                   }
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
                 />
               </label>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-subtle">
               휴업일은 결강 슬롯 자동 추출에서 제외됩니다. (다음 업데이트에서 관리 UI 제공)
             </p>
           </div>
         </Card>
         <Card>
-          <h2 className="font-bold">추천 규칙</h2>
+          <h2 className="font-display text-lg font-semibold">추천 규칙</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             {[
               ['maxDaily', '일 최대 수업', '개'],
@@ -96,14 +96,14 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
                     onChange={(e) =>
                       setData((d) => ({ ...d, settings: { ...d.settings, [key]: Number(e.target.value) } }))
                     }
-                    className="w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                    className="w-full rounded-md border border-line px-3 py-3 font-normal"
                   />
-                  <span className="text-xs text-slate-400">{unit}</span>
+                  <span className="text-xs text-subtle">{unit}</span>
                 </div>
               </label>
             ))}
           </div>
-          <div className="mt-5 rounded-xl bg-sky-50 p-4 text-sm leading-6 text-sky-900">
+          <div className="mt-5 rounded-md bg-iris-soft p-4 text-sm leading-6 text-iris-deep">
             하드 제약: 같은 시간 수업 없음 · 일 최대 수업 미만 · 연속 수업 제한
             <br />
             소프트 우선: 같은 학년 · 당일 부담 · 누적 보강 횟수
@@ -112,7 +112,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
       </div>
       <WeightsCard data={data} setData={setData} />
       <Card className="mt-6">
-        <h2 className="font-bold">데이터 관리</h2>
+        <h2 className="font-display text-lg font-semibold">데이터 관리</h2>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             onClick={() => {
@@ -121,7 +121,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               localStorage.removeItem(STORAGE_KEY)
               location.reload()
             }}
-            className="rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-600"
+            className="rounded-md border border-bad-line px-4 py-3 text-sm font-semibold text-bad"
           >
             모든 데이터 초기화
           </button>
@@ -133,16 +133,16 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               a.download = '결보강-백업.json'
               a.click()
             }}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold"
+            className="flex items-center gap-2 rounded-md border border-line px-4 py-3 text-sm font-semibold"
           >
-            <Download />
+            <Download size={16} strokeWidth={1.5} />
             JSON 백업 내보내기
           </button>
           <button
             onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold"
+            className="flex items-center gap-2 rounded-md border border-line px-4 py-3 text-sm font-semibold"
           >
-            <Upload />
+            <Upload size={16} strokeWidth={1.5} />
             JSON 백업 불러오기
           </button>
           <input
@@ -159,7 +159,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
           />
         </div>
         {importMsg && (
-          <p className={`mt-3 text-sm ${importMsg.ok ? 'text-emerald-700' : 'text-rose-600'}`}>
+          <p className={`mt-3 text-sm ${importMsg.ok ? 'text-ok' : 'text-bad'}`}>
             {importMsg.text}
           </p>
         )}

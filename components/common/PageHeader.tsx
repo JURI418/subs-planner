@@ -9,11 +9,11 @@ type Props = {
 
 export function PageHeader({ eyebrow, title, desc, action }: Props) {
   return (
-    <div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-      <div>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[.18em] text-sky-600">{eyebrow}</p>
-        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-2 text-sm text-slate-500">{desc}</p>
+    <div className="mb-8 flex flex-col justify-between gap-4 border-b border-line pb-6 md:flex-row md:items-end">
+      <div className="min-w-0">
+        <p className="mb-3 text-[11px] font-semibold tracking-[.2em] text-iris">{eyebrow}</p>
+        <h1 className="font-display text-[2rem] font-semibold leading-tight tracking-[-0.01em] text-ink">{title}</h1>
+        <p className="mt-2 text-sm text-subtle">{desc}</p>
       </div>
       {action}
     </div>

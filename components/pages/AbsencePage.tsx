@@ -103,14 +103,14 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
       />
       <div className="grid gap-6 xl:grid-cols-[.75fr_1.25fr]">
         <Card>
-          <h2 className="font-bold">결강 기본 정보</h2>
+          <h2 className="font-display text-lg font-semibold">결강 기본 정보</h2>
           <div className="mt-5 flex flex-col gap-4">
             <label className="text-sm font-semibold">
               결강 교사
               <select
                 value={teacherId}
                 onChange={(e) => setTeacherId(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
               >
                 <option value="">선택</option>
                 {data.teachers.map((t) => (
@@ -127,7 +127,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   type="date"
                   value={start}
                   onChange={(e) => setStart(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
                 />
               </label>
               <label className="text-sm font-semibold">
@@ -136,7 +136,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   type="date"
                   value={end}
                   onChange={(e) => setEnd(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
                 />
               </label>
             </div>
@@ -145,10 +145,10 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               <input
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal"
+                className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
               />
             </label>
-            <button onClick={make} className="rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white">
+            <button onClick={make} className="rounded-md bg-iris-deep py-3 text-sm font-semibold text-paper">
               슬롯 미리보기
             </button>
           </div>
@@ -156,8 +156,8 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-bold">결강 슬롯 미리보기</h2>
-              <p className="mt-1 text-xs text-slate-500">수업을 제외하려면 체크를 해제하세요.</p>
+              <h2 className="font-display text-lg font-semibold">결강 슬롯 미리보기</h2>
+              <p className="mt-1 text-xs text-subtle">수업을 제외하려면 체크를 해제하세요.</p>
             </div>
             {preview.length > 0 && (
               <Badge>
@@ -166,9 +166,9 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
             )}
           </div>
           {preview.length === 0 ? (
-            <div className="grid min-h-64 place-items-center text-center text-sm text-slate-400">
+            <div className="grid min-h-64 place-items-center text-center text-sm text-subtle">
               <div>
-                <CalendarDays className="mx-auto mb-3" />
+                <CalendarDays className="mx-auto mb-3" size={20} strokeWidth={1.5} />
                 <p>결강 정보를 입력하고 미리보기를 생성하세요.</p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 {preview.map((s) => (
                   <label
                     key={s.id}
-                    className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
+                    className="flex items-center gap-3 rounded-md border border-line p-3"
                   >
                     <input
                       type="checkbox"
@@ -199,7 +199,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               </div>
               <button
                 onClick={execute}
-                className="mt-5 w-full rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white"
+                className="mt-5 w-full rounded-md bg-ok py-3 text-sm font-semibold text-paper"
               >
                 배정 실행
               </button>
@@ -210,17 +210,17 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
       <Card className="mt-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-bold">등록된 결강</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <h2 className="font-display text-lg font-semibold">등록된 결강</h2>
+            <p className="mt-1 text-xs text-subtle">
               결강을 삭제하면 그 결강의 보강 배정도 함께 삭제됩니다.
             </p>
           </div>
           <Badge>{registered.length}건</Badge>
         </div>
         {registered.length === 0 ? (
-          <p className="mt-5 text-sm text-slate-400">등록된 결강이 없습니다.</p>
+          <p className="mt-5 text-sm text-subtle">등록된 결강이 없습니다.</p>
         ) : (
-          <div className="mt-4 flex flex-col divide-y divide-slate-100">
+          <div className="mt-4 flex flex-col divide-y divide-line">
             {registered.map((a) => {
               const { slots, confirmed } = absenceSummary(data, a.id)
               return (
@@ -228,17 +228,17 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   <span className="w-20 text-sm font-semibold">
                     {data.teachers.find((t) => t.id === a.teacherId)?.name ?? '알 수 없음'}
                   </span>
-                  <span className="text-sm text-slate-600">
+                  <span className="text-sm text-ink-2">
                     {formatDate(a.startDate)}
                     {a.endDate !== a.startDate && ` ~ ${formatDate(a.endDate)}`}
                   </span>
-                  <span className="text-sm text-slate-400">{a.reason}</span>
+                  <span className="text-sm text-subtle">{a.reason}</span>
                   <span className="ml-auto flex items-center gap-2">
                     <Badge>보강 {slots}건</Badge>
                     {confirmed > 0 && <Badge tone="green">확정 {confirmed}</Badge>}
                     <button
                       onClick={() => remove(a)}
-                      className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                      className="rounded border border-bad-line px-3 py-1.5 text-xs font-semibold text-bad hover:bg-bad-soft"
                     >
                       삭제
                     </button>

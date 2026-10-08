@@ -67,9 +67,9 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           <div className="flex gap-2">
             <button
               onClick={copy}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold"
+              className="flex items-center gap-2 rounded-md border border-line bg-surface px-4 py-3 text-sm font-semibold"
             >
-              <Copy />
+              <Copy size={16} strokeWidth={1.5} />
               복사
             </button>
             <button
@@ -78,7 +78,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                   .filter((a) => a.status === '제안' && a.substituteTeacherId)
                   .forEach((a) => confirmOne(a.slotId))
               }
-              className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+              className="rounded-md bg-iris-deep px-4 py-3 text-sm font-semibold text-paper"
             >
               제안 전체 확정
             </button>
@@ -95,7 +95,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           <button
             key={v}
             onClick={() => setFilter(v)}
-            className={`rounded-full px-4 py-2 text-sm ${filter === v ? 'bg-slate-900 text-white' : 'bg-white text-slate-500'}`}
+            className={`rounded-sm px-4 py-2 text-sm ${filter === v ? 'bg-iris-deep text-paper' : 'bg-surface text-subtle'}`}
           >
             {l}
           </button>
@@ -105,7 +105,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead>
-              <tr className="border-b text-xs text-slate-400">
+              <tr className="border-b text-xs text-subtle">
                 <th className="p-3">일자</th>
                 <th className="p-3">수업</th>
                 <th className="p-3">결강 교사</th>
@@ -119,18 +119,18 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
               {rows.map((a) => {
                 const s = data.slots.find((x) => x.id === a.slotId)
                 return (
-                  <tr className="border-b border-slate-100" key={a.slotId}>
+                  <tr className="border-b border-line" key={a.slotId}>
                     <td className="p-3 font-semibold">
                       {formatDate(s?.date || '')}
                       <br />
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-subtle">
                         {s?.dayOfWeek} {s?.period}교시
                       </span>
                     </td>
                     <td className="p-3">
                       {s?.grade}학년 {s?.room}
                       <br />
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-subtle">
                         {s?.group || '일반'} · {s?.subject}
                       </span>
                     </td>
@@ -140,7 +140,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         disabled={a.status === '확정'}
                         value={a.substituteTeacherId || ''}
                         onChange={(e) => changeSubstitute(a, e.target.value)}
-                        className="rounded-lg border border-slate-200 px-2 py-2"
+                        className="rounded border border-line px-2 py-2"
                       >
                         <option value="">배정불가</option>
                         {data.teachers
@@ -152,7 +152,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                           ))}
                       </select>
                     </td>
-                    <td className="max-w-56 p-3 text-xs text-slate-500">{a.reasons.join(' · ')}</td>
+                    <td className="max-w-56 p-3 text-xs text-subtle">{a.reasons.join(' · ')}</td>
                     <td className="p-3">
                       <Badge
                         tone={a.status === '확정' ? 'green' : a.status === '배정불가' ? 'red' : 'yellow'}
@@ -164,7 +164,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                       {a.status === '제안' && a.substituteTeacherId && (
                         <button
                           onClick={() => confirmOne(a.slotId)}
-                          className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"
+                          className="rounded bg-ok-soft px-3 py-2 text-xs font-semibold text-ok"
                         >
                           확정
                         </button>
@@ -179,7 +179,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                             )
                               setData((d) => cancelConfirm(d, a.slotId))
                           }}
-                          className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+                          className="rounded bg-wash-2 px-3 py-2 text-xs font-semibold text-ink-2 hover:bg-line"
                         >
                           확정 취소
                         </button>

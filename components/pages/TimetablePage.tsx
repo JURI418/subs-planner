@@ -60,7 +60,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
         action={
           <button
             onClick={() => setText(samplePaste)}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold"
+            className="rounded-md border border-line bg-surface px-4 py-3 text-sm font-semibold"
           >
             샘플 데이터 불러오기
           </button>
@@ -69,33 +69,33 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
       <div className="grid gap-6 xl:grid-cols-[1fr_1.3fr]">
         <Card>
           <div className="flex items-center justify-between">
-            <h2 className="font-bold">붙여넣기</h2>
+            <h2 className="font-display text-lg font-semibold">붙여넣기</h2>
             <Badge>TSV / 표</Badge>
           </div>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="교사명  월  화  수  목  금\n1(08:10)  209문학 ..."
-            className="mt-4 h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 font-mono text-xs outline-none focus:border-sky-400"
+            placeholder={'교사명\t월\t화\t수\t목\t금\n1(08:10)\t209문학\t…'}
+            className="mt-4 h-80 w-full resize-none rounded-md border border-line bg-wash p-4 font-mono text-xs outline-none focus:border-iris"
           />
           <button
             onClick={() => setPreview(parseTimetable(text, data.teachers))}
-            className="mt-3 w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white"
+            className="mt-3 w-full rounded-md bg-iris-deep py-3 text-sm font-semibold text-paper"
           >
             미리보기 생성
           </button>
           {preview && (
-            <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm">
+            <div className="mt-4 rounded-md bg-wash p-3 text-sm">
               <p className="font-semibold">{preview.entries.length}개 수업 파싱됨</p>
               {preview.newTeachers.length > 0 && (
-                <p className="mt-2 text-sky-700">
+                <p className="mt-2 text-iris-deep">
                   새 교사 {preview.newTeachers.length}명: {preview.newTeachers.map((t) => t.name).join(', ')}
                 </p>
               )}
               {preview.errors.length > 0 && (
                 <>
-                  <p className="mt-2 text-rose-600">파싱 실패 {preview.errors.length}건</p>
-                  <ul className="mt-1 max-h-32 overflow-y-auto rounded-lg bg-white p-2 font-mono text-xs text-rose-600">
+                  <p className="mt-2 text-bad">파싱 실패 {preview.errors.length}건</p>
+                  <ul className="mt-1 max-h-32 overflow-y-auto rounded bg-surface p-2 font-mono text-xs text-bad">
                     {preview.errors.map((err, i) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -105,7 +105,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
               <button
                 onClick={register}
                 disabled={preview.entries.length === 0}
-                className="mt-3 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-40"
+                className="mt-3 rounded bg-ok px-3 py-2 text-xs font-semibold text-paper disabled:opacity-40"
               >
                 등록
               </button>
@@ -114,11 +114,11 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
         </Card>
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-bold">등록 시간표</h2>
+            <h2 className="font-display text-lg font-semibold">등록 시간표</h2>
             <select
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="rounded border border-line px-3 py-2 text-sm"
             >
               {data.teachers.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -130,7 +130,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
           <div className="mt-5 overflow-x-auto">
             <table className="w-full min-w-[620px] text-left text-sm">
               <thead>
-                <tr className="border-b text-xs text-slate-400">
+                <tr className="border-b text-xs text-subtle">
                   <th className="p-3">교시</th>
                   {days.map((d) => (
                     <th key={d} className="p-3">
@@ -141,14 +141,14 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
               </thead>
               <tbody>
                 {periods.map((p) => (
-                  <tr className="border-b border-slate-100" key={p}>
-                    <td className="p-3 font-semibold text-slate-500">{p}</td>
+                  <tr className="border-b border-line" key={p}>
+                    <td className="p-3 font-semibold text-subtle">{p}</td>
                     {days.map((day) => {
                       const e = selectedEntries.find((x) => x.period === p && x.dayOfWeek === day)
                       return (
                         <td className="p-2" key={day}>
                           {e ? (
-                            <div className="rounded-lg bg-sky-50 p-2 text-xs text-sky-800">
+                            <div className="rounded bg-iris-soft p-2 text-xs text-iris-deep">
                               <b>
                                 {e.room}
                                 {e.group ? e.group : ''}
@@ -157,7 +157,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
                               {e.subject}
                             </div>
                           ) : (
-                            <span className="text-slate-300">—</span>
+                            <span className="text-faint">—</span>
                           )}
                         </td>
                       )
