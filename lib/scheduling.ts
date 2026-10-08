@@ -77,6 +77,7 @@ export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.
   return {
     winner: scored[0] as Scored | undefined,
     top: scored.slice(0, 3),
+    ranked: scored,
     blocked: [...reasonsById.entries()].filter(([, r]) => r.length).map(([id, reasons]) => ({ id, reasons })),
   }
 }
@@ -101,6 +102,7 @@ export function autoAssign(slot: Slot, data: AppData, prior: Assignment[]): Assi
     isManual: false,
     score: result.winner?.score ?? 0,
     reasons: result.winner?.reasons ?? ['조건을 만족하는 후보 없음'],
+    backups: [result.top[1]?.t.id ?? null, result.top[2]?.t.id ?? null],
   }
 }
 
@@ -119,7 +121,9 @@ export function validateAssignment(slot: Slot, teacherId: string, data: AppData)
 }
 
 export function gridForTeacher(teacherId: string, day: string, data: AppData) {
-  return data.timetable.filter((e) => e.teacherId === teacherId && e.dayOfWeek === day).sort((a, b) => a.period - b.period)
+  return data.timetable
+    .filter((e) => e.teacherId === teacherId && e.dayOfWeek === day)
+    .sort((a, b) => a.period - b.period)
 }
 
 export type Parsed = { entries: TimetableEntry[]; errors: string[] }
@@ -137,7 +141,9 @@ export function makeSlots(
     const day = data.settings.holidays.includes(cur) ? null : dayOf(cur)
     if (!day) continue
     data.timetable
-      .filter((e) => e.teacherId === teacherId && e.dayOfWeek === day && (!periods || periods.includes(e.period)))
+      .filter(
+        (e) => e.teacherId === teacherId && e.dayOfWeek === day && (!periods || periods.includes(e.period)),
+      )
       .forEach((e) =>
         out.push({
           id: `s-${absenceId}-${cur}-${e.period}-${e.teacherId}`,
@@ -165,4 +171,44 @@ function nextDate(d: string) {
 function dayOf(d: string) {
   const [y, m, day] = d.split('-').map(Number)
   return ['일', '월', '화', '수', '목', '금', '토'][new Date(y, m - 1, day).getDay()] as any
+}
+
+export type DayCell = { period: number; kind: 'class' | 'cover' | 'this' | 'free'; label: string }
+
+/**
+ * 보강 교사 후보의 그날 하루: 교시별로 자기 수업 / 다른 보강 / 이번 보강 / 빈 시간.
+ * 추천 근거(그날 수업 수, 연속 교시, 누적 보강)를 눈으로 확인하는 데 쓴다.
+ */
+export function teacherDay(teacherId: string, slot: Slot, data: AppData) {
+  const prior = data.assignments.filter((a) => a.slotId !== slot.id)
+  const own = data.timetable.filter((e) => e.teacherId === teacherId && e.dayOfWeek === slot.dayOfWeek)
+  const covers = prior
+    .filter((a) => a.substituteTeacherId === teacherId)
+    .map((a) => data.slots.find((s) => s.id === a.slotId))
+    .filter((s): s is Slot => !!s && s.date === slot.date)
+  const cells: DayCell[] = Array.from({ length: data.settings.periodCount }, (_, i) => {
+    const p = i + 1
+    if (p === slot.period) return { period: p, kind: 'this', label: `${slot.room} 보강` }
+    const c = own.find((e) => e.period === p)
+    if (c) return { period: p, kind: 'class', label: `${c.room}${c.group ?? ''}` }
+    const v = covers.find((x) => x.period === p)
+    if (v) return { period: p, kind: 'cover', label: `${v.room} 보강` }
+    return { period: p, kind: 'free', label: '' }
+  })
+  let run = 0
+  let maxRun = 0
+  for (const c of cells) {
+    run = c.kind === 'free' ? 0 : run + 1
+    maxRun = Math.max(maxRun, run)
+  }
+  const teacher = data.teachers.find((t) => t.id === teacherId)
+  return {
+    cells,
+    classes: own.length,
+    covers: covers.length,
+    total: cells.filter((c) => c.kind !== 'free').length,
+    maxRun,
+    totalAssignments: teacher?.totalAssignments ?? 0,
+    clash: own.some((e) => e.period === slot.period) || covers.some((x) => x.period === slot.period),
+  }
 }

@@ -30,15 +30,15 @@
   --color-bad: #8c1d18;
   --color-bad-soft: #f9dedc;
   --color-bad-line: #b3261e;
-  --font-sans: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: 'Hahmlet', 'Nanum Myeongjo', 'AppleMyungjo', serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* Material 3 부품 */
 @layer components {
   .m3-btn {
-    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-medium tracking-[.01em] transition-[background-color,box-shadow,color] duration-150 disabled:pointer-events-none disabled:opacity-40;
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold tracking-[.01em] transition-[background-color,box-shadow,color] duration-150 disabled:pointer-events-none disabled:opacity-40;
   }
   .m3-btn-sm {
     @apply h-8 px-4 text-[13px];
@@ -71,7 +71,7 @@
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong/50 bg-surface px-4 text-sm font-medium text-ink-2 transition-colors hover:bg-iris/[.06];
+    @apply inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong/50 bg-surface px-4 text-sm font-bold text-ink-2 transition-colors hover:bg-iris/[.06];
   }
   .m3-chip-on {
     @apply border-transparent bg-iris-soft pl-2.5 text-on-iris-container;

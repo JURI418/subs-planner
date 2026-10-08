@@ -25,11 +25,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
               placeholder="이름 검색"
               className="m3-field m3-field-sm w-36"
             />
-            <select
-              value={grade}
-              onChange={(e) => setGrade(e.target.value)}
-              className="m3-field m3-field-sm"
-            >
+            <select value={grade} onChange={(e) => setGrade(e.target.value)} className="m3-field m3-field-sm">
               <option value="all">전체 학년</option>
               <option value="1">1학년</option>
               <option value="2">2학년</option>
@@ -46,8 +42,8 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                 <th className="p-3">이름</th>
                 <th className="p-3">교과</th>
                 <th className="p-3">담당 학년</th>
-                <th className="p-3">고용 형태</th>
-                <th className="p-3">후보 상태</th>
+                <th className="p-3">근무 구분</th>
+                <th className="p-3">보강 후보</th>
                 <th className="p-3 text-right">누적 보강</th>
               </tr>
             </thead>
@@ -73,14 +69,22 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                         setData((d) => ({
                           ...d,
                           teachers: d.teachers.map((x) =>
-                            x.id === t.id ? { ...x, employmentType: e.target.value as any } : x,
+                            // 시간강사는 보강 후보에서 빠지는 것이 기본, 정규로 돌리면 다시 후보에 넣는다
+                            x.id === t.id
+                              ? e.target.value === '시간강사'
+                                ? { ...x, employmentType: '시간강사', poolStatus: '제외' }
+                                : {
+                                    ...x,
+                                    employmentType: '정규',
+                                    poolStatus: x.poolStatus === '제외' ? '기본' : x.poolStatus,
+                                  }
+                              : x,
                           ),
                         }))
                       }
                       className="m3-field m3-field-sm"
                     >
                       <option>정규</option>
-                      <option>기간제</option>
                       <option>시간강사</option>
                     </select>
                   </td>

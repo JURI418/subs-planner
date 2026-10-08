@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react'
-export type EmploymentType = '정규' | '시간강사' | '기간제'
+export type EmploymentType = '정규' | '시간강사'
 export type PoolStatus = '기본' | '제외' | '추가포함'
 export type Day = '월' | '화' | '수' | '목' | '금'
 export type Teacher = {
@@ -49,6 +49,8 @@ export type Assignment = {
   isManual: boolean
   score: number
   reasons: string[]
+  /** 보강 교사가 못 들어갈 때를 대비한 예비 교사 [예비1, 예비2] */
+  backups: [string | null, string | null]
 }
 export type Settings = {
   semester: string
@@ -133,11 +135,21 @@ export function uid(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 export function emptyData(): AppData {
-  return { teachers: [], timetable: [], absences: [], slots: [], assignments: [], settings: defaultSettings, events: [] }
+  return {
+    teachers: [],
+    timetable: [],
+    absences: [],
+    slots: [],
+    assignments: [],
+    settings: defaultSettings,
+    events: [],
+  }
 }
 export function seedData(): AppData {
   // 샘플용 가상 이름 (실명 사용 안 함). 21번째 '가상E'는 자동 제외 규칙 확인용으로 유지
-  const names = Array.from({ length: 24 }, (_, i) => (i === 20 ? '가상E' : `교사${String(i + 1).padStart(2, '0')}`))
+  const names = Array.from({ length: 24 }, (_, i) =>
+    i === 20 ? '가상E' : `교사${String(i + 1).padStart(2, '0')}`,
+  )
   const partTime = ['교사22', '교사23', '교사24'] // 시간강사 + 보강 후보 제외
   const extraPool = ['교사17', '교사19'] // 보강 후보 추가 포함
   const subjects = [
@@ -172,7 +184,12 @@ export function seedData(): AppData {
     subject: subjects[i],
     grades: [(i % 3) + 1],
     employmentType: partTime.includes(name) ? '시간강사' : '정규',
-    poolStatus: name.startsWith('가상') || partTime.includes(name) ? '제외' : extraPool.includes(name) ? '추가포함' : '기본',
+    poolStatus:
+      name.startsWith('가상') || partTime.includes(name)
+        ? '제외'
+        : extraPool.includes(name)
+          ? '추가포함'
+          : '기본',
     totalAssignments: i % 4,
   }))
   const timetable: TimetableEntry[] = []
@@ -223,6 +240,7 @@ export function seedData(): AppData {
       isManual: false,
       score: 82,
       reasons: ['같은 학년 담당', '그날 수업 1개', '연속 1교시', '누적 보강 1회'],
+      backups: ['t5', 't8'],
     },
   ]
   // 대시보드 예시용 행사 (실제 학사일정 PDF를 올리면 교체됨)
@@ -250,6 +268,14 @@ export function normalizeData(raw: Partial<AppData> & Record<string, unknown>): 
       weights: { ...defaultSettings.weights, ...(raw.settings?.weights ?? {}) },
     },
     events: Array.isArray(raw.events) ? raw.events : [],
+    // '기간제'는 근무 구분에서 빠졌으므로 정규로 본다
+    teachers: (raw.teachers ?? []).map((t) =>
+      t.employmentType === '시간강사' ? t : { ...t, employmentType: '정규' as const },
+    ),
+    assignments: (raw.assignments ?? []).map((a) => ({
+      ...a,
+      backups: Array.isArray(a.backups) ? a.backups : [null, null],
+    })),
   } as AppData
 }
 export function parseTimetable(text: string, existing: Teacher[] = []) {
