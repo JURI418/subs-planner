@@ -110,7 +110,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               <select
                 value={teacherId}
                 onChange={(e) => setTeacherId(e.target.value)}
-                className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
+                className="m3-field mt-2 w-full"
               >
                 <option value="">선택</option>
                 {data.teachers.map((t) => (
@@ -127,7 +127,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   type="date"
                   value={start}
                   onChange={(e) => setStart(e.target.value)}
-                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
+                  className="m3-field mt-2 w-full"
                 />
               </label>
               <label className="text-sm font-semibold">
@@ -136,7 +136,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   type="date"
                   value={end}
                   onChange={(e) => setEnd(e.target.value)}
-                  className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
+                  className="m3-field mt-2 w-full"
                 />
               </label>
             </div>
@@ -145,10 +145,10 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               <input
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="mt-2 w-full rounded-md border border-line px-3 py-3 font-normal"
+                className="m3-field mt-2 w-full"
               />
             </label>
-            <button onClick={make} className="rounded-md bg-iris-deep py-3 text-sm font-semibold text-paper">
+            <button onClick={make} className="m3-btn m3-filled">
               슬롯 미리보기
             </button>
           </div>
@@ -178,7 +178,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 {preview.map((s) => (
                   <label
                     key={s.id}
-                    className="flex items-center gap-3 rounded-md border border-line p-3"
+                    className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 hover:bg-wash"
                   >
                     <input
                       type="checkbox"
@@ -199,7 +199,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               </div>
               <button
                 onClick={execute}
-                className="mt-5 w-full rounded-md bg-ok py-3 text-sm font-semibold text-paper"
+                className="m3-btn m3-filled mt-5 w-full"
               >
                 배정 실행
               </button>
@@ -238,7 +238,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     {confirmed > 0 && <Badge tone="green">확정 {confirmed}</Badge>}
                     <button
                       onClick={() => remove(a)}
-                      className="rounded border border-bad-line px-3 py-1.5 text-xs font-semibold text-bad hover:bg-bad-soft"
+                      className="m3-btn m3-btn-sm m3-danger"
                     >
                       삭제
                     </button>

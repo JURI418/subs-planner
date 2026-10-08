@@ -23,12 +23,12 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="이름 검색"
-              className="w-32 rounded-md border border-line px-3 py-2 text-sm"
+              className="m3-field m3-field-sm w-36"
             />
             <select
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
-              className="rounded-md border border-line px-3 py-2 text-sm"
+              className="m3-field m3-field-sm"
             >
               <option value="all">전체 학년</option>
               <option value="1">1학년</option>
@@ -77,7 +77,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                           ),
                         }))
                       }
-                      className="rounded border border-line px-2 py-1 text-xs"
+                      className="m3-field m3-field-sm"
                     >
                       <option>정규</option>
                       <option>기간제</option>
@@ -95,7 +95,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                           ),
                         }))
                       }
-                      className="rounded border border-line px-2 py-1 text-xs"
+                      className="m3-field m3-field-sm"
                     >
                       <option>기본</option>
                       <option>제외</option>

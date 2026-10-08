@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Copy } from 'lucide-react'
+import { Check, Copy } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
@@ -67,7 +67,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           <div className="flex gap-2">
             <button
               onClick={copy}
-              className="flex items-center gap-2 rounded-md border border-line bg-surface px-4 py-3 text-sm font-semibold"
+              className="m3-btn m3-outlined"
             >
               <Copy size={16} strokeWidth={1.5} />
               복사
@@ -78,7 +78,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                   .filter((a) => a.status === '제안' && a.substituteTeacherId)
                   .forEach((a) => confirmOne(a.slotId))
               }
-              className="rounded-md bg-iris-deep px-4 py-3 text-sm font-semibold text-paper"
+              className="m3-btn m3-filled"
             >
               제안 전체 확정
             </button>
@@ -95,8 +95,10 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           <button
             key={v}
             onClick={() => setFilter(v)}
-            className={`rounded-sm px-4 py-2 text-sm ${filter === v ? 'bg-iris-deep text-paper' : 'bg-surface text-subtle'}`}
+            className={`m3-chip ${filter === v ? 'm3-chip-on' : ''}`}
+            aria-pressed={filter === v}
           >
+            {filter === v && <Check size={16} strokeWidth={2} />}
             {l}
           </button>
         ))}
@@ -140,7 +142,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         disabled={a.status === '확정'}
                         value={a.substituteTeacherId || ''}
                         onChange={(e) => changeSubstitute(a, e.target.value)}
-                        className="rounded border border-line px-2 py-2"
+                        className="m3-field m3-field-sm"
                       >
                         <option value="">배정불가</option>
                         {data.teachers
@@ -164,7 +166,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                       {a.status === '제안' && a.substituteTeacherId && (
                         <button
                           onClick={() => confirmOne(a.slotId)}
-                          className="rounded bg-ok-soft px-3 py-2 text-xs font-semibold text-ok"
+                          className="m3-btn m3-btn-sm m3-tonal"
                         >
                           확정
                         </button>
@@ -179,7 +181,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                             )
                               setData((d) => cancelConfirm(d, a.slotId))
                           }}
-                          className="rounded bg-wash-2 px-3 py-2 text-xs font-semibold text-ink-2 hover:bg-line"
+                          className="m3-btn m3-btn-sm m3-text"
                         >
                           확정 취소
                         </button>

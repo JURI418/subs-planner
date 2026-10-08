@@ -60,7 +60,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
         action={
           <button
             onClick={() => setText(samplePaste)}
-            className="rounded-md border border-line bg-surface px-4 py-3 text-sm font-semibold"
+            className="m3-btn m3-outlined"
           >
             샘플 데이터 불러오기
           </button>
@@ -76,16 +76,16 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={'교사명\t월\t화\t수\t목\t금\n1(08:10)\t209문학\t…'}
-            className="mt-4 h-80 w-full resize-none rounded-md border border-line bg-wash p-4 font-mono text-xs outline-none focus:border-iris"
+            className="m3-field mt-4 h-80 w-full resize-none p-4 font-mono text-xs leading-6"
           />
           <button
             onClick={() => setPreview(parseTimetable(text, data.teachers))}
-            className="mt-3 w-full rounded-md bg-iris-deep py-3 text-sm font-semibold text-paper"
+            className="m3-btn m3-filled mt-3 w-full"
           >
             미리보기 생성
           </button>
           {preview && (
-            <div className="mt-4 rounded-md bg-wash p-3 text-sm">
+            <div className="mt-4 rounded-xl bg-wash p-4 text-sm">
               <p className="font-semibold">{preview.entries.length}개 수업 파싱됨</p>
               {preview.newTeachers.length > 0 && (
                 <p className="mt-2 text-iris-deep">
@@ -95,7 +95,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
               {preview.errors.length > 0 && (
                 <>
                   <p className="mt-2 text-bad">파싱 실패 {preview.errors.length}건</p>
-                  <ul className="mt-1 max-h-32 overflow-y-auto rounded bg-surface p-2 font-mono text-xs text-bad">
+                  <ul className="mt-1 max-h-32 overflow-y-auto rounded-lg bg-surface p-2 font-mono text-xs text-bad">
                     {preview.errors.map((err, i) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -105,7 +105,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
               <button
                 onClick={register}
                 disabled={preview.entries.length === 0}
-                className="mt-3 rounded bg-ok px-3 py-2 text-xs font-semibold text-paper disabled:opacity-40"
+                className="m3-btn m3-btn-sm m3-filled mt-3"
               >
                 등록
               </button>
@@ -118,7 +118,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
             <select
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
-              className="rounded border border-line px-3 py-2 text-sm"
+              className="m3-field m3-field-sm"
             >
               {data.teachers.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -148,7 +148,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
                       return (
                         <td className="p-2" key={day}>
                           {e ? (
-                            <div className="rounded bg-iris-soft p-2 text-xs text-iris-deep">
+                            <div className="rounded-lg bg-iris-soft px-2.5 py-2 text-xs text-on-iris-container">
                               <b>
                                 {e.room}
                                 {e.group ? e.group : ''}

@@ -59,7 +59,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
             setData((d) => ({ ...d, settings: { ...d.settings, weights: { ...defaultSettings.weights } } }))
           }}
           disabled={isDefault}
-          className="rounded border border-line px-3 py-2 text-xs font-semibold text-ink-2 disabled:opacity-40"
+          className="m3-btn m3-btn-sm m3-text"
         >
           기본값으로
         </button>
@@ -85,7 +85,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
           </label>
         ))}
       </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-md bg-wash p-4">
+      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-wash p-4">
         <p className="min-w-0 flex-1 text-xs leading-5 text-ink-2">
           바꾼 가중치는 앞으로 등록하는 결강부터 적용됩니다. 이미 만들어진 미확정 배정({pending}건)에도
           적용하려면 다시 추천하세요. 확정된 배정과 직접 고른 수동 배정은 바뀌지 않습니다.
@@ -93,7 +93,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
         <button
           onClick={recompute}
           disabled={pending === 0}
-          className="rounded-md bg-iris-deep px-4 py-3 text-sm font-semibold text-paper disabled:opacity-40"
+          className="m3-btn m3-filled"
         >
           미확정 배정 다시 추천
         </button>

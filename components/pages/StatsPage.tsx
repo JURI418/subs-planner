@@ -39,9 +39,9 @@ export function StatsPage({ data }: { data: AppData }) {
           {sorted.slice(0, 12).map((t) => (
             <div className="grid grid-cols-[90px_1fr_35px] items-center gap-3" key={t.id}>
               <span className="text-sm font-medium">{t.name}</span>
-              <div className="h-3 rounded-sm bg-wash-2">
+              <div className="h-2.5 rounded-full bg-wash-2">
                 <div
-                  className="h-3 rounded-sm bg-iris"
+                  className="h-2.5 rounded-full bg-iris"
                   style={{ width: `${(t.totalAssignments / max) * 100}%` }}
                 />
               </div>

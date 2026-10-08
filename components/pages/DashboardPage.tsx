@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { Plus } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
@@ -24,24 +25,22 @@ export function DashboardPage({ data }: { data: AppData }) {
         title="결보강 확인"
         desc={formatDotDate(today)}
         action={
-          <button
-            onClick={() => router.push('/absence')}
-            className="rounded-sm bg-iris-deep px-5 py-2.5 text-sm font-medium text-paper hover:bg-ink"
-          >
+          <button onClick={() => router.push('/absence')} className="m3-fab">
+            <Plus size={22} strokeWidth={2} />
             결강 등록
           </button>
         }
       />
 
       {/* 요약: 하나의 띠를 네 칸으로 나눈 장부 형식 */}
-      <div className="grid grid-cols-2 overflow-hidden rounded-md border border-line bg-surface xl:grid-cols-4">
+      <div className="grid grid-cols-2 overflow-hidden rounded-2xl bg-surface xl:grid-cols-4">
         {stats.map((s, i) => (
           <div
             key={s.label}
             className={`px-6 py-5 ${i % 2 ? 'border-l border-line' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''} ${i === 2 ? 'xl:border-l' : ''}`}
           >
             <p className="flex items-center gap-2 text-xs tracking-wide text-subtle">
-              <span className={`size-2 rounded-[1px] ${s.mark}`} aria-hidden />
+              <span className={`size-2 rounded-full ${s.mark}`} aria-hidden />
               {s.label}
             </p>
             <p className="mt-3 font-display text-4xl font-semibold tabular-nums text-ink">
@@ -54,14 +53,14 @@ export function DashboardPage({ data }: { data: AppData }) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card>
-          <div className="flex items-baseline justify-between border-b border-line pb-4">
+          <div className="flex items-start justify-between pb-2">
             <div>
               <h2 className="font-display text-lg font-semibold">최근 배정</h2>
               <p className="mt-1 text-xs text-subtle">가장 최근에 처리한 결보강 4건</p>
             </div>
             <button
               onClick={() => router.push('/assignments')}
-              className="text-sm text-iris-deep underline decoration-line-strong underline-offset-4 hover:decoration-iris"
+              className="m3-btn m3-btn-sm m3-text"
             >
               전체 보기
             </button>
@@ -69,7 +68,7 @@ export function DashboardPage({ data }: { data: AppData }) {
           <AssignmentMini data={data} />
         </Card>
         <Card>
-          <h2 className="border-b border-line pb-4 font-display text-lg font-semibold">운영 체크리스트</h2>
+          <h2 className="pb-2 font-display text-lg font-semibold">운영 체크리스트</h2>
           <ol className="mt-2 flex flex-col">
             {[
               ['시간표 등록', '교사별 주간 시간표가 준비됐습니다.', data.timetable.length > 0],

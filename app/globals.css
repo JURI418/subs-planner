@@ -4,33 +4,78 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 결보강 매니저 디자인 토큰
-   방향: 영국식 편집 디자인. 그림자 대신 가는 선, 작은 모서리, 연보라 바탕 위의 짙은 가지색 글자,
-   교시·날짜 숫자는 열차 시간표처럼 고정폭 숫자로. */
+/* 결보강 매니저 디자인 토큰 — Material Design 3 (기본 보라 팔레트) 기준
+   paper = 앱 바탕(surface-container), surface = 카드(surface), iris = primary,
+   iris-soft = secondary-container(선택 표시), line = outline-variant */
 @theme {
-  --color-paper: #f2f0f7;
-  --color-surface: #fdfcfe;
-  --color-wash: #f7f5fa;
-  --color-wash-2: #ece8f3;
-  --color-line: #e0dae9;
-  --color-line-strong: #c9c0d8;
-  --color-ink: #221b2f;
-  --color-ink-2: #4a4158;
-  --color-subtle: #776e87;
-  --color-faint: #b7afc5;
-  --color-iris: #7b68b5;
-  --color-iris-deep: #4b3c7a;
-  --color-iris-soft: #e9e3f5;
-  --color-ok: #2e6a4e;
-  --color-ok-soft: #e2eee6;
-  --color-warn: #87580f;
-  --color-warn-soft: #f4ead6;
-  --color-bad: #993a33;
-  --color-bad-soft: #f6e3e0;
-  --color-bad-line: #e6c2bd;
+  --color-paper: #f3edf7;
+  --color-surface: #fffbfe;
+  --color-wash: #f7f2fa;
+  --color-wash-2: #ece6f0;
+  --color-line: #e3dce9;
+  --color-line-strong: #79747e;
+  --color-ink: #1d1b20;
+  --color-ink-2: #3f3a46;
+  --color-subtle: #57525e;
+  --color-faint: #a29daa;
+  --color-iris: #6750a4;
+  --color-iris-deep: #4f378b;
+  --color-iris-soft: #e8def8;
+  --color-iris-container: #eaddff;
+  --color-on-iris-container: #21005d;
+  --color-ok: #1e6b3a;
+  --color-ok-soft: #d4efdb;
+  --color-warn: #6b4b00;
+  --color-warn-soft: #fbe6b6;
+  --color-bad: #8c1d18;
+  --color-bad-soft: #f9dedc;
+  --color-bad-line: #b3261e;
   --font-sans: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-display: 'Hahmlet', 'Nanum Myeongjo', 'AppleMyungjo', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+/* Material 3 부품 */
+@layer components {
+  .m3-btn {
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-medium tracking-[.01em] transition-[background-color,box-shadow,color] duration-150 disabled:pointer-events-none disabled:opacity-40;
+  }
+  .m3-btn-sm {
+    @apply h-8 px-4 text-[13px];
+  }
+  .m3-filled {
+    @apply bg-iris text-white hover:shadow-[0_1px_2px_rgb(0_0_0/.3),0_1px_3px_1px_rgb(0_0_0/.15)];
+  }
+  .m3-filled:hover {
+    background-color: color-mix(in srgb, var(--color-iris) 92%, white);
+  }
+  .m3-tonal {
+    @apply bg-iris-soft text-on-iris-container hover:shadow-[0_1px_2px_rgb(0_0_0/.3)];
+  }
+  .m3-outlined {
+    @apply border border-line-strong text-iris hover:bg-iris/[.08];
+  }
+  .m3-text {
+    @apply px-3 text-iris hover:bg-iris/[.08];
+  }
+  .m3-danger {
+    @apply border border-bad-line/60 text-bad hover:bg-bad/[.08];
+  }
+  .m3-fab {
+    @apply inline-flex h-14 items-center gap-3 rounded-2xl bg-iris-container px-5 text-sm font-semibold text-on-iris-container shadow-[0_1px_3px_rgb(0_0_0/.3),0_4px_8px_3px_rgb(0_0_0/.15)] transition-shadow hover:shadow-[0_2px_3px_rgb(0_0_0/.3),0_6px_10px_4px_rgb(0_0_0/.15)];
+  }
+  .m3-field {
+    @apply rounded border border-line-strong/70 bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-ink focus:border-iris focus:ring-1 focus:ring-iris;
+  }
+  .m3-field-sm {
+    @apply py-1.5 text-sm;
+  }
+  .m3-chip {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong/50 bg-surface px-4 text-sm font-medium text-ink-2 transition-colors hover:bg-iris/[.06];
+  }
+  .m3-chip-on {
+    @apply border-transparent bg-iris-soft pl-2.5 text-on-iris-container;
+  }
 }
 
 @theme inline {
@@ -186,8 +231,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: 106.25%;
+  }
   body {
     @apply bg-paper text-ink font-sans;
+    line-height: 1.6;
+    word-break: keep-all;
     font-feature-settings: 'tnum' 1;
   }
   h1,
