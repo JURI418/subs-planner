@@ -1,0 +1,197 @@
+'use client'
+import { useState } from 'react'
+import { Copy } from 'lucide-react'
+import { Card } from '@/components/common/Card'
+import { Badge } from '@/components/common/Badge'
+import { PageHeader } from '@/components/common/PageHeader'
+import { exportText, formatDate, type AppData, type Assignment, type SetData } from '@/lib/types'
+import { validateAssignment } from '@/lib/scheduling'
+import { cancelConfirm } from '@/lib/dataOps'
+
+export function AssignmentsPage({ data, setData }: { data: AppData; setData: SetData }) {
+  const [filter, setFilter] = useState('all')
+  const rows = data.assignments.filter((a) => filter === 'all' || a.status === filter)
+  const confirmOne = (id: string) =>
+    setData((d) => {
+      const target = d.assignments.find((x) => x.slotId === id)
+      // 보강 교사가 없거나 이미 확정된 건은 확정하지 않음
+      if (!target || !target.substituteTeacherId || target.status !== '제안') return d
+      return {
+        ...d,
+        assignments: d.assignments.map((a) => (a.slotId === id ? { ...a, status: '확정' } : a)),
+        teachers: d.teachers.map((t) =>
+          t.id === target.substituteTeacherId ? { ...t, totalAssignments: t.totalAssignments + 1 } : t,
+        ),
+      }
+    })
+  const update = (slotId: string, patch: Partial<Assignment>) =>
+    setData((d) => ({
+      ...d,
+      assignments: d.assignments.map((x) => (x.slotId === slotId ? { ...x, ...patch } : x)),
+    }))
+  const changeSubstitute = (a: Assignment, teacherId: string) => {
+    if (!teacherId) {
+      update(a.slotId, {
+        substituteTeacherId: null,
+        status: '배정불가',
+        isManual: true,
+        reasons: ['수동으로 배정 해제'],
+      })
+      return
+    }
+    const slot = data.slots.find((s) => s.id === a.slotId)
+    if (!slot) return
+    const problems = validateAssignment(slot, teacherId, data)
+    if (problems.length && !window.confirm(`제약 조건 위반: ${problems.join(', ')}. 그래도 배정할까요?`))
+      return
+    update(a.slotId, {
+      substituteTeacherId: teacherId,
+      status: '제안',
+      isManual: true,
+      reasons: ['수동 배정', ...problems],
+    })
+  }
+  const copy = () => {
+    const text = exportText(data)
+    if (!text) return alert('복사할 배정이 없습니다.')
+    navigator.clipboard?.writeText(text)
+    alert('엑셀·나이스 붙여넣기 형식으로 복사했습니다.')
+  }
+  return (
+    <>
+      <PageHeader
+        eyebrow="배정 관리"
+        title="배정 확인"
+        desc="추천 근거를 확인한 뒤 개별 또는 일괄 확정하세요."
+        action={
+          <div className="flex gap-2">
+            <button
+              onClick={copy}
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold"
+            >
+              <Copy />
+              복사
+            </button>
+            <button
+              onClick={() =>
+                data.assignments
+                  .filter((a) => a.status === '제안' && a.substituteTeacherId)
+                  .forEach((a) => confirmOne(a.slotId))
+              }
+              className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+            >
+              제안 전체 확정
+            </button>
+          </div>
+        }
+      />
+      <div className="mb-4 flex gap-2">
+        {[
+          ['all', '전체'],
+          ['제안', '제안'],
+          ['확정', '확정'],
+          ['배정불가', '배정불가'],
+        ].map(([v, l]) => (
+          <button
+            key={v}
+            onClick={() => setFilter(v)}
+            className={`rounded-full px-4 py-2 text-sm ${filter === v ? 'bg-slate-900 text-white' : 'bg-white text-slate-500'}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+      <Card>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-left text-sm">
+            <thead>
+              <tr className="border-b text-xs text-slate-400">
+                <th className="p-3">일자</th>
+                <th className="p-3">수업</th>
+                <th className="p-3">결강 교사</th>
+                <th className="p-3">보강 교사</th>
+                <th className="p-3">추천 근거</th>
+                <th className="p-3">상태</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((a) => {
+                const s = data.slots.find((x) => x.id === a.slotId)
+                return (
+                  <tr className="border-b border-slate-100" key={a.slotId}>
+                    <td className="p-3 font-semibold">
+                      {formatDate(s?.date || '')}
+                      <br />
+                      <span className="text-xs text-slate-400">
+                        {s?.dayOfWeek} {s?.period}교시
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      {s?.grade}학년 {s?.room}
+                      <br />
+                      <span className="text-xs text-slate-400">
+                        {s?.group || '일반'} · {s?.subject}
+                      </span>
+                    </td>
+                    <td className="p-3">{data.teachers.find((t) => t.id === s?.absentTeacherId)?.name}</td>
+                    <td className="p-3">
+                      <select
+                        disabled={a.status === '확정'}
+                        value={a.substituteTeacherId || ''}
+                        onChange={(e) => changeSubstitute(a, e.target.value)}
+                        className="rounded-lg border border-slate-200 px-2 py-2"
+                      >
+                        <option value="">배정불가</option>
+                        {data.teachers
+                          .filter((t) => t.poolStatus !== '제외')
+                          .map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {t.name}
+                            </option>
+                          ))}
+                      </select>
+                    </td>
+                    <td className="max-w-56 p-3 text-xs text-slate-500">{a.reasons.join(' · ')}</td>
+                    <td className="p-3">
+                      <Badge
+                        tone={a.status === '확정' ? 'green' : a.status === '배정불가' ? 'red' : 'yellow'}
+                      >
+                        {a.status}
+                      </Badge>
+                    </td>
+                    <td className="p-3">
+                      {a.status === '제안' && a.substituteTeacherId && (
+                        <button
+                          onClick={() => confirmOne(a.slotId)}
+                          className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"
+                        >
+                          확정
+                        </button>
+                      )}
+                      {a.status === '확정' && (
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                '확정을 취소하고 제안 상태로 되돌립니다. 누적 보강 횟수도 1 줄어듭니다. 계속할까요?',
+                              )
+                            )
+                              setData((d) => cancelConfirm(d, a.slotId))
+                          }}
+                          className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+                        >
+                          확정 취소
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </>
+  )
+}
