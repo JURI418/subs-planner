@@ -178,7 +178,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 {preview.map((s) => (
                   <label
                     key={s.id}
-                    className="flex items-center gap-3 rounded-none border border-line px-4 py-3 hover:bg-wash"
+                    className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 hover:bg-wash"
                   >
                     <input
                       type="checkbox"

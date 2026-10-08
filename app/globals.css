@@ -4,32 +4,39 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 결보강 매니저 디자인 토큰 — 부티크 편집 디자인
-   따뜻한 미색 바탕, 검정 잉크, 각진 면과 가는 선, 선택은 타원 테두리, 영문은 이탤릭 세리프 */
+/* 결보강 매니저 디자인 토큰 — 연보라
+   바탕은 아주 옅은 라벤더, 글자는 보랏빛이 도는 짙은 남색, 강조는 라벤더 퍼플 */
 @theme {
-  --color-paper: #f6f5f1;
-  --color-surface: #fcfbf8;
-  --color-wash: #efede7;
-  --color-wash-2: #e7e4dc;
-  --color-line: #e2dfd7;
-  --color-line-strong: #1b1a18;
-  --color-ink: #1b1a18;
-  --color-ink-2: #3c3a36;
-  --color-subtle: #6f6c65;
-  --color-faint: #b2aea5;
-  --color-iris: #1b1a18;
-  --color-iris-deep: #1b1a18;
-  --color-iris-soft: #ebe8e1;
-  --color-iris-container: #e9e5ef;
-  --color-on-iris-container: #1b1a18;
-  --color-gold: #d8c08c;
-  --color-ok: #3e6a4a;
-  --color-ok-soft: #e4ece3;
+  --color-paper: #f4f2f9;
+  --color-surface: #fdfcff;
+  --color-wash: #f0edf6;
+  --color-wash-2: #e7e2f0;
+  --color-line: #e1dbeb;
+  --color-line-strong: #2a2238;
+  --color-ink: #241d33;
+  --color-ink-2: #433b54;
+  --color-subtle: #6c6480;
+  --color-faint: #b4adc4;
+  --color-iris: #6a56b0;
+  --color-iris-deep: #4c3a8c;
+  --color-iris-soft: #ebe5f7;
+  --color-iris-container: #e4dbf6;
+  --color-on-iris-container: #2a1f4a;
+  --color-gold: #e9dcb6;
+  --color-ok: #2f6b4b;
+  --color-ok-soft: #e0efe6;
   --color-warn: #86601c;
-  --color-warn-soft: #f2e8d3;
-  --color-bad: #96382f;
-  --color-bad-soft: #f3e3df;
-  --color-bad-line: #96382f;
+  --color-warn-soft: #f4ead3;
+  --color-bad: #9b3a3a;
+  --color-bad-soft: #f6e2e2;
+  --color-bad-line: #9b3a3a;
+  /* 첫 화면 타일 색 (연보라와 어울리는 파스텔) */
+  --color-tile-1: #d8cdf3;
+  --color-tile-2: #cdd7f6;
+  --color-tile-3: #f1d4e7;
+  --color-tile-4: #cfe9dd;
+  --color-tile-5: #f3e7c6;
+  --color-tile-6: #c8b7ec;
   --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
   --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
@@ -44,16 +51,16 @@
     @apply h-8 px-4 text-[13px];
   }
   .m3-filled {
-    @apply border border-ink bg-ink text-paper hover:bg-transparent hover:text-ink;
+    @apply border border-iris bg-iris text-white hover:border-iris-deep hover:bg-iris-deep;
   }
   .m3-tonal {
-    @apply border border-ink/25 bg-transparent text-ink hover:border-ink;
+    @apply border border-transparent bg-iris-soft text-on-iris-container hover:border-iris/40;
   }
   .m3-outlined {
-    @apply border border-ink text-ink hover:bg-ink hover:text-paper;
+    @apply border border-iris/60 text-iris-deep hover:border-iris hover:bg-iris-soft;
   }
   .m3-text {
-    @apply px-2 text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink;
+    @apply px-2 text-iris-deep underline decoration-iris/30 underline-offset-4 hover:decoration-iris;
   }
   .m3-danger {
     @apply border border-bad/60 text-bad hover:bg-bad hover:text-paper;
@@ -62,16 +69,16 @@
     @apply inline-flex h-12 items-center gap-2 rounded-full bg-gold px-6 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-paper;
   }
   .m3-field {
-    @apply rounded-none border border-line bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-ink/50 focus:border-ink;
+    @apply rounded-lg border border-line bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-iris/50 focus:border-iris;
   }
   .m3-field-sm {
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-ink;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-iris;
   }
   .m3-chip-on {
-    @apply border-ink bg-ink text-paper hover:border-ink;
+    @apply border-iris bg-iris text-white hover:border-iris;
   }
 }
 

@@ -4,7 +4,7 @@ const toneClass: Record<string, string> = {
   green: 'bg-ok-soft text-ok',
   yellow: 'bg-warn-soft text-warn',
   red: 'bg-bad-soft text-bad',
-  blue: 'border border-ink/20 text-ink',
+  blue: 'bg-iris-soft text-on-iris-container',
   slate: 'bg-wash text-ink-2',
 }
 

@@ -156,7 +156,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
           {msg && <p className={`mt-3 text-sm ${msg.ok ? 'text-ok' : 'text-bad'}`}>{msg.text}</p>}
 
           {parsed && (
-            <div className="mt-5 rounded-none bg-wash p-5">
+            <div className="mt-5 rounded-xl bg-wash p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="mr-2 font-semibold">{parsed.year}학년도 학사일정</p>
                 <Badge>행사 {parsed.events.filter((e) => e.kind === '행사').length}건</Badge>
@@ -167,7 +167,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
               <p className="mt-3 text-[13px] leading-5 text-subtle">
                 아래 날짜를 휴업일로 등록합니다. 수업이 있는 날이면 체크를 해제하세요.
               </p>
-              <ul className="mt-3 max-h-80 divide-y divide-line overflow-y-auto rounded-none bg-surface">
+              <ul className="mt-3 max-h-80 divide-y divide-line overflow-y-auto rounded-xl bg-surface">
                 {groups.map((g) => {
                   const on = !off.has(g.key)
                   return (
