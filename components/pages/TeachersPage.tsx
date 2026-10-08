@@ -14,7 +14,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
   return (
     <>
       <PageHeader
-        eyebrow="인력 관리"
+        eyebrow="Faculty"
         title="교사 관리"
         desc="시간표에서 담당 학년을 자동으로 계산합니다."
         action={

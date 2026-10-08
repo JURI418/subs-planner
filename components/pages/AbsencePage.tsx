@@ -97,7 +97,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
   return (
     <>
       <PageHeader
-        eyebrow="결강 관리"
+        eyebrow="Absence"
         title="결강 등록"
         desc="날짜와 교사를 입력하면 시간표에서 결강 슬롯을 자동으로 찾습니다."
       />
@@ -178,7 +178,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 {preview.map((s) => (
                   <label
                     key={s.id}
-                    className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 hover:bg-wash"
+                    className="flex items-center gap-3 rounded-none border border-line px-4 py-3 hover:bg-wash"
                   >
                     <input
                       type="checkbox"

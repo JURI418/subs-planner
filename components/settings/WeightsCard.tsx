@@ -85,7 +85,7 @@ export function WeightsCard({ data, setData }: { data: AppData; setData: SetData
           </label>
         ))}
       </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-wash p-4">
+      <div className="mt-5 flex flex-wrap items-center gap-3 rounded-none bg-wash p-4">
         <p className="min-w-0 flex-1 text-xs leading-5 text-ink-2">
           바꾼 가중치는 앞으로 등록하는 결강부터 적용됩니다. 이미 만들어진 미확정 배정({pending}건)에도
           적용하려면 다시 추천하세요. 확정된 배정과 직접 고른 수동 배정은 바뀌지 않습니다.

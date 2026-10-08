@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { CalendarDays, CalendarRange, ChevronRight, ClipboardCheck, FileUp, Plus } from 'lucide-react'
+import { ChevronRight, Plus } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar'
@@ -23,16 +23,16 @@ export function DashboardPage({ data }: { data: AppData }) {
     .map((s) => ({ s, a: data.assignments.find((x) => x.slotId === s.id) }))
 
   const stats = [
-    { label: '오늘 결강', value: todayAbsences, unit: '건', mark: 'bg-iris' },
+    { label: '오늘 결강', value: todayAbsences, unit: '건', mark: 'bg-ink' },
     { label: '미확정 배정', value: pending, unit: '건', mark: pending ? 'bg-warn' : 'bg-faint' },
     { label: '확정 완료', value: done, unit: '건', mark: 'bg-ok' },
     { label: '등록 교사', value: data.teachers.length, unit: '명', mark: 'bg-faint' },
   ]
   const actions = [
-    { href: '/absence', icon: CalendarDays, title: '결강 등록', desc: '교사와 날짜를 고르면 보강 수업을 찾아요' },
-    { href: '/assignments', icon: ClipboardCheck, title: '배정 확인', desc: `확정을 기다리는 배정 ${pending}건` },
-    { href: '/timetable', icon: FileUp, title: '시간표 올리기', desc: '교사별 시간표 PDF·표 붙여넣기' },
-    { href: '/calendar', icon: CalendarRange, title: '학사일정 올리기', desc: '휴업일·방학을 자동으로 반영' },
+    { href: '/absence', en: 'Absence', title: '결강 등록', desc: '교사와 날짜를 고르면 보강 수업을 찾아요' },
+    { href: '/assignments', en: 'Assignments', title: '배정 확인', desc: `확정을 기다리는 배정 ${pending}건` },
+    { href: '/timetable', en: 'Timetable', title: '시간표 올리기', desc: '교사별 시간표 PDF·표 붙여넣기' },
+    { href: '/calendar', en: 'Calendar', title: '학사일정 올리기', desc: '휴업일·방학을 자동으로 반영' },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -42,89 +42,89 @@ export function DashboardPage({ data }: { data: AppData }) {
 
   return (
     <>
-      {/* 첫 화면 상단: 오늘 날짜와 오늘의 학사일정 */}
-      <section className="relative overflow-hidden rounded-[28px] bg-iris-container px-6 py-7 text-on-iris-container md:px-10 md:py-9">
-        <div aria-hidden className="absolute -right-16 -top-20 size-72 rounded-full bg-iris/15" />
-        <div aria-hidden className="absolute -bottom-24 right-40 size-56 rounded-full bg-white/30" />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <p className="text-[13px] font-medium text-iris-deep">{data.settings.semester}</p>
-            <h1 className="mt-1 font-display text-[2.25rem] font-semibold leading-tight">결보강 확인</h1>
-            <p className="mt-1 font-mono text-[15px]">{formatDotDate(today)}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              {todayOff ? (
-                <span className="rounded-full bg-white/70 px-3 py-1 text-sm font-medium text-bad">
-                  오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}
-                </span>
-              ) : todayEvents.length ? (
-                todayEvents.slice(0, 4).map((e, i) => (
-                  <span key={i} className="rounded-full bg-white/70 px-3 py-1 text-sm">
-                    {e.title}
-                  </span>
-                ))
-              ) : (
-                <span className="rounded-full bg-white/70 px-3 py-1 text-sm text-ink-2">오늘 등록된 학사일정이 없습니다</span>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => router.push('/absence')} className="m3-btn m3-filled h-12 px-6">
-              <Plus size={20} /> 결강 등록
+      {/* 첫 화면 상단: 큰 날짜 숫자와 오늘의 학사일정 */}
+      <section className="grid gap-10 border-b border-line pb-12 md:grid-cols-[1.1fr_1fr] md:items-end">
+        <div className="min-w-0">
+          <p className="serif-i text-[30px] leading-none text-subtle">Today</p>
+          <h1 className="mt-3 text-[2.75rem] font-extrabold leading-tight tracking-[-0.03em]">결보강 확인</h1>
+          <p className="mt-2 text-[17px] text-ink-2">{formatDotDate(today)}</p>
+          <ul className="mt-6 flex flex-col gap-1.5">
+            {todayOff ? (
+              <li className="text-[15px] text-bad">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+            ) : todayEvents.length ? (
+              todayEvents.slice(0, 4).map((e, i) => (
+                <li key={i} className="flex items-baseline gap-3 text-[15px]">
+                  <span className="serif-i text-[17px] text-subtle">—</span>
+                  {e.title}
+                </li>
+              ))
+            ) : (
+              <li className="text-[15px] text-subtle">오늘 등록된 학사일정이 없습니다</li>
+            )}
+          </ul>
+          <div className="mt-8 flex flex-wrap gap-2">
+            <button onClick={() => router.push('/absence')} className="m3-btn m3-filled h-12 px-7">
+              <Plus size={18} /> 결강 등록
             </button>
-            <button onClick={() => router.push('/assignments')} className="m3-btn h-12 bg-white/80 px-6 text-iris-deep hover:bg-white">
+            <button onClick={() => router.push('/assignments')} className="m3-btn m3-outlined h-12 px-7">
               배정 확인
             </button>
           </div>
         </div>
+        <div className="text-left md:text-right" aria-hidden>
+          <p className="serif-i text-[7rem] leading-[.85] tracking-[-0.02em] md:text-[10rem]">
+            {today.slice(5).replace('-', '.')}
+          </p>
+          <p className="serif-i mt-3 text-[22px] text-subtle">{englishDate(today)}</p>
+        </div>
       </section>
 
-      {/* 바로가기 */}
-      <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
-        {actions.map(({ href, icon: Icon, title, desc }) => (
+      {/* 바로가기: 번호가 붙은 목차 형식 */}
+      <nav className="grid grid-cols-2 border-b border-line xl:grid-cols-4" aria-label="바로가기">
+        {actions.map(({ href, en, title, desc }, i) => (
           <button
             key={href}
             onClick={() => router.push(href)}
-            className="group flex flex-col items-start gap-3 rounded-2xl bg-surface p-4 text-left transition-colors hover:bg-iris-soft/50 sm:flex-row sm:gap-4 sm:p-5"
+            className={`group flex flex-col items-start gap-1 py-7 pr-6 text-left ${i % 2 ? 'pl-6' : ''} ${i === 2 ? 'xl:pl-6' : ''} ${i > 0 ? 'xl:border-l xl:border-line' : ''} ${i % 2 ? 'border-l border-line' : ''}`}
           >
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-iris-soft text-on-iris-container">
-              <Icon size={20} strokeWidth={1.75} />
+            <span className="serif-i text-[15px] text-subtle">
+              {String(i + 1).padStart(2, '0')} · {en}
             </span>
-            <span className="min-w-0">
-              <span className="flex items-center gap-1 font-semibold">
-                {title}
-                <ChevronRight size={16} className="text-subtle transition-transform group-hover:translate-x-0.5" />
-              </span>
-              <span className="mt-1 block text-[13px] leading-5 text-subtle">{desc}</span>
+            <span className="mt-1 flex items-center gap-1 text-[19px] font-extrabold">
+              {title}
+              <ChevronRight size={17} className="transition-transform group-hover:translate-x-1" />
             </span>
+            <span className="text-[13px] leading-5 text-subtle">{desc}</span>
           </button>
         ))}
-      </div>
+      </nav>
 
-      {/* 요약 수치 */}
-      <div className="mt-6 grid grid-cols-2 overflow-hidden rounded-2xl bg-surface xl:grid-cols-4">
+      {/* 요약 수치: 큰 이탤릭 숫자 */}
+      <div className="grid grid-cols-2 border-b border-line xl:grid-cols-4">
         {stats.map((s, i) => (
           <div
             key={s.label}
-            className={`px-6 py-5 ${i % 2 ? 'border-l border-line' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''} ${i === 2 ? 'xl:border-l' : ''}`}
+            className={`py-8 pr-6 ${i % 2 ? 'border-l border-line pl-6' : ''} ${i === 2 ? 'xl:border-l xl:border-line xl:pl-6' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''}`}
           >
             <p className="flex items-center gap-2 text-[13px] text-subtle">
-              <span className={`size-2 rounded-full ${s.mark}`} aria-hidden />
+              <span className={`size-1.5 rounded-full ${s.mark}`} aria-hidden />
               {s.label}
             </p>
-            <p className="mt-2 font-display text-4xl font-semibold tabular-nums">
-              {s.value}
-              <span className="ml-1.5 font-sans text-sm font-normal text-subtle">{s.unit}</span>
+            <p className="mt-2 flex items-baseline gap-2">
+              <span className="serif-i text-[4.25rem] leading-none tabular-nums">{s.value}</span>
+              <span className="text-sm text-subtle">{s.unit}</span>
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <div className="flex min-w-0 flex-col gap-6">
+      <div className="mt-12 grid gap-8 xl:grid-cols-[1.5fr_1fr]">
+        <div className="flex min-w-0 flex-col gap-8">
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="font-display text-lg font-semibold">오늘의 보강</h2>
+                <p className="serif-i text-[18px] text-subtle">Today&rsquo;s cover</p>
+                <h2 className="text-xl font-extrabold">오늘의 보강</h2>
                 <p className="mt-1 text-[13px] text-subtle">{formatDotDate(today)} 결강 수업과 보강 교사</p>
               </div>
               <button onClick={() => router.push('/assignments')} className="m3-btn m3-btn-sm m3-text">
@@ -160,7 +160,8 @@ export function DashboardPage({ data }: { data: AppData }) {
             )}
           </Card>
           <Card>
-            <h2 className="font-display text-lg font-semibold">운영 체크리스트</h2>
+            <p className="serif-i text-[18px] text-subtle">Checklist</p>
+            <h2 className="text-xl font-extrabold">운영 체크리스트</h2>
             <ol className="mt-2 flex flex-col">
               {checklist.map(([title, desc, ok, href], i) => (
                 <li key={title} className="border-b border-line last:border-b-0">
@@ -178,13 +179,16 @@ export function DashboardPage({ data }: { data: AppData }) {
           </Card>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-8">
           <Card>
             <MiniCalendar data={data} />
           </Card>
           <Card>
             <div className="flex items-start justify-between">
-              <h2 className="font-display text-lg font-semibold">다가오는 학사일정</h2>
+              <div>
+                <p className="serif-i text-[18px] text-subtle">Upcoming</p>
+                <h2 className="text-xl font-extrabold">다가오는 학사일정</h2>
+              </div>
               <button onClick={() => router.push('/calendar')} className="m3-btn m3-btn-sm m3-text">
                 전체 일정
               </button>
@@ -207,4 +211,10 @@ export function DashboardPage({ data }: { data: AppData }) {
       </div>
     </>
   )
+}
+
+/** 'Thursday, October 8' — 큰 날짜 아래 영문 캡션 */
+function englishDate(iso: string) {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 }

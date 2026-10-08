@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useState } from 'react'
-import { Check, ChevronDown, Copy } from 'lucide-react'
+import { ChevronDown, Copy } from 'lucide-react'
 import { AssignmentDetail, type DetailActions } from '@/components/assignments/AssignmentDetail'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
@@ -121,7 +121,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
   return (
     <>
       <PageHeader
-        eyebrow="배정 관리"
+        eyebrow="Assignments"
         title="배정 확인"
         desc="추천 근거를 확인한 뒤 개별 또는 일괄 확정하세요."
         action={
@@ -156,8 +156,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
             className={`m3-chip ${filter === v ? 'm3-chip-on' : ''}`}
             aria-pressed={filter === v}
           >
-            {filter === v && <Check size={16} strokeWidth={2} />}
-            {l}
+                        {l}
           </button>
         ))}
       </div>

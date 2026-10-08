@@ -33,7 +33,7 @@ export function FileDrop({ id, title, hint, accept = 'application/pdf,.pdf', bus
         const f = e.dataTransfer.files?.[0]
         if (f && !busy) onFile(f)
       }}
-      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${over ? 'border-iris bg-iris-soft/60' : 'border-line-strong/40 bg-wash hover:border-iris/60 hover:bg-iris-soft/30'} ${busy ? 'cursor-wait opacity-70' : ''}`}
+      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-none border-2 border-dashed px-6 py-8 text-center transition-colors ${over ? 'border-iris bg-iris-soft/60' : 'border-line-strong/40 bg-wash hover:border-iris/60 hover:bg-iris-soft/30'} ${busy ? 'cursor-wait opacity-70' : ''}`}
     >
       <span className="grid size-12 place-items-center rounded-full bg-iris-soft text-on-iris-container">
         {busy ? <LoaderCircle size={22} className="animate-spin" /> : <FileUp size={22} strokeWidth={1.75} />}

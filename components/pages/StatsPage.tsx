@@ -9,7 +9,7 @@ export function StatsPage({ data }: { data: AppData }) {
   const max = Math.max(...sorted.map((t) => t.totalAssignments), 1)
   return (
     <>
-      <PageHeader eyebrow="분석" title="보강 통계" desc="학기 누적 보강 횟수와 교사별 편차를 확인합니다." />
+      <PageHeader eyebrow="Statistics" title="보강 통계" desc="학기 누적 보강 횟수와 교사별 편차를 확인합니다." />
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <p className="text-sm text-subtle">평균 보강</p>

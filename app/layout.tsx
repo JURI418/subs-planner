@@ -1,6 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import '@kfonts/nanum-square-round/index.css'
+import '@fontsource/cormorant-garamond/400-italic.css'
+import '@fontsource/cormorant-garamond/500-italic.css'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: light)', color: '#1b1a18' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 }

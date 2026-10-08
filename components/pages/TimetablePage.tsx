@@ -85,7 +85,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
   return (
     <>
       <PageHeader
-        eyebrow="시간표"
+        eyebrow="Timetable"
         title="시간표 등록·조회"
         desc="교사별 시간표 PDF를 올리거나, 표를 복사해서 붙여넣으세요."
       />
@@ -125,7 +125,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
             미리보기 생성
           </button>
           {preview && (
-            <div className="mt-4 rounded-xl bg-wash p-4 text-sm">
+            <div className="mt-4 rounded-none bg-wash p-4 text-sm">
               <p className="font-semibold">
                 교사 {new Set(preview.entries.map((e) => e.teacherId)).size}명 · 수업 {preview.entries.length}개를 읽었습니다
               </p>

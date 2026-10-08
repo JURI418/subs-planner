@@ -4,77 +4,91 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 결보강 매니저 디자인 토큰 — Material Design 3 (기본 보라 팔레트) 기준
-   paper = 앱 바탕(surface-container), surface = 카드(surface), iris = primary,
-   iris-soft = secondary-container(선택 표시), line = outline-variant */
+/* 결보강 매니저 디자인 토큰 — 부티크 편집 디자인
+   따뜻한 미색 바탕, 검정 잉크, 각진 면과 가는 선, 선택은 타원 테두리, 영문은 이탤릭 세리프 */
 @theme {
-  --color-paper: #f3edf7;
-  --color-surface: #fffbfe;
-  --color-wash: #f7f2fa;
-  --color-wash-2: #ece6f0;
-  --color-line: #e3dce9;
-  --color-line-strong: #79747e;
-  --color-ink: #1d1b20;
-  --color-ink-2: #3f3a46;
-  --color-subtle: #57525e;
-  --color-faint: #a29daa;
-  --color-iris: #6750a4;
-  --color-iris-deep: #4f378b;
-  --color-iris-soft: #e8def8;
-  --color-iris-container: #eaddff;
-  --color-on-iris-container: #21005d;
-  --color-ok: #1e6b3a;
-  --color-ok-soft: #d4efdb;
-  --color-warn: #6b4b00;
-  --color-warn-soft: #fbe6b6;
-  --color-bad: #8c1d18;
-  --color-bad-soft: #f9dedc;
-  --color-bad-line: #b3261e;
+  --color-paper: #f6f5f1;
+  --color-surface: #fcfbf8;
+  --color-wash: #efede7;
+  --color-wash-2: #e7e4dc;
+  --color-line: #e2dfd7;
+  --color-line-strong: #1b1a18;
+  --color-ink: #1b1a18;
+  --color-ink-2: #3c3a36;
+  --color-subtle: #6f6c65;
+  --color-faint: #b2aea5;
+  --color-iris: #1b1a18;
+  --color-iris-deep: #1b1a18;
+  --color-iris-soft: #ebe8e1;
+  --color-iris-container: #e9e5ef;
+  --color-on-iris-container: #1b1a18;
+  --color-gold: #d8c08c;
+  --color-ok: #3e6a4a;
+  --color-ok-soft: #e4ece3;
+  --color-warn: #86601c;
+  --color-warn-soft: #f2e8d3;
+  --color-bad: #96382f;
+  --color-bad-soft: #f3e3df;
+  --color-bad-line: #96382f;
   --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
   --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
 }
 
-/* Material 3 부품 */
+/* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
 @layer components {
   .m3-btn {
-    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold tracking-[.01em] transition-[background-color,box-shadow,color] duration-150 disabled:pointer-events-none disabled:opacity-40;
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold tracking-[.01em] transition-[background-color,color,border-color] duration-200 disabled:pointer-events-none disabled:opacity-35;
   }
   .m3-btn-sm {
     @apply h-8 px-4 text-[13px];
   }
   .m3-filled {
-    @apply bg-iris text-white hover:shadow-[0_1px_2px_rgb(0_0_0/.3),0_1px_3px_1px_rgb(0_0_0/.15)];
-  }
-  .m3-filled:hover {
-    background-color: color-mix(in srgb, var(--color-iris) 92%, white);
+    @apply border border-ink bg-ink text-paper hover:bg-transparent hover:text-ink;
   }
   .m3-tonal {
-    @apply bg-iris-soft text-on-iris-container hover:shadow-[0_1px_2px_rgb(0_0_0/.3)];
+    @apply border border-ink/25 bg-transparent text-ink hover:border-ink;
   }
   .m3-outlined {
-    @apply border border-line-strong text-iris hover:bg-iris/[.08];
+    @apply border border-ink text-ink hover:bg-ink hover:text-paper;
   }
   .m3-text {
-    @apply px-3 text-iris hover:bg-iris/[.08];
+    @apply px-2 text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink;
   }
   .m3-danger {
-    @apply border border-bad-line/60 text-bad hover:bg-bad/[.08];
+    @apply border border-bad/60 text-bad hover:bg-bad hover:text-paper;
   }
   .m3-fab {
-    @apply inline-flex h-14 items-center gap-3 rounded-2xl bg-iris-container px-5 text-sm font-semibold text-on-iris-container shadow-[0_1px_3px_rgb(0_0_0/.3),0_4px_8px_3px_rgb(0_0_0/.15)] transition-shadow hover:shadow-[0_2px_3px_rgb(0_0_0/.3),0_6px_10px_4px_rgb(0_0_0/.15)];
+    @apply inline-flex h-12 items-center gap-2 rounded-full bg-gold px-6 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-paper;
   }
   .m3-field {
-    @apply rounded border border-line-strong/70 bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-ink focus:border-iris focus:ring-1 focus:ring-iris;
+    @apply rounded-none border border-line bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-ink/50 focus:border-ink;
   }
   .m3-field-sm {
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong/50 bg-surface px-4 text-sm font-bold text-ink-2 transition-colors hover:bg-iris/[.06];
+    @apply inline-flex h-8 items-center gap-1.5 rounded-[50%] border border-transparent px-4 text-sm text-subtle transition-colors hover:text-ink;
   }
   .m3-chip-on {
-    @apply border-transparent bg-iris-soft pl-2.5 text-on-iris-container;
+    @apply border-ink text-ink;
+  }
+  .serif-i {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee {
+    animation: marquee 40s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { animation: none; }
   }
 }
 
