@@ -33,7 +33,6 @@
   --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
   --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
-  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
 }
 
 /* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
@@ -69,26 +68,10 @@
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-8 items-center gap-1.5 rounded-[50%] border border-transparent px-4 text-sm text-subtle transition-colors hover:text-ink;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-ink;
   }
   .m3-chip-on {
-    @apply border-ink text-ink;
-  }
-  .serif-i {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0;
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .marquee {
-    animation: marquee 40s linear infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .marquee { animation: none; }
+    @apply border-ink bg-ink text-paper hover:border-ink;
   }
 }
 

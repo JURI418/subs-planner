@@ -11,9 +11,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@fontsource/cormorant-garamond':
-        specifier: 5.2.10
-        version: 5.2.10
       '@kfonts/nanum-square-round':
         specifier: 0.2.0
         version: 0.2.0
@@ -269,9 +266,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@fontsource/cormorant-garamond@5.2.10':
-    resolution: {integrity: sha512-RvzeGMSY01g50yezIU+GoyrvXv44VqH90sV23B2C49+P/vGOI/jNe19TNgNBSUS22VlK8p8UoJ3pkvJViLIC0A==}
 
   '@hono/node-server@1.19.14':
     resolution: {integrity: sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==}
@@ -2210,8 +2204,6 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@fontsource/cormorant-garamond@5.2.10': {}
 
   '@hono/node-server@1.19.14(hono@4.12.25)':
     dependencies:

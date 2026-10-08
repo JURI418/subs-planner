@@ -42,40 +42,41 @@ export function DashboardPage({ data }: { data: AppData }) {
 
   return (
     <>
-      {/* 첫 화면 상단: 큰 날짜 숫자와 오늘의 학사일정 */}
-      <section className="grid gap-10 border-b border-line pb-12 md:grid-cols-[1.1fr_1fr] md:items-end">
-        <div className="min-w-0">
-          <p className="serif-i text-[30px] leading-none text-subtle">Today</p>
-          <h1 className="mt-3 text-[2.75rem] font-extrabold leading-tight tracking-[-0.03em]">결보강 확인</h1>
-          <p className="mt-2 text-[17px] text-ink-2">{formatDotDate(today)}</p>
-          <ul className="mt-6 flex flex-col gap-1.5">
+      {/* 첫 화면 상단: 화면을 가로지르는 어두운 큰 배너 */}
+      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink px-6 pb-12 pt-14 text-paper md:-mx-10 md:px-12 md:pb-16 md:pt-20">
+        <p
+          aria-hidden
+          className="pointer-events-none absolute -bottom-6 right-4 select-none text-[9rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-10 md:text-[15rem]"
+        >
+          {today.slice(5).replace('-', '.')}
+        </p>
+        <div className="relative max-w-2xl">
+          <p className="text-[12px] font-bold uppercase tracking-[.25em] text-paper/60">Today · {englishDate(today)}</p>
+          <h1 className="mt-4 text-[2.75rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[3.5rem]">결보강 확인</h1>
+          <p className="mt-2 text-[18px] text-paper/80">{formatDotDate(today)}</p>
+          <ul className="mt-6 flex flex-col gap-1.5 text-[15px]">
             {todayOff ? (
-              <li className="text-[15px] text-bad">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+              <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
             ) : todayEvents.length ? (
-              todayEvents.slice(0, 4).map((e, i) => (
-                <li key={i} className="flex items-baseline gap-3 text-[15px]">
-                  <span className="serif-i text-[17px] text-subtle">—</span>
-                  {e.title}
-                </li>
-              ))
+              todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
             ) : (
-              <li className="text-[15px] text-subtle">오늘 등록된 학사일정이 없습니다</li>
+              <li className="text-paper/60">오늘 등록된 학사일정이 없습니다</li>
             )}
           </ul>
-          <div className="mt-8 flex flex-wrap gap-2">
-            <button onClick={() => router.push('/absence')} className="m3-btn m3-filled h-12 px-7">
+          <div className="mt-9 flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push('/absence')}
+              className="m3-btn h-12 border border-paper bg-paper px-7 text-ink hover:bg-transparent hover:text-paper"
+            >
               <Plus size={18} /> 결강 등록
             </button>
-            <button onClick={() => router.push('/assignments')} className="m3-btn m3-outlined h-12 px-7">
-              배정 확인
+            <button
+              onClick={() => router.push('/assignments')}
+              className="m3-btn h-12 border border-paper/60 px-7 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+            >
+              배정 확인 {pending > 0 && `· ${pending}건`}
             </button>
           </div>
-        </div>
-        <div className="text-left md:text-right" aria-hidden>
-          <p className="serif-i text-[7rem] leading-[.85] tracking-[-0.02em] md:text-[10rem]">
-            {today.slice(5).replace('-', '.')}
-          </p>
-          <p className="serif-i mt-3 text-[22px] text-subtle">{englishDate(today)}</p>
         </div>
       </section>
 
@@ -87,7 +88,7 @@ export function DashboardPage({ data }: { data: AppData }) {
             onClick={() => router.push(href)}
             className={`group flex flex-col items-start gap-1 py-7 pr-6 text-left ${i % 2 ? 'pl-6' : ''} ${i === 2 ? 'xl:pl-6' : ''} ${i > 0 ? 'xl:border-l xl:border-line' : ''} ${i % 2 ? 'border-l border-line' : ''}`}
           >
-            <span className="serif-i text-[15px] text-subtle">
+            <span className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">
               {String(i + 1).padStart(2, '0')} · {en}
             </span>
             <span className="mt-1 flex items-center gap-1 text-[19px] font-extrabold">
@@ -111,7 +112,7 @@ export function DashboardPage({ data }: { data: AppData }) {
               {s.label}
             </p>
             <p className="mt-2 flex items-baseline gap-2">
-              <span className="serif-i text-[4.25rem] leading-none tabular-nums">{s.value}</span>
+              <span className="text-[3.25rem] font-extrabold leading-none tracking-[-0.03em] tabular-nums">{s.value}</span>
               <span className="text-sm text-subtle">{s.unit}</span>
             </p>
           </div>
@@ -123,8 +124,8 @@ export function DashboardPage({ data }: { data: AppData }) {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="serif-i text-[18px] text-subtle">Today&rsquo;s cover</p>
-                <h2 className="text-xl font-extrabold">오늘의 보강</h2>
+                <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Today&rsquo;s cover</p>
+                <h2 className="mt-1 text-xl font-extrabold">오늘의 보강</h2>
                 <p className="mt-1 text-[13px] text-subtle">{formatDotDate(today)} 결강 수업과 보강 교사</p>
               </div>
               <button onClick={() => router.push('/assignments')} className="m3-btn m3-btn-sm m3-text">
@@ -160,8 +161,8 @@ export function DashboardPage({ data }: { data: AppData }) {
             )}
           </Card>
           <Card>
-            <p className="serif-i text-[18px] text-subtle">Checklist</p>
-            <h2 className="text-xl font-extrabold">운영 체크리스트</h2>
+            <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Checklist</p>
+            <h2 className="mt-1 text-xl font-extrabold">운영 체크리스트</h2>
             <ol className="mt-2 flex flex-col">
               {checklist.map(([title, desc, ok, href], i) => (
                 <li key={title} className="border-b border-line last:border-b-0">
@@ -186,8 +187,8 @@ export function DashboardPage({ data }: { data: AppData }) {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="serif-i text-[18px] text-subtle">Upcoming</p>
-                <h2 className="text-xl font-extrabold">다가오는 학사일정</h2>
+                <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Upcoming</p>
+                <h2 className="mt-1 text-xl font-extrabold">다가오는 학사일정</h2>
               </div>
               <button onClick={() => router.push('/calendar')} className="m3-btn m3-btn-sm m3-text">
                 전체 일정

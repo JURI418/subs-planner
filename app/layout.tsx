@@ -1,8 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import '@kfonts/nanum-square-round/index.css'
-import '@fontsource/cormorant-garamond/400-italic.css'
-import '@fontsource/cormorant-garamond/500-italic.css'
 import './globals.css'
 
 export const metadata: Metadata = {
