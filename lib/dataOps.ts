@@ -1,4 +1,4 @@
-import { normalizeData, todayISO, type AppData, type Slot } from './types'
+import { normalizeData, type AppData, type Slot } from './types'
 import { autoAssign, runScheduling } from './scheduling'
 
 /** 확정 취소: 상태를 '제안'으로 되돌리고 보강 교사의 누적 보강 횟수를 1 줄인다 */
@@ -83,17 +83,16 @@ export function recomputeProposals(d: AppData): { data: AppData; total: number; 
 
 /**
  * 교사가 보강 후보에서 빠졌을 때(시간강사로 변경, 후보 '제외') 이미 만들어진 배정에 반영한다.
- * - 오늘 이후의 확정 전 배정: 그 교사가 보강·예비로 들어가 있으면 다시 추천
+ * - 확정 전 배정: 그 교사가 보강·예비로 들어가 있으면 다시 추천
  * - 확정된 배정: 예비에서만 빼고(빈자리는 다시 추천), 보강 교사인 경우는 목록으로 알려 준다
  */
 export function excludeTeacher(d: AppData, teacherId: string) {
-  const today = todayISO()
   let assignments = d.assignments
   let replaced = 0
   const conflicts: Slot[] = []
   for (const a of d.assignments) {
     const slot = d.slots.find((s) => s.id === a.slotId)
-    if (!slot || slot.date < today) continue
+    if (!slot) continue
     const involved = a.substituteTeacherId === teacherId || a.backups.includes(teacherId)
     if (!involved) continue
     const prior = assignments.filter((x) => x.slotId !== a.slotId)
@@ -111,4 +110,17 @@ export function excludeTeacher(d: AppData, teacherId: string) {
     assignments = assignments.map((x) => (x.slotId === a.slotId ? next : x))
   }
   return { data: { ...d, assignments }, replaced, conflicts }
+}
+
+/** 저장된 데이터에서 보강 후보 '제외' 교사가 배정(보강·예비)에 남아 있으면 정리한다 */
+export function cleanExcluded(d: AppData): AppData {
+  const excluded = new Set(d.teachers.filter((t) => t.poolStatus === '제외').map((t) => t.id))
+  const stuck = new Set<string>()
+  for (const a of d.assignments) {
+    const slot = d.slots.find((s) => s.id === a.slotId)
+    if (!slot) continue
+    for (const id of [a.status === '확정' ? null : a.substituteTeacherId, ...a.backups])
+      if (id && excluded.has(id)) stuck.add(id)
+  }
+  return [...stuck].reduce((acc, id) => excludeTeacher(acc, id).data, d)
 }

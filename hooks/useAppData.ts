@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { emptyData, normalizeData, seedData, type AppData } from '@/lib/types'
+import { cleanExcluded } from '@/lib/dataOps'
 
 export const STORAGE_KEY = 'school-cover-data'
 
@@ -10,7 +11,8 @@ export function useAppData() {
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY)
-    setData(raw ? normalizeData(JSON.parse(raw)) : seedData())
+    // 예전에 후보에서 뺀 교사가 배정에 남아 있으면 열 때 정리
+    setData(raw ? cleanExcluded(normalizeData(JSON.parse(raw))) : seedData())
     setReady(true)
   }, [])
 
