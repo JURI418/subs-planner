@@ -135,7 +135,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
     <>
       <PageHeader
         eyebrow="Calendar"
-        title="학사일정"
+        title="학사일정 올리기"
         desc="학사일정 PDF를 올리면 공휴일·재량휴업일·방학을 찾아 결강 수업 계산에서 자동으로 뺍니다."
       />
       <div className="grid gap-6 xl:grid-cols-[1.15fr_1fr]">

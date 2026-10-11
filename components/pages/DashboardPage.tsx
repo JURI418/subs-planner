@@ -58,8 +58,8 @@ export function DashboardPage({ data }: { data: AppData }) {
   const actions = [
     { key: 'absence', en: 'Absence', title: '결강 등록', desc: '교사와 날짜를 고르면 보강 수업을 찾아요', run: () => router.push('/absence') },
     { key: 'assignments', en: 'Assignments', title: '배정 확인', desc: `확정을 기다리는 배정 ${pending}건`, run: () => router.push('/assignments') },
-    { key: 'copy', en: 'Copy', title: '보강 내역 복사', desc: `오늘 이후 보강 ${upcomingCount}건 · 나이스·메신저용`, run: copyUpcoming },
     { key: 'stats', en: 'Statistics', title: '보강 통계', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
+    { key: 'copy', en: 'Copy', title: '보강 내역 복사', desc: `오늘 이후 보강 ${upcomingCount}건 · 나이스·메신저용`, run: copyUpcoming },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -70,42 +70,42 @@ export function DashboardPage({ data }: { data: AppData }) {
   return (
     <>
       {/* 첫 화면 상단: 화면을 가로지르는 어두운 큰 배너 */}
-      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink px-6 pb-12 pt-8 text-paper md:-mx-10 md:px-12 md:pb-16 md:pt-10">
-        {/* 위아래 가는 줄 사이의 작은 글씨 띠 */}
-        <div className="relative mb-10 grid grid-cols-3 items-center border-y border-paper/30 py-2.5 text-[11px] tracking-[.18em] text-paper/70 md:mb-14">
-          <span className="font-extrabold text-paper">//Subs Planner</span>
-          <span className="text-center">{data.settings.semester}</span>
-          <span className="text-right">{formatDotDate(today)}</span>
-        </div>
+      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink px-6 pb-7 pt-6 text-paper md:-mx-10 md:px-12 md:pb-8 md:pt-7">
         <p
           aria-hidden
-          className="pointer-events-none absolute -bottom-6 right-4 select-none text-[9rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-10 md:text-[15rem]"
+          className="pointer-events-none absolute -bottom-3 right-4 select-none text-[4.5rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-5 md:text-[7.5rem]"
         >
           {today.slice(5).replace('-', '.')}
         </p>
-        <div className="relative max-w-2xl">
-          <p className="text-[12px] font-bold uppercase tracking-[.25em] text-paper/60">Today · {englishDate(today)}</p>
-          <h1 className="mt-4 text-[2.75rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[3.5rem]">결보강 확인</h1>
-          <p className="mt-2 text-[18px] text-paper/80">{formatDotDate(today)}</p>
-          <ul className="mt-6 flex flex-col gap-1.5 text-[15px]">
-            {todayOff ? (
-              <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
-            ) : todayEvents.length ? (
-              todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
-            ) : (
-              <li className="text-paper/60">오늘 등록된 학사일정이 없습니다</li>
-            )}
-          </ul>
-          <div className="mt-9 flex flex-wrap gap-2">
+        <div className="relative">
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-paper/60">
+              Today · {englishDate(today)}
+            </p>
+            <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
+              결보강 확인
+              <span className="text-[16px] font-bold tracking-normal text-paper/80">{formatDotDate(today)}</span>
+            </h1>
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+              {todayOff ? (
+                <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+              ) : todayEvents.length ? (
+                todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
+              ) : (
+                <li className="text-paper/60">오늘 등록된 학사일정이 없습니다</li>
+              )}
+            </ul>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
             <button
               onClick={() => router.push('/absence')}
-              className="m3-btn h-12 border border-paper bg-paper px-7 text-ink hover:bg-transparent hover:text-paper"
+              className="m3-btn h-11 border border-paper bg-paper px-6 text-ink hover:bg-transparent hover:text-paper"
             >
               <Plus size={18} /> 결강 등록
             </button>
             <button
               onClick={() => router.push('/assignments')}
-              className="m3-btn h-12 border border-paper/60 px-7 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+              className="m3-btn h-11 border border-paper/60 px-6 text-paper hover:border-paper hover:bg-paper hover:text-ink"
             >
               배정 확인 {pending > 0 && `· ${pending}건`}
             </button>

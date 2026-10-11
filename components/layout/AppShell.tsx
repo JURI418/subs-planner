@@ -12,14 +12,16 @@ import { TeachersPage } from '@/components/pages/TeachersPage'
 import { StatsPage } from '@/components/pages/StatsPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
 import { CalendarPage } from '@/components/pages/CalendarPage'
+import { WeekPage } from '@/components/pages/WeekPage'
 
 // 메뉴: 위쪽은 매일 쓰는 일(› 화살표 목록), 아래쪽은 관리 메뉴(아이콘 목록)
 const primary = [
   ['/dashboard', '홈'],
   ['/absence', '결강 등록'],
   ['/assignments', '배정 확인'],
-  ['/timetable', '시간표'],
-  ['/calendar', '학사일정'],
+  ['/week', '이번 주 시간표'],
+  ['/timetable', '시간표 올리기'],
+  ['/calendar', '학사일정 올리기'],
 ] as const
 const secondary = [
   ['/teachers', '교사 관리', Users],
@@ -50,6 +52,8 @@ export function AppShell() {
         return <AbsencePage data={data} setData={setData} />
       case 'assignments':
         return <AssignmentsPage data={data} setData={setData} />
+      case 'week':
+        return <WeekPage data={data} />
       case 'timetable':
         return <TimetablePage data={data} setData={setData} />
       case 'calendar':
@@ -170,18 +174,24 @@ export function AppShell() {
       )}
 
       <div className="lg:pl-[300px]">
-        {/* 검정 안내 띠: 한 번에 하나씩, 멈춤 가능 */}
-        <div className="relative flex h-10 items-center justify-center bg-ink px-12 text-paper">
-          <p key={noticeIdx} className="truncate text-[13px] font-bold underline-offset-4" aria-live="polite">
-            {notice}
-          </p>
-          <button
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? '안내 넘기기 다시 시작' : '안내 넘기기 멈춤'}
-            className="absolute right-4 grid size-7 place-items-center text-paper/80 hover:text-paper"
-          >
-            {paused ? <Play size={13} /> : <Pause size={13} />}
-          </button>
+        {/* 검정 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내(한 번에 하나씩) · 날짜 */}
+        <div className="bg-ink px-4 py-1.5 text-paper md:px-6">
+          <div className="grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y border-paper/30 text-[12px] tracking-[.06em]">
+            <span className="font-extrabold tracking-[.18em]">//Subs Planner</span>
+            <p key={noticeIdx} className="truncate text-center font-bold text-paper/90" aria-live="polite">
+              {notice}
+            </p>
+            <span className="flex items-center gap-2 text-paper/70">
+              <span className="hidden tracking-[.12em] sm:inline">{data.settings.semester}</span>
+              <button
+                onClick={() => setPaused((p) => !p)}
+                aria-label={paused ? '안내 넘기기 다시 시작' : '안내 넘기기 멈춤'}
+                className="grid size-7 place-items-center text-paper/80 hover:text-paper"
+              >
+                {paused ? <Play size={13} /> : <Pause size={13} />}
+              </button>
+            </span>
+          </div>
         </div>
 
         {/* 휴대폰 상단 */}

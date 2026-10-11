@@ -86,7 +86,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
     <>
       <PageHeader
         eyebrow="Timetable"
-        title="시간표 등록·조회"
+        title="시간표 올리기"
         desc="교사별 시간표 PDF를 올리거나, 표를 복사해서 붙여넣으세요."
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_1.3fr]">
