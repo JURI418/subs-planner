@@ -9,12 +9,39 @@ import { formatDate, todayISO, uid, type Absence, type AppData, type SetData, ty
 import { autoAssign, isAbsentAt, makeSlots, runScheduling } from '@/lib/scheduling'
 import { absenceSummary, deleteAbsence } from '@/lib/dataOps'
 
+/** 나이스 복무 근무상황 종류 (교원 휴가에 관한 예규 기준) */
+const reasonGroups: [string, string[]][] = [
+  ['휴가', ['연가', '병가', '공가', '특별휴가']],
+  ['근무', ['출장', '41조 연수']],
+  ['시간 단위', ['외출', '조퇴', '지각']],
+  ['그 밖', ['결근', '기타']],
+]
+const specialLeaves = [
+  '경조사',
+  '출산',
+  '배우자 출산',
+  '유산·사산',
+  '임신검진',
+  '모성보호시간',
+  '육아시간',
+  '여성보건',
+  '난임치료',
+  '가족돌봄',
+  '자녀돌봄',
+  '수업',
+  '재해구호',
+  '포상',
+  '장기재직',
+]
+
 export function AbsencePage({ data, setData }: { data: AppData; setData: SetData }) {
   const router = useRouter()
   const [teacherId, setTeacherId] = useState(data.teachers[0]?.id || '')
   const [start, setStart] = useState(todayISO)
   const [end, setEnd] = useState(todayISO)
-  const [reason, setReason] = useState('병가')
+  const [kind, setKind] = useState('병가')
+  const [detail, setDetail] = useState('')
+  const reason = [kind, detail.trim()].filter(Boolean).join(' · ')
   const [preview, setPreview] = useState<Slot[]>([])
   const [selected, setSelected] = useState<string[]>([])
   // 미리보기 때 만든 결강 id를 저장해 두었다가 저장할 때 그대로 사용 (슬롯의 absenceId와 일치시키기 위함)
@@ -140,14 +167,47 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 />
               </label>
             </div>
-            <label className="text-sm font-semibold">
-              사유
-              <input
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="m3-field mt-2 w-full"
-              />
-            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-sm font-semibold">
+                사유 (나이스 근무상황)
+                <select
+                  id="absence-kind"
+                  value={kind}
+                  onChange={(e) => {
+                    setKind(e.target.value)
+                    setDetail('')
+                  }}
+                  className="m3-field mt-2 w-full"
+                >
+                  {reasonGroups.map(([group, items]) => (
+                    <optgroup key={group} label={group}>
+                      {items.map((x) => (
+                        <option key={x}>{x}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-semibold">
+                {kind === '특별휴가' ? '특별휴가 종류' : '세부 사유 (선택)'}
+                {kind === '특별휴가' ? (
+                  <select id="absence-detail" value={detail} onChange={(e) => setDetail(e.target.value)} className="m3-field mt-2 w-full">
+                    <option value="">선택 안 함</option>
+                    {specialLeaves.map((x) => (
+                      <option key={x}>{x}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id="absence-detail"
+                    value={detail}
+                    onChange={(e) => setDetail(e.target.value)}
+                    placeholder={kind === '출장' ? '예: 교육청 회의' : kind === '기타' ? '직접 입력' : '예: 진료'}
+                    className="m3-field mt-2 w-full"
+                  />
+                )}
+              </label>
+            </div>
             <button onClick={make} className="m3-btn m3-filled">
               슬롯 미리보기
             </button>

@@ -75,6 +75,7 @@ export function AppShell() {
     setMobile(false)
   }
   const isActive = (href: string) => path === href || (href === '/dashboard' && page === 'dashboard')
+  const home = page === 'dashboard'
   const pending = data.assignments.filter((a) => a.status === '제안').length
   const todayEvent = data.events.find((e) => e.date === today && e.kind !== '방학')
   const nextOff = data.events.find((e) => e.date > today && e.kind !== '행사' && e.kind !== '방학')
@@ -175,19 +176,19 @@ export function AppShell() {
       )}
 
       <div className="lg:pl-[300px]">
-        {/* 검정 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내(한 번에 하나씩) · 날짜 */}
-        <div className="bg-ink px-4 py-1.5 text-paper md:px-6">
-          <div className="grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y border-paper/30 text-[12px] tracking-[.06em]">
+        {/* 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내 · 학기. 홈에서만 검정 바탕 */}
+        <div className={`px-4 py-1.5 md:px-6 ${home ? 'bg-ink text-paper' : 'bg-paper text-ink'}`}>
+          <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[12px] tracking-[.06em]`}>
             <span className="font-extrabold tracking-[.18em]">//Subs Planner</span>
-            <p key={noticeIdx} className="truncate text-center font-bold text-paper/90" aria-live="polite">
+            <p key={noticeIdx} className={`truncate text-center font-bold ${home ? 'text-paper/90' : 'text-ink-2'}`} aria-live="polite">
               {notice}
             </p>
-            <span className="flex items-center gap-2 text-paper/70">
+            <span className={`flex items-center gap-2 ${home ? 'text-paper/70' : 'text-subtle'}`}>
               <span className="hidden tracking-[.12em] sm:inline">{data.settings.semester}</span>
               <button
                 onClick={() => setPaused((p) => !p)}
                 aria-label={paused ? '안내 넘기기 다시 시작' : '안내 넘기기 멈춤'}
-                className="grid size-7 place-items-center text-paper/80 hover:text-paper"
+                className={`grid size-7 place-items-center ${home ? 'text-paper/80 hover:text-paper' : 'text-subtle hover:text-ink'}`}
               >
                 {paused ? <Play size={13} /> : <Pause size={13} />}
               </button>
