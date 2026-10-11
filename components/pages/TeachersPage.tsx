@@ -3,9 +3,29 @@ import { useState } from 'react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import type { AppData, SetData } from '@/lib/types'
+import { formatDate, type AppData, type SetData, type Teacher } from '@/lib/types'
+import { excludeTeacher } from '@/lib/dataOps'
 
 export function TeachersPage({ data, setData }: { data: AppData; setData: SetData }) {
+  // 교사 정보 변경. 보강 후보에서 빠지게 되면 이미 만든 배정도 다시 추천한다
+  const updateTeacher = (id: string, patch: Partial<Teacher>) => {
+    const before = data.teachers.find((x) => x.id === id)
+    let next: AppData = { ...data, teachers: data.teachers.map((x) => (x.id === id ? { ...x, ...patch } : x)) }
+    if (before && before.poolStatus !== '제외' && patch.poolStatus === '제외') {
+      const r = excludeTeacher(next, id)
+      next = r.data
+      const lines = [`${before.name} 선생님을 보강 후보에서 뺐습니다.`]
+      if (r.replaced) lines.push(`확정 전 배정 ${r.replaced}건을 다른 교사로 다시 추천했습니다.`)
+      if (r.conflicts.length)
+        lines.push(
+          `이미 확정된 보강 ${r.conflicts.length}건은 그대로 두었습니다. 배정 확인에서 직접 바꿔 주세요:\n` +
+            r.conflicts.map((s) => `${formatDate(s.date)} ${s.period}교시 ${s.room}`).join('\n'),
+        )
+      if (r.replaced || r.conflicts.length) alert(lines.join('\n'))
+    }
+    setData(next)
+  }
+
   const [q, setQ] = useState('')
   const [grade, setGrade] = useState('all')
   const list = data.teachers.filter(
@@ -66,21 +86,13 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                     <select
                       value={t.employmentType}
                       onChange={(e) =>
-                        setData((d) => ({
-                          ...d,
-                          teachers: d.teachers.map((x) =>
-                            // 시간강사는 보강 후보에서 빠지는 것이 기본, 정규로 돌리면 다시 후보에 넣는다
-                            x.id === t.id
-                              ? e.target.value === '시간강사'
-                                ? { ...x, employmentType: '시간강사', poolStatus: '제외' }
-                                : {
-                                    ...x,
-                                    employmentType: '정규',
-                                    poolStatus: x.poolStatus === '제외' ? '기본' : x.poolStatus,
-                                  }
-                              : x,
-                          ),
-                        }))
+                        // 시간강사는 보강 후보에서 빠지는 것이 기본, 정규로 돌리면 다시 후보에 넣는다
+                        updateTeacher(
+                          t.id,
+                          e.target.value === '시간강사'
+                            ? { employmentType: '시간강사', poolStatus: '제외' }
+                            : { employmentType: '정규', poolStatus: t.poolStatus === '제외' ? '기본' : t.poolStatus },
+                        )
                       }
                       className="m3-field m3-field-sm"
                     >
@@ -91,14 +103,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                   <td className="p-3">
                     <select
                       value={t.poolStatus}
-                      onChange={(e) =>
-                        setData((d) => ({
-                          ...d,
-                          teachers: d.teachers.map((x) =>
-                            x.id === t.id ? { ...x, poolStatus: e.target.value as any } : x,
-                          ),
-                        }))
-                      }
+                      onChange={(e) => updateTeacher(t.id, { poolStatus: e.target.value as Teacher['poolStatus'] })}
                       className="m3-field m3-field-sm"
                     >
                       <option>기본</option>

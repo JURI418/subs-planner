@@ -1,5 +1,5 @@
-import { normalizeData, type AppData } from './types'
-import { runScheduling } from './scheduling'
+import { normalizeData, todayISO, type AppData, type Slot } from './types'
+import { autoAssign, runScheduling } from './scheduling'
 
 /** 확정 취소: 상태를 '제안'으로 되돌리고 보강 교사의 누적 보강 횟수를 1 줄인다 */
 export function cancelConfirm(d: AppData, slotId: string): AppData {
@@ -79,4 +79,36 @@ export function recomputeProposals(d: AppData): { data: AppData; total: number; 
     total: slots.length,
     changed,
   }
+}
+
+/**
+ * 교사가 보강 후보에서 빠졌을 때(시간강사로 변경, 후보 '제외') 이미 만들어진 배정에 반영한다.
+ * - 오늘 이후의 확정 전 배정: 그 교사가 보강·예비로 들어가 있으면 다시 추천
+ * - 확정된 배정: 예비에서만 빼고(빈자리는 다시 추천), 보강 교사인 경우는 목록으로 알려 준다
+ */
+export function excludeTeacher(d: AppData, teacherId: string) {
+  const today = todayISO()
+  let assignments = d.assignments
+  let replaced = 0
+  const conflicts: Slot[] = []
+  for (const a of d.assignments) {
+    const slot = d.slots.find((s) => s.id === a.slotId)
+    if (!slot || slot.date < today) continue
+    const involved = a.substituteTeacherId === teacherId || a.backups.includes(teacherId)
+    if (!involved) continue
+    const prior = assignments.filter((x) => x.slotId !== a.slotId)
+    const redo = autoAssign(slot, { ...d, assignments: prior }, prior)
+    let next = redo
+    if (a.status === '확정') {
+      if (a.substituteTeacherId === teacherId) conflicts.push(slot)
+      const keep = a.backups.filter((b) => b && b !== teacherId) as string[]
+      const fill = [redo.substituteTeacherId, ...redo.backups].filter(
+        (x): x is string => !!x && x !== a.substituteTeacherId && !keep.includes(x),
+      )
+      const backups = [...keep, ...fill].slice(0, 2)
+      next = { ...a, backups: [backups[0] ?? null, backups[1] ?? null] }
+    } else replaced++
+    assignments = assignments.map((x) => (x.slotId === a.slotId ? next : x))
+  }
+  return { data: { ...d, assignments }, replaced, conflicts }
 }
