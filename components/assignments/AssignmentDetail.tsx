@@ -1,6 +1,5 @@
 'use client'
 import { ArrowUp, X } from 'lucide-react'
-import { Badge } from '@/components/common/Badge'
 import { recommend, teacherDay, validateAssignment } from '@/lib/scheduling'
 import type { AppData, Assignment, Slot } from '@/lib/types'
 
@@ -17,6 +16,38 @@ const CELL: Record<string, string> = {
   free: 'border border-dashed border-line text-faint',
   // 다른 후보: 아직 배정 전이므로 이번 보강 칸을 점선으로
   maybe: 'border-2 border-dashed border-ink/70 bg-surface font-bold text-ink',
+}
+
+const TONE = { ink: 'text-ink', sky: 'text-sky', bad: 'text-bad', warn: 'text-warn' } as const
+
+function Stat({
+  label,
+  value,
+  unit,
+  meta,
+  extra,
+  tone,
+}: {
+  label: string
+  value: number
+  unit: string
+  meta: string
+  extra?: string
+  tone: keyof typeof TONE
+}) {
+  return (
+    <div className="min-w-0 border-line pt-2.5 [&:not(:first-child)]:border-l [&:not(:first-child)]:pl-3 sm:[&:not(:first-child)]:pl-4">
+      <p className="text-[12px] text-subtle">{label}</p>
+      <p className={`mt-0.5 flex items-baseline gap-0.5 ${TONE[tone]}`}>
+        <span className="text-[1.6rem] font-bold leading-none tabular-nums">{value}</span>
+        <span className="text-[13px]">{unit}</span>
+      </p>
+      <p className={`mt-1 truncate text-[11px] ${tone === 'bad' ? 'font-bold text-bad' : 'text-subtle'}`}>
+        {meta}
+        {extra && ` · ${extra}`}
+      </p>
+    </div>
+  )
 }
 
 /** 한 교사의 그날 교시 막대 + 수업 수·연속·누적 */
@@ -60,16 +91,34 @@ function DayStrip({
           </div>
         ))}
       </div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        <Badge tone={heavy ? 'red' : 'slate'}>
-          총 수업 {day.total}시간{day.covers > 0 ? ` (보강 ${day.covers + 1})` : ''}
-        </Badge>
-        <Badge tone={longRun ? 'red' : 'sky'}>연속 {day.maxRun}교시</Badge>
-        <Badge tone={many ? 'yellow' : 'slate'}>
-          누적 보강 {day.totalAssignments}회 · 평균 {avg.toFixed(1)}
-        </Badge>
-        {day.clash && <Badge tone="red">같은 교시 수업 있음</Badge>}
+      {/* 수치 3칸: 큰 숫자 + 이름표 + 한도·평균 */}
+      <div className="mt-3 grid grid-cols-3 border-t border-line">
+        <Stat
+          label="총 수업"
+          value={day.total}
+          unit="시간"
+          meta={heavy ? '한도 도달' : `한도 ${data.settings.maxDaily}시간`}
+          extra={day.covers > 0 ? `보강 ${day.covers + 1} 포함` : undefined}
+          tone={heavy ? 'bad' : 'ink'}
+        />
+        <Stat
+          label="연속 수업"
+          value={day.maxRun}
+          unit="교시"
+          meta={longRun ? '한도 도달' : `한도 ${data.settings.maxConsecutive}교시`}
+          tone={longRun ? 'bad' : 'sky'}
+        />
+        <Stat
+          label="누적 보강"
+          value={day.totalAssignments}
+          unit="회"
+          meta={`학교 평균 ${avg.toFixed(1)}회`}
+          tone={many ? 'warn' : 'ink'}
+        />
       </div>
+      {day.clash && (
+        <p className="mt-2 text-[13px] font-bold text-bad">같은 교시에 수업이 있습니다</p>
+      )}
     </div>
   )
 }
