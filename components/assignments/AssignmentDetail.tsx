@@ -15,6 +15,8 @@ const CELL: Record<string, string> = {
   cover: 'bg-warn-soft text-warn',
   this: 'bg-iris text-white',
   free: 'border border-dashed border-line text-faint',
+  // 다른 후보: 아직 배정 전이므로 이번 보강 칸을 점선으로
+  maybe: 'border-2 border-dashed border-ink/70 bg-surface font-bold text-ink',
 }
 
 /** 한 교사의 그날 교시 막대 + 수업 수·연속·누적 */
@@ -23,11 +25,13 @@ function DayStrip({
   slot,
   data,
   avg,
+  candidate,
 }: {
   teacherId: string
   slot: Slot
   data: AppData
   avg: number
+  candidate?: boolean
 }) {
   const day = teacherDay(teacherId, slot, data)
   const heavy = day.total >= data.settings.maxDaily
@@ -40,7 +44,7 @@ function DayStrip({
           <div key={c.period} className="flex min-w-0 flex-1 flex-col items-center gap-1">
             <span className="text-[11px] text-subtle">{c.period}</span>
             <span
-              className={`flex h-9 w-full items-center justify-center rounded-md px-0.5 text-center text-[11px] leading-tight ${CELL[c.kind]}`}
+              className={`flex h-9 w-full items-center justify-center rounded-md px-0.5 text-center text-[11px] leading-tight ${CELL[candidate && c.kind === 'this' ? 'maybe' : c.kind]}`}
               title={
                 c.kind === 'class'
                   ? `${c.period}교시 수업 ${c.label}`
@@ -51,7 +55,7 @@ function DayStrip({
                       : '빈 시간'
               }
             >
-              {c.kind === 'free' ? '' : c.kind === 'this' ? '보강' : c.label}
+              {c.kind === 'free' ? '' : c.kind === 'this' ? (candidate ? '후보' : '보강') : c.label}
             </span>
           </div>
         ))}
@@ -78,7 +82,9 @@ function Row({
   avg,
   note,
   actions,
+  rank,
 }: {
+  rank?: number
   role?: string
   teacherId: string
   slot: Slot
@@ -89,9 +95,25 @@ function Row({
 }) {
   const t = data.teachers.find((x) => x.id === teacherId)
   return (
-    <div className="rounded-none bg-surface p-4">
+    <div
+      className={
+        rank
+          ? 'border border-dashed border-ink/25 p-4 transition-colors hover:border-solid hover:border-ink/40 hover:bg-surface'
+          : `border-l-4 bg-surface p-4 shadow-[0_1px_2px_rgba(0,0,0,.06)] ${role === '보강' ? 'border-ink' : 'border-ink/30'}`
+      }
+    >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        {role && <Badge tone={role === '보강' ? 'blue' : 'slate'}>{role}</Badge>}
+        {rank && (
+          <span className="grid size-6 place-items-center rounded-full border border-ink/40 text-[12px] font-bold text-ink-2">
+            {rank}
+          </span>
+        )}
+        {role &&
+          (role === '보강' ? (
+            <span className="bg-ink px-2 py-0.5 text-[12px] font-bold text-paper">보강</span>
+          ) : (
+            <Badge tone="slate">{role}</Badge>
+          ))}
         <span className="text-[15px] font-bold">{t?.name ?? '알 수 없음'}</span>
         <span className="text-[13px] text-subtle">
           {t?.subject} · {t?.grades.map((g) => `${g}학년`).join('·') || '학년 정보 없음'}
@@ -99,7 +121,7 @@ function Row({
         {note && <span className="text-[13px] text-bad">{note}</span>}
         <span className="ml-auto flex flex-wrap gap-1">{actions}</span>
       </div>
-      <DayStrip teacherId={teacherId} slot={slot} data={data} avg={avg} />
+      <DayStrip teacherId={teacherId} slot={slot} data={data} avg={avg} candidate={!!rank} />
     </div>
   )
 }
@@ -129,10 +151,13 @@ export function AssignmentDetail({
   const problemsOf = (id: string) => validateAssignment(slot, id, data)
 
   return (
-    <div className="grid gap-5 rounded-none bg-wash p-4 md:p-5 xl:grid-cols-2">
-      <section className="flex min-w-0 flex-col gap-3">
+    <div className="grid gap-5 rounded-none bg-wash p-4 md:p-5 xl:grid-cols-2 xl:gap-0">
+      <section className="flex min-w-0 flex-col gap-3 xl:pr-5">
         <div className="flex items-baseline justify-between">
-          <h3 className="font-bold">배정된 교사</h3>
+          <h3 className="flex items-center gap-2 font-bold">
+            <span className="size-2.5 bg-ink" aria-hidden />
+            배정된 교사
+          </h3>
           <Legend />
         </div>
         {a.substituteTeacherId ? (
@@ -182,9 +207,12 @@ export function AssignmentDetail({
         })}
       </section>
 
-      <section className="flex min-w-0 flex-col gap-3">
-        <h3 className="font-bold">
-          다른 후보{' '}
+      <section className="flex min-w-0 flex-col gap-3 border-t border-line pt-5 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
+        <h3 className="flex flex-wrap items-baseline gap-x-2 font-bold">
+          <span className="flex items-center gap-2 self-center">
+            <span className="size-2.5 border border-dashed border-ink" aria-hidden />
+            다른 후보
+          </span>
           <span className="text-[13px] font-normal text-subtle">
             추천 점수 순 · 조건 때문에 빠진 교사 {rec.blocked.length}명
           </span>
@@ -194,9 +222,10 @@ export function AssignmentDetail({
             조건을 만족하는 다른 후보가 없습니다.
           </p>
         ) : (
-          others.map((r) => (
+          others.map((r, ri) => (
             <Row
               key={r.t.id}
+              rank={ri + 1}
               teacherId={r.t.id}
               slot={slot}
               data={data}
