@@ -109,11 +109,12 @@ export function AppShell() {
             aria-current={isActive(href) ? 'page' : undefined}
             className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
-            <span className="flex items-center gap-3">
-              <span className={`h-[2px] bg-ink transition-all ${isActive(href) ? 'w-4' : 'w-0 group-hover:w-2'}`} />
-              {label}
-            </span>
-            <ChevronRight size={18} strokeWidth={1.5} className="text-ink-2" />
+            {label}
+            {isActive(href) ? (
+              <span className="mr-1.5 size-[7px] rounded-full bg-ink" aria-hidden />
+            ) : (
+              <ChevronRight size={18} strokeWidth={1.5} className="text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-ink-2" />
+            )}
           </button>
         ))}
       </nav>

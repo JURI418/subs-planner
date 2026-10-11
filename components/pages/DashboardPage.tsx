@@ -36,12 +36,6 @@ export function DashboardPage({ data }: { data: AppData }) {
     return a.status === '확정' && s?.date.startsWith(today.slice(0, 7))
   }).length
 
-  const stats = [
-    { label: '오늘 결강', value: todayAbsences, unit: '건', mark: 'bg-ink' },
-    { label: '미확정 배정', value: pending, unit: '건', mark: pending ? 'bg-warn' : 'bg-faint' },
-    { label: weekend ? '다음 주 결강 수업' : '이번 주 결강 수업', value: weekSlots, unit: '개', mark: 'bg-ink-2' },
-    { label: '이번 달 확정 보강', value: monthDone, unit: '건', mark: 'bg-ok' },
-  ]
 
   // 오늘 이후 보강 교사가 정해진 배정을 나이스·메신저 붙여넣기 형식으로 복사
   const copyUpcoming = () => {
@@ -56,10 +50,10 @@ export function DashboardPage({ data }: { data: AppData }) {
     return a.substituteTeacherId && s && s.date >= today
   }).length
   const actions = [
-    { key: 'absence', en: 'Absence', title: '결강 등록', desc: '교사와 날짜를 고르면 보강 수업을 찾아요', run: () => router.push('/absence') },
-    { key: 'assignments', en: 'Assignments', title: '배정 확인', desc: `확정을 기다리는 배정 ${pending}건`, run: () => router.push('/assignments') },
-    { key: 'stats', en: 'Statistics', title: '보강 통계', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
-    { key: 'copy', en: 'Copy', title: '보강 내역 복사', desc: `오늘 이후 보강 ${upcomingCount}건 · 나이스·메신저용`, run: copyUpcoming },
+    { key: 'absence', en: 'Absence', title: '결강 등록', value: todayAbsences, unit: '건 오늘', mark: 'bg-ink', desc: `${weekend ? '다음 주' : '이번 주'} 결강 수업 ${weekSlots}개`, run: () => router.push('/absence') },
+    { key: 'assignments', en: 'Assignments', title: '배정 확인', value: pending, unit: '건 미확정', mark: pending ? 'bg-warn' : 'bg-faint', desc: pending ? '확정을 기다리는 배정이 있어요' : '모든 배정을 확정했어요', run: () => router.push('/assignments') },
+    { key: 'stats', en: 'Statistics', title: '보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
+    { key: 'copy', en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강 · 나이스·메신저용', run: copyUpcoming },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -113,44 +107,32 @@ export function DashboardPage({ data }: { data: AppData }) {
         </div>
       </section>
 
-      {/* 바로가기: 번호가 붙은 목차 형식 */}
-      <nav className="grid grid-cols-2 border-b border-line xl:grid-cols-4" aria-label="바로가기">
-        {actions.map(({ key, en, title, desc, run }, i) => (
+      {/* 바로가기 + 숫자: 테두리로 나눈 4칸 타일 */}
+      <nav className="mt-8 grid grid-cols-2 gap-px border border-line bg-line xl:grid-cols-4" aria-label="바로가기">
+        {actions.map(({ key, en, title, value, unit, mark, desc, run }, i) => (
           <button
             key={key}
             onClick={run}
-            className={`group flex flex-col items-start gap-1 py-7 pr-6 text-left ${i % 2 ? 'pl-6' : ''} ${i === 2 ? 'xl:pl-6' : ''} ${i > 0 ? 'xl:border-l xl:border-line' : ''} ${i % 2 ? 'border-l border-line' : ''}`}
+            className="group flex flex-col items-stretch bg-surface p-5 text-left transition-colors hover:bg-wash md:p-6"
           >
-            <span className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">
+            <span className="truncate text-[11px] font-bold uppercase tracking-[.14em] text-subtle md:tracking-[.2em]">
               {String(i + 1).padStart(2, '0')} · {en}
             </span>
-            <span className="mt-1 flex items-center gap-1 text-[19px] font-extrabold">
+            <span className="mt-2 flex items-center justify-between gap-2 text-[18px] font-bold md:text-[19px]">
               {title}
-              <ChevronRight size={17} className="transition-transform group-hover:translate-x-1" />
+              <ChevronRight size={18} className="shrink-0 text-subtle transition-transform group-hover:translate-x-1 group-hover:text-ink" />
             </span>
-            <span className="text-[13px] leading-5 text-subtle">{desc}</span>
+            <span className="mt-5 flex items-baseline gap-2">
+              <span className="text-[2.75rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
+              <span className="flex items-center gap-1.5 text-[13px] text-subtle">
+                <span className={`size-1.5 rounded-full ${mark}`} aria-hidden />
+                {unit}
+              </span>
+            </span>
+            <span className="mt-2 text-[13px] leading-5 text-subtle">{desc}</span>
           </button>
         ))}
       </nav>
-
-      {/* 요약 수치: 큰 이탤릭 숫자 */}
-      <div className="grid grid-cols-2 border-b border-line xl:grid-cols-4">
-        {stats.map((s, i) => (
-          <div
-            key={s.label}
-            className={`py-8 pr-6 ${i % 2 ? 'border-l border-line pl-6' : ''} ${i === 2 ? 'xl:border-l xl:border-line xl:pl-6' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''}`}
-          >
-            <p className="flex items-center gap-2 text-[13px] text-subtle">
-              <span className={`size-1.5 rounded-full ${s.mark}`} aria-hidden />
-              {s.label}
-            </p>
-            <p className="mt-2 flex items-baseline gap-2">
-              <span className="text-[3.25rem] font-extrabold leading-none tracking-[-0.03em] tabular-nums">{s.value}</span>
-              <span className="text-sm text-subtle">{s.unit}</span>
-            </p>
-          </div>
-        ))}
-      </div>
 
       <div className="mt-12 grid gap-8 xl:grid-cols-[1.5fr_1fr]">
         <div className="flex min-w-0 flex-col gap-8">

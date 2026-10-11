@@ -30,9 +30,9 @@
   --color-bad: #96382f;
   --color-bad-soft: #f3e3df;
   --color-bad-line: #96382f;
-  --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
-  --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
