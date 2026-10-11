@@ -239,7 +239,7 @@ export function seedData(): AppData {
       status: '제안',
       isManual: false,
       score: 82,
-      reasons: ['같은 학년 담당', '그날 수업 1개', '연속 1교시', '누적 보강 1회'],
+      reasons: ['같은 학년 담당', '총 수업 1개', '연속 1교시', '누적 보강 1회'],
       backups: ['t5', 't8'],
     },
   ]

@@ -214,9 +214,9 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         </select>
                         {(a.backups[0] || a.backups[1]) && (
                           <span className="mt-1.5 block text-xs leading-5 text-subtle">
-                            {a.backups[0] && <>예비1 {nameOf(a.backups[0])}</>}
+                            {a.backups[0] && <><b className="font-bold text-plum">예비1</b> {nameOf(a.backups[0])}</>}
                             {a.backups[0] && a.backups[1] && ' · '}
-                            {a.backups[1] && <>예비2 {nameOf(a.backups[1])}</>}
+                            {a.backups[1] && <><b className="font-bold text-plum">예비2</b> {nameOf(a.backups[1])}</>}
                           </span>
                         )}
                       </td>

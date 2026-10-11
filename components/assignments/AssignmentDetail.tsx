@@ -62,9 +62,9 @@ function DayStrip({
       </div>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <Badge tone={heavy ? 'red' : 'slate'}>
-          그날 {day.total}시간{day.covers > 0 ? ` (보강 ${day.covers + 1})` : ''}
+          총 수업 {day.total}시간{day.covers > 0 ? ` (보강 ${day.covers + 1})` : ''}
         </Badge>
-        <Badge tone={longRun ? 'red' : day.maxRun >= 3 ? 'yellow' : 'slate'}>연속 {day.maxRun}교시</Badge>
+        <Badge tone={longRun ? 'red' : 'sky'}>연속 {day.maxRun}교시</Badge>
         <Badge tone={many ? 'yellow' : 'slate'}>
           누적 보강 {day.totalAssignments}회 · 평균 {avg.toFixed(1)}
         </Badge>
@@ -99,7 +99,7 @@ function Row({
       className={
         rank
           ? 'border border-dashed border-ink/25 p-4 transition-colors hover:border-solid hover:border-ink/40 hover:bg-surface'
-          : `border-l-4 bg-surface p-4 shadow-[0_1px_2px_rgba(0,0,0,.06)] ${role === '보강' ? 'border-ink' : 'border-ink/30'}`
+          : `border-l-4 bg-surface p-4 shadow-[0_1px_2px_rgba(0,0,0,.06)] ${role === '보강' ? 'border-ink' : 'border-plum'}`
       }
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -112,7 +112,11 @@ function Row({
           (role === '보강' ? (
             <span className="bg-ink px-2 py-0.5 text-[12px] font-bold text-paper">보강</span>
           ) : (
-            <Badge tone="slate">{role}</Badge>
+            <span
+              className={`px-2 py-0.5 text-[12px] font-bold ${role === '예비1' ? 'bg-plum text-white' : 'border border-plum bg-plum-soft text-plum'}`}
+            >
+              {role}
+            </span>
           ))}
         <span className="text-[15px] font-bold">{t?.name ?? '알 수 없음'}</span>
         <span className="text-[13px] text-subtle">
@@ -173,9 +177,9 @@ export function AssignmentDetail({
             return (
               <p
                 key={i}
-                className="rounded-none border border-dashed border-line px-4 py-3 text-sm text-subtle"
+                className="rounded-none border border-dashed border-plum/40 px-4 py-3 text-sm text-subtle"
               >
-                예비{i + 1} 없음 · 오른쪽 후보에서 지정할 수 있습니다.
+                <b className="text-plum">예비{i + 1}</b> 없음 · 오른쪽 후보에서 지정할 수 있습니다.
               </p>
             )
           const p = problemsOf(id)
@@ -240,13 +244,13 @@ export function AssignmentDetail({
                   )}
                   <button
                     onClick={() => actions.setBackup(0, r.t.id)}
-                    className="m3-btn m3-btn-sm m3-outlined"
+                    className="m3-btn m3-btn-sm border border-plum text-plum hover:bg-plum hover:text-white"
                   >
                     예비1
                   </button>
                   <button
                     onClick={() => actions.setBackup(1, r.t.id)}
-                    className="m3-btn m3-btn-sm m3-outlined"
+                    className="m3-btn m3-btn-sm border border-plum text-plum hover:bg-plum hover:text-white"
                   >
                     예비2
                   </button>

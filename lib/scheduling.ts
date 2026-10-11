@@ -47,7 +47,7 @@ export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.
       if (absent) reasons.push('해당 일자 결강')
       if (samePeriod) reasons.push('해당 교시 수업 있음')
       if (sameAssigned) reasons.push('해당 교시 다른 보강 있음')
-      if (dayCount >= data.settings.maxDaily) reasons.push(`그날 수업 ${dayCount}개`)
+      if (dayCount >= data.settings.maxDaily) reasons.push(`총 수업 ${dayCount}개`)
       if (maxRun >= data.settings.maxConsecutive) reasons.push(`연속 ${maxRun}교시 초과`)
       reasonsById.set(t.id, reasons)
       if (reasons.length) return { t, score: -999, reasons }
@@ -65,7 +65,7 @@ export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.
         score,
         reasons: [
           sameGrade ? '같은 학년 담당' : '추가 포함 후보',
-          `그날 수업 ${dayCount - 1}개`,
+          `총 수업 ${dayCount - 1}개`,
           `연속 ${maxRun}교시`,
           `누적 보강 ${t.totalAssignments}회`,
         ],

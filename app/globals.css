@@ -23,6 +23,11 @@
   --color-iris-container: #e9e5ef;
   --color-on-iris-container: #1b1a18;
   --color-gold: #d8c08c;
+  /* 예비 교사 표시(자주), 연속 수업 표시(청회색) */
+  --color-plum: #6a3f7a;
+  --color-plum-soft: #efe5f2;
+  --color-sky: #2d5f7e;
+  --color-sky-soft: #e0ebf2;
   --color-ok: #3e6a4a;
   --color-ok-soft: #e4ece3;
   --color-warn: #86601c;

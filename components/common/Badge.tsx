@@ -6,6 +6,8 @@ const toneClass: Record<string, string> = {
   red: 'bg-bad-soft text-bad',
   blue: 'border border-ink/20 text-ink',
   slate: 'bg-wash text-ink-2',
+  sky: 'bg-sky-soft text-sky',
+  plum: 'bg-plum-soft text-plum',
 }
 
 export function Badge({ children, tone = 'slate' }: { children: ReactNode; tone?: string }) {
