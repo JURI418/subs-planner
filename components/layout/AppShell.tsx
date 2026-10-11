@@ -85,7 +85,7 @@ export function AppShell() {
 
   const Logo = () => (
     <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="첫 화면">
-      <span className="grid size-9 place-items-center bg-ink text-paper">
+      <span className="grid size-9 place-items-center bg-iris-container text-on-iris-container">
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
@@ -106,7 +106,7 @@ export function AppShell() {
             className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             <span className="flex items-center gap-3">
-              <span className={`h-[2px] bg-ink transition-all ${isActive(href) ? 'w-4' : 'w-0 group-hover:w-2'}`} />
+              <span className={`h-[2px] bg-iris transition-all ${isActive(href) ? 'w-4' : 'w-0 group-hover:w-2'}`} />
               {label}
             </span>
             <ChevronRight size={18} strokeWidth={1.5} className="text-ink-2" />
@@ -171,14 +171,14 @@ export function AppShell() {
 
       <div className="lg:pl-[300px]">
         {/* 검정 안내 띠: 한 번에 하나씩, 멈춤 가능 */}
-        <div className="relative flex h-10 items-center justify-center bg-ink px-12 text-paper">
+        <div className="relative flex h-10 items-center justify-center bg-iris-container px-12 text-on-iris-container">
           <p key={noticeIdx} className="truncate text-[13px] font-bold underline-offset-4" aria-live="polite">
             {notice}
           </p>
           <button
             onClick={() => setPaused((p) => !p)}
             aria-label={paused ? '안내 넘기기 다시 시작' : '안내 넘기기 멈춤'}
-            className="absolute right-4 grid size-7 place-items-center text-paper/80 hover:text-paper"
+            className="absolute right-4 grid size-7 place-items-center text-on-iris-container/70 hover:text-on-iris-container"
           >
             {paused ? <Play size={13} /> : <Pause size={13} />}
           </button>
@@ -202,7 +202,7 @@ export function AppShell() {
           onClick={() => go('/absence')}
           aria-label="결강 등록"
           title="결강 등록"
-          className="fixed bottom-6 right-6 z-10 grid size-14 place-items-center rounded-full bg-ink text-paper shadow-[0_6px_20px_rgb(0_0_0/.25)] transition-transform hover:scale-105"
+          className="fixed bottom-6 right-6 z-10 grid size-14 place-items-center rounded-full bg-lime text-ink shadow-[0_6px_20px_rgb(68_114_31/.3)] transition-transform hover:scale-105"
         >
           <Plus size={24} strokeWidth={1.75} />
         </button>
