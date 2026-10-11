@@ -12,7 +12,7 @@ import { absenceSummary, deleteAbsence } from '@/lib/dataOps'
 /** 나이스 복무 근무상황 종류 (교원 휴가에 관한 예규 기준) */
 const reasonGroups: [string, string[]][] = [
   ['휴가', ['연가', '병가', '공가', '특별휴가']],
-  ['근무', ['출장', '41조 연수']],
+  ['근무', ['국내출장', '국외출장', '41조 연수']],
   ['시간 단위', ['외출', '조퇴', '지각']],
   ['그 밖', ['결근', '기타']],
 ]
@@ -202,7 +202,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     id="absence-detail"
                     value={detail}
                     onChange={(e) => setDetail(e.target.value)}
-                    placeholder={kind === '출장' ? '예: 교육청 회의' : kind === '기타' ? '직접 입력' : '예: 진료'}
+                    placeholder={kind === '국내출장' ? '예: 교육청 회의' : kind === '국외출장' ? '예: 해외 연수' : kind === '기타' ? '직접 입력' : '예: 진료'}
                     className="m3-field mt-2 w-full"
                   />
                 )}
