@@ -1,8 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, ChevronRight, Copy, Menu, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
-import { seedData } from '@/lib/types'
+import { BarChart3, ChevronRight, Copy, Menu, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
+import { formatDotDate, seedData, todayISO } from '@/lib/types'
 import { useAppData } from '@/hooks/useAppData'
 import { DashboardPage } from '@/components/pages/DashboardPage'
 import { AbsencePage } from '@/components/pages/AbsencePage'
@@ -32,6 +32,13 @@ export function AppShell() {
   const router = useRouter()
   const { data, setData, ready } = useAppData()
   const [mobile, setMobile] = useState(false)
+  const [noticeIdx, setNoticeIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
+  useEffect(() => {
+    if (paused) return
+    const t = setInterval(() => setNoticeIdx((i) => i + 1), 4500)
+    return () => clearInterval(t)
+  }, [paused])
   if (!ready) return <div className="min-h-screen bg-paper" />
   const page = path.replace('/', '') || 'dashboard'
 
@@ -58,14 +65,27 @@ export function AppShell() {
     }
   })()
 
+  const today = todayISO()
   const go = (href: string) => {
     router.push(href)
     setMobile(false)
   }
   const isActive = (href: string) => path === href || (href === '/dashboard' && page === 'dashboard')
+  const pending = data.assignments.filter((a) => a.status === '제안').length
+  const todayEvent = data.events.find((e) => e.date === today && e.kind !== '방학')
+  const nextOff = data.events.find((e) => e.date > today && e.kind !== '행사' && e.kind !== '방학')
+  const notices = [
+    data.settings.holidays.includes(today)
+      ? `오늘은 휴업일입니다${todayEvent ? ` · ${todayEvent.title}` : ''}`
+      : `${formatDotDate(today)}${todayEvent ? ` · ${todayEvent.title}` : ''}`,
+    pending ? `확정을 기다리는 배정 ${pending}건이 있습니다` : '모든 배정이 확정되었습니다',
+    nextOff ? `다음 휴업일 ${formatDotDate(nextOff.date)} ${nextOff.title}` : '학사일정을 올리면 휴업일이 자동으로 반영됩니다',
+  ]
+  const notice = notices[noticeIdx % notices.length]
+
   const Logo = () => (
     <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="첫 화면">
-      <span className="grid size-9 place-items-center rounded-lg bg-iris text-white">
+      <span className="grid size-9 place-items-center bg-ink text-paper">
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
@@ -83,10 +103,10 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-iris-deep' : 'text-ink-2 hover:text-ink'}`}
+            className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             <span className="flex items-center gap-3">
-              <span className={`h-[2px] bg-iris transition-all ${isActive(href) ? 'w-4' : 'w-0 group-hover:w-2'}`} />
+              <span className={`h-[2px] bg-ink transition-all ${isActive(href) ? 'w-4' : 'w-0 group-hover:w-2'}`} />
               {label}
             </span>
             <ChevronRight size={18} strokeWidth={1.5} className="text-ink-2" />
@@ -150,6 +170,20 @@ export function AppShell() {
       )}
 
       <div className="lg:pl-[300px]">
+        {/* 검정 안내 띠: 한 번에 하나씩, 멈춤 가능 */}
+        <div className="relative flex h-10 items-center justify-center bg-ink px-12 text-paper">
+          <p key={noticeIdx} className="truncate text-[13px] font-bold underline-offset-4" aria-live="polite">
+            {notice}
+          </p>
+          <button
+            onClick={() => setPaused((p) => !p)}
+            aria-label={paused ? '안내 넘기기 다시 시작' : '안내 넘기기 멈춤'}
+            className="absolute right-4 grid size-7 place-items-center text-paper/80 hover:text-paper"
+          >
+            {paused ? <Play size={13} /> : <Pause size={13} />}
+          </button>
+        </div>
+
         {/* 휴대폰 상단 */}
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur lg:hidden">
           <button onClick={() => setMobile(true)} className="flex items-center gap-2 text-[14px] font-bold" aria-label="메뉴 열기">
@@ -168,7 +202,7 @@ export function AppShell() {
           onClick={() => go('/absence')}
           aria-label="결강 등록"
           title="결강 등록"
-          className="fixed bottom-6 right-6 z-10 grid size-14 place-items-center rounded-full bg-iris text-white shadow-[0_6px_20px_rgb(74_58_140/.35)] transition-transform hover:scale-105"
+          className="fixed bottom-6 right-6 z-10 grid size-14 place-items-center rounded-full bg-ink text-paper shadow-[0_6px_20px_rgb(0_0_0/.25)] transition-transform hover:scale-105"
         >
           <Plus size={24} strokeWidth={1.75} />
         </button>

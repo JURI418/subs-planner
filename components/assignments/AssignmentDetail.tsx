@@ -89,7 +89,7 @@ function Row({
 }) {
   const t = data.teachers.find((x) => x.id === teacherId)
   return (
-    <div className="rounded-xl bg-surface p-4">
+    <div className="rounded-none bg-surface p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {role && <Badge tone={role === '보강' ? 'blue' : 'slate'}>{role}</Badge>}
         <span className="text-[15px] font-bold">{t?.name ?? '알 수 없음'}</span>
@@ -129,7 +129,7 @@ export function AssignmentDetail({
   const problemsOf = (id: string) => validateAssignment(slot, id, data)
 
   return (
-    <div className="grid gap-5 rounded-xl bg-wash p-4 md:p-5 xl:grid-cols-2">
+    <div className="grid gap-5 rounded-none bg-wash p-4 md:p-5 xl:grid-cols-2">
       <section className="flex min-w-0 flex-col gap-3">
         <div className="flex items-baseline justify-between">
           <h3 className="font-bold">배정된 교사</h3>
@@ -138,7 +138,7 @@ export function AssignmentDetail({
         {a.substituteTeacherId ? (
           <Row role="보강" teacherId={a.substituteTeacherId} slot={slot} data={data} avg={avg} />
         ) : (
-          <p className="rounded-xl bg-surface p-4 text-sm text-subtle">
+          <p className="rounded-none bg-surface p-4 text-sm text-subtle">
             보강 교사가 없습니다. 오른쪽 후보에서 고르세요.
           </p>
         )}
@@ -148,7 +148,7 @@ export function AssignmentDetail({
             return (
               <p
                 key={i}
-                className="rounded-xl border border-dashed border-line px-4 py-3 text-sm text-subtle"
+                className="rounded-none border border-dashed border-line px-4 py-3 text-sm text-subtle"
               >
                 예비{i + 1} 없음 · 오른쪽 후보에서 지정할 수 있습니다.
               </p>
@@ -190,7 +190,7 @@ export function AssignmentDetail({
           </span>
         </h3>
         {others.length === 0 ? (
-          <p className="rounded-xl bg-surface p-4 text-sm text-subtle">
+          <p className="rounded-none bg-surface p-4 text-sm text-subtle">
             조건을 만족하는 다른 후보가 없습니다.
           </p>
         ) : (

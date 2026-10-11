@@ -103,7 +103,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               </label>
             ))}
           </div>
-          <div className="mt-5 rounded-xl bg-iris-soft p-4 text-sm leading-6 text-iris-deep">
+          <div className="mt-5 rounded-none bg-iris-soft p-4 text-sm leading-6 text-iris-deep">
             하드 제약: 같은 시간 수업 없음 · 일 최대 수업 미만 · 연속 수업 제한
             <br />
             소프트 우선: 같은 학년 · 당일 부담 · 누적 보강 횟수
