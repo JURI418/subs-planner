@@ -1,10 +1,10 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { BookOpen, CalendarPlus, CalendarRange, ClipboardCheck, Plus } from 'lucide-react'
+import { ChevronRight, Plus } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar'
-import { formatDotDate, todayISO, type AppData } from '@/lib/types'
+import { exportText, formatDotDate, todayISO, type AppData } from '@/lib/types'
 
 const KIND_TONE: Record<string, string> = { 공휴일: 'red', 휴업일: 'yellow', 방학: 'blue', 행사: 'slate' }
 
@@ -21,13 +21,45 @@ export function DashboardPage({ data }: { data: AppData }) {
     .sort((a, b) => a.period - b.period)
     .map((s) => ({ s, a: data.assignments.find((x) => x.slotId === s.id) }))
 
-  const nextOff = data.events.find((e) => e.date > today && (e.kind === '공휴일' || e.kind === '휴업일'))
-  // 오른쪽 2×2 카드: 그림 자리(파스텔 면 + 아이콘), 제목, 설명, 초록 숫자
-  const cards = [
-    { href: '/absence', title: '결강 등록', desc: '교사·날짜로 보강 수업 찾기', stat: `오늘 결강 ${todayAbsences}건`, icon: CalendarPlus, bg: 'bg-wash-2' },
-    { href: '/assignments', title: '배정 확인', desc: '추천 근거 보고 확정하기', stat: `확정 대기 ${pending}건`, icon: ClipboardCheck, bg: 'bg-iris-container' },
-    { href: '/timetable', title: '시간표', desc: '교사별 시간표 PDF 올리기', stat: `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명`, icon: BookOpen, bg: 'bg-peach' },
-    { href: '/calendar', title: '학사일정', desc: '휴업일·방학 자동 반영', stat: `휴업일 ${data.settings.holidays.length}일`, icon: CalendarRange, bg: 'bg-wash' },
+  // 이번 주(월~일)와 이번 달 범위
+  const [ty, tm, td] = today.split('-').map(Number)
+  const base = new Date(ty, tm - 1, td)
+  const iso = (x: Date) => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`
+  // 주말(토·일)에는 곧 시작할 다음 주(월~금)를 보여준다
+  const weekend = base.getDay() === 0 || base.getDay() === 6
+  const monday = td - ((base.getDay() + 6) % 7) + (weekend ? 7 : 0)
+  const weekStart = iso(new Date(ty, tm - 1, monday))
+  const weekEnd = iso(new Date(ty, tm - 1, monday + 4))
+  const weekSlots = data.slots.filter((s) => s.date >= weekStart && s.date <= weekEnd).length
+  const monthDone = data.assignments.filter((a) => {
+    const s = data.slots.find((x) => x.id === a.slotId)
+    return a.status === '확정' && s?.date.startsWith(today.slice(0, 7))
+  }).length
+
+  const stats = [
+    { label: '오늘 결강', value: todayAbsences, unit: '건', mark: 'bg-ink' },
+    { label: '미확정 배정', value: pending, unit: '건', mark: pending ? 'bg-warn' : 'bg-faint' },
+    { label: weekend ? '다음 주 결강 수업' : '이번 주 결강 수업', value: weekSlots, unit: '개', mark: 'bg-ink-2' },
+    { label: '이번 달 확정 보강', value: monthDone, unit: '건', mark: 'bg-ok' },
+  ]
+
+  // 오늘 이후 보강 교사가 정해진 배정을 나이스·메신저 붙여넣기 형식으로 복사
+  const copyUpcoming = () => {
+    const ids = new Set(data.slots.filter((s) => s.date >= today).map((s) => s.id))
+    const text = exportText({ ...data, assignments: data.assignments.filter((a) => ids.has(a.slotId)) })
+    if (!text) return alert('복사할 보강 내역이 없습니다.')
+    navigator.clipboard?.writeText(text)
+    alert(`오늘 이후 보강 ${text.split('\n').length}건을 나이스·메신저 붙여넣기 형식으로 복사했습니다.`)
+  }
+  const upcomingCount = data.assignments.filter((a) => {
+    const s = data.slots.find((x) => x.id === a.slotId)
+    return a.substituteTeacherId && s && s.date >= today
+  }).length
+  const actions = [
+    { key: 'absence', en: 'Absence', title: '결강 등록', desc: '교사와 날짜를 고르면 보강 수업을 찾아요', run: () => router.push('/absence') },
+    { key: 'assignments', en: 'Assignments', title: '배정 확인', desc: `확정을 기다리는 배정 ${pending}건`, run: () => router.push('/assignments') },
+    { key: 'copy', en: 'Copy', title: '보강 내역 복사', desc: `오늘 이후 보강 ${upcomingCount}건 · 나이스·메신저용`, run: copyUpcoming },
+    { key: 'stats', en: 'Statistics', title: '보강 통계', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -37,70 +69,90 @@ export function DashboardPage({ data }: { data: AppData }) {
 
   return (
     <>
-      {/* 첫 화면: 왼쪽 회색 패널(세이지 블록 제목) + 오른쪽 2×2 카드 */}
-      <div className="flex items-center justify-between pb-4 text-[11px] font-bold uppercase tracking-[.25em] text-subtle">
-        <span>Subs Planner</span>
-        <span>{data.settings.semester}</span>
-      </div>
-      <section className="grid overflow-hidden border border-line bg-surface lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
-        <div className="flex min-w-0 flex-col bg-wash pb-8">
-          <div className="mt-10 bg-iris-container px-8 py-8 md:mt-14">
-            <h1 className="text-[2.6rem] font-extrabold leading-[1.1] tracking-[-0.03em] text-ink">
-              결보강
-              <br />
-              확인
-            </h1>
-            <p className="mt-3 text-[16px] font-bold text-on-iris-container">{formatDotDate(today)}</p>
-          </div>
-          <div className="px-8 pt-8">
-            <p className="text-[17px] font-extrabold leading-snug">
-              {todayOff
-                ? '오늘은 휴업일입니다'
-                : todaySlots.length
-                  ? `오늘 결강 수업 ${todaySlots.length}개, 확정 대기 ${pending}건`
-                  : pending
-                    ? `확정을 기다리는 배정 ${pending}건`
-                    : '오늘 처리할 결보강이 없습니다'}
-            </p>
-            <ul className="mt-3 flex flex-col gap-1 text-[13px] leading-6 text-ink-2">
-              {todayEvents.length ? (
-                todayEvents.slice(0, 3).map((e, i) => <li key={i}>· {e.title}</li>)
-              ) : (
-                <li>오늘 등록된 학사일정이 없습니다.</li>
-              )}
-              {nextOff && (
-                <li>
-                  · 다음 휴업일 {formatDotDate(nextOff.date).slice(5)} {nextOff.title}
-                </li>
-              )}
-            </ul>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <button onClick={() => router.push('/absence')} className="m3-btn h-10 bg-lime px-6 text-ink hover:bg-iris hover:text-white">
-                <Plus size={17} /> 결강 등록
-              </button>
-              <button onClick={() => router.push('/assignments')} className="m3-btn m3-text h-10">
-                배정 확인
-              </button>
-            </div>
-          </div>
-          <p className="mt-auto px-8 pt-10 text-[11px] tracking-[.15em] text-faint">subs-planner.vercel.app</p>
+      {/* 첫 화면 상단: 화면을 가로지르는 어두운 큰 배너 */}
+      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink px-6 pb-12 pt-8 text-paper md:-mx-10 md:px-12 md:pb-16 md:pt-10">
+        {/* 위아래 가는 줄 사이의 작은 글씨 띠 */}
+        <div className="relative mb-10 grid grid-cols-3 items-center border-y border-paper/30 py-2.5 text-[11px] tracking-[.18em] text-paper/70 md:mb-14">
+          <span className="font-extrabold text-paper">//Subs Planner</span>
+          <span className="text-center">{data.settings.semester}</span>
+          <span className="text-right">{formatDotDate(today)}</span>
         </div>
-
-        <div className="grid min-w-0 grid-cols-2 gap-x-5 gap-y-8 p-6 md:gap-x-8 md:p-10">
-          {cards.map(({ href, title, desc, stat, icon: Icon, bg }) => (
-            <button key={href} onClick={() => router.push(href)} className="group min-w-0 text-center">
-              <span className={`grid aspect-[4/3] place-items-center transition-transform duration-300 group-hover:scale-[1.02] ${bg}`}>
-                <Icon size={44} strokeWidth={1.3} className="text-ink/70" />
-              </span>
-              <span className="mt-3 block text-[15px] font-extrabold">{title}</span>
-              <span className="mt-1 block truncate text-[12px] text-subtle">{desc}</span>
-              <span className="mt-1.5 block text-[14px] font-extrabold text-iris">{stat}</span>
+        <p
+          aria-hidden
+          className="pointer-events-none absolute -bottom-6 right-4 select-none text-[9rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-10 md:text-[15rem]"
+        >
+          {today.slice(5).replace('-', '.')}
+        </p>
+        <div className="relative max-w-2xl">
+          <p className="text-[12px] font-bold uppercase tracking-[.25em] text-paper/60">Today · {englishDate(today)}</p>
+          <h1 className="mt-4 text-[2.75rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[3.5rem]">결보강 확인</h1>
+          <p className="mt-2 text-[18px] text-paper/80">{formatDotDate(today)}</p>
+          <ul className="mt-6 flex flex-col gap-1.5 text-[15px]">
+            {todayOff ? (
+              <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+            ) : todayEvents.length ? (
+              todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
+            ) : (
+              <li className="text-paper/60">오늘 등록된 학사일정이 없습니다</li>
+            )}
+          </ul>
+          <div className="mt-9 flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push('/absence')}
+              className="m3-btn h-12 border border-paper bg-paper px-7 text-ink hover:bg-transparent hover:text-paper"
+            >
+              <Plus size={18} /> 결강 등록
             </button>
-          ))}
+            <button
+              onClick={() => router.push('/assignments')}
+              className="m3-btn h-12 border border-paper/60 px-7 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+            >
+              배정 확인 {pending > 0 && `· ${pending}건`}
+            </button>
+          </div>
         </div>
       </section>
 
-      <div className="mt-10 grid gap-8 xl:grid-cols-[1.5fr_1fr]">
+      {/* 바로가기: 번호가 붙은 목차 형식 */}
+      <nav className="grid grid-cols-2 border-b border-line xl:grid-cols-4" aria-label="바로가기">
+        {actions.map(({ key, en, title, desc, run }, i) => (
+          <button
+            key={key}
+            onClick={run}
+            className={`group flex flex-col items-start gap-1 py-7 pr-6 text-left ${i % 2 ? 'pl-6' : ''} ${i === 2 ? 'xl:pl-6' : ''} ${i > 0 ? 'xl:border-l xl:border-line' : ''} ${i % 2 ? 'border-l border-line' : ''}`}
+          >
+            <span className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">
+              {String(i + 1).padStart(2, '0')} · {en}
+            </span>
+            <span className="mt-1 flex items-center gap-1 text-[19px] font-extrabold">
+              {title}
+              <ChevronRight size={17} className="transition-transform group-hover:translate-x-1" />
+            </span>
+            <span className="text-[13px] leading-5 text-subtle">{desc}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* 요약 수치: 큰 이탤릭 숫자 */}
+      <div className="grid grid-cols-2 border-b border-line xl:grid-cols-4">
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className={`py-8 pr-6 ${i % 2 ? 'border-l border-line pl-6' : ''} ${i === 2 ? 'xl:border-l xl:border-line xl:pl-6' : ''} ${i >= 2 ? 'border-t border-line xl:border-t-0' : ''}`}
+          >
+            <p className="flex items-center gap-2 text-[13px] text-subtle">
+              <span className={`size-1.5 rounded-full ${s.mark}`} aria-hidden />
+              {s.label}
+            </p>
+            <p className="mt-2 flex items-baseline gap-2">
+              <span className="text-[3.25rem] font-extrabold leading-none tracking-[-0.03em] tabular-nums">{s.value}</span>
+              <span className="text-sm text-subtle">{s.unit}</span>
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-12 grid gap-8 xl:grid-cols-[1.5fr_1fr]">
         <div className="flex min-w-0 flex-col gap-8">
           <Card>
             <div className="flex items-start justify-between">
@@ -195,3 +247,8 @@ export function DashboardPage({ data }: { data: AppData }) {
   )
 }
 
+/** 'Thursday, October 8' — 큰 날짜 아래 영문 캡션 */
+function englishDate(iso: string) {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+}

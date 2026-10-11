@@ -4,34 +4,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 결보강 매니저 디자인 토큰 — 세이지 그린 포트폴리오
-   흰 면과 연회색 패널, 세이지 그린 블록, 라임 그린 버튼, 짙은 먹색 글자 */
+/* 결보강 매니저 디자인 토큰 — 부티크 편집 디자인
+   따뜻한 미색 바탕, 검정 잉크, 각진 면과 가는 선, 선택은 타원 테두리, 영문은 이탤릭 세리프 */
 @theme {
-  --color-paper: #f3f4f2;
-  --color-surface: #ffffff;
-  --color-wash: #eeefec;
-  --color-wash-2: #e4e7e2;
-  --color-line: #e3e6e1;
-  --color-line-strong: #1c1d1b;
-  --color-ink: #1c1d1b;
-  --color-ink-2: #3c403b;
-  --color-subtle: #6b7169;
-  --color-faint: #adb3ab;
-  --color-iris: #5a8f2e;
-  --color-iris-deep: #44721f;
-  --color-iris-soft: #dfece4;
-  --color-iris-container: #bfd8ca;
-  --color-on-iris-container: #1b2b21;
-  --color-lime: #8cc152;
-  --color-peach: #f2cdb2;
-  --color-gold: #8cc152;
-  --color-ok: #3f7a2a;
-  --color-ok-soft: #e1efd9;
-  --color-warn: #8a5f16;
-  --color-warn-soft: #f5ead3;
-  --color-bad: #a2402f;
-  --color-bad-soft: #f6e3de;
-  --color-bad-line: #a2402f;
+  --color-paper: #f6f5f1;
+  --color-surface: #fcfbf8;
+  --color-wash: #efede7;
+  --color-wash-2: #e7e4dc;
+  --color-line: #e2dfd7;
+  --color-line-strong: #1b1a18;
+  --color-ink: #1b1a18;
+  --color-ink-2: #3c3a36;
+  --color-subtle: #6f6c65;
+  --color-faint: #b2aea5;
+  --color-iris: #1b1a18;
+  --color-iris-deep: #1b1a18;
+  --color-iris-soft: #ebe8e1;
+  --color-iris-container: #e9e5ef;
+  --color-on-iris-container: #1b1a18;
+  --color-gold: #d8c08c;
+  --color-ok: #3e6a4a;
+  --color-ok-soft: #e4ece3;
+  --color-warn: #86601c;
+  --color-warn-soft: #f2e8d3;
+  --color-bad: #96382f;
+  --color-bad-soft: #f3e3df;
+  --color-bad-line: #96382f;
   --font-sans: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-display: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
   --font-mono: '나눔스퀘어라운드', 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
@@ -46,34 +44,34 @@
     @apply h-8 px-4 text-[13px];
   }
   .m3-filled {
-    @apply border border-iris bg-iris text-white hover:border-iris-deep hover:bg-iris-deep;
+    @apply border border-ink bg-ink text-paper hover:bg-transparent hover:text-ink;
   }
   .m3-tonal {
-    @apply border border-transparent bg-iris-soft text-on-iris-container hover:border-iris/40;
+    @apply border border-ink/25 bg-transparent text-ink hover:border-ink;
   }
   .m3-outlined {
-    @apply border border-ink/70 text-ink hover:border-iris hover:text-iris-deep;
+    @apply border border-ink text-ink hover:bg-ink hover:text-paper;
   }
   .m3-text {
-    @apply px-2 text-iris-deep underline decoration-iris/30 underline-offset-4 hover:decoration-iris;
+    @apply px-2 text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink;
   }
   .m3-danger {
     @apply border border-bad/60 text-bad hover:bg-bad hover:text-paper;
   }
   .m3-fab {
-    @apply inline-flex h-12 items-center gap-2 rounded-full bg-lime px-6 text-sm font-bold text-ink transition-colors hover:bg-iris hover:text-white;
+    @apply inline-flex h-12 items-center gap-2 rounded-full bg-gold px-6 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-paper;
   }
   .m3-field {
-    @apply rounded-none border border-line bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-iris/50 focus:border-iris;
+    @apply rounded-none border border-line bg-surface px-3.5 py-3 text-[15px] font-normal text-ink outline-none transition-colors hover:border-ink/50 focus:border-ink;
   }
   .m3-field-sm {
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-iris;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-ink;
   }
   .m3-chip-on {
-    @apply border-iris-container bg-iris-container text-on-iris-container hover:border-iris-container;
+    @apply border-ink bg-ink text-paper hover:border-ink;
   }
 }
 
