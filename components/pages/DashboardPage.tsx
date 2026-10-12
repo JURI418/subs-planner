@@ -82,15 +82,47 @@ export function DashboardPage({ data }: { data: AppData }) {
               결보강 확인
               <span className="text-[16px] font-bold tracking-normal text-paper/80">{formatDotDate(today)}</span>
             </h1>
-            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
-              {todayOff ? (
-                <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
-              ) : todayEvents.length ? (
-                todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
-              ) : (
-                <li className="text-paper/60">오늘 등록된 학사일정이 없습니다</li>
-              )}
-            </ul>
+            {todaySlots.length > 0 && !todayOff ? (
+              <>
+                {todayEvents.length > 0 && (
+                  <p className="mt-1.5 truncate text-[13px] text-paper/70">
+                    {todayEvents.slice(0, 3).map((e) => `· ${e.title}`).join('  ')}
+                  </p>
+                )}
+                {/* 오늘의 보강: 교시 · 반 · 결강 → 보강 */}
+                <ul className="mt-3 flex flex-wrap gap-2" aria-label="오늘의 보강">
+                  {todaySlots.slice(0, 4).map(({ s, a }) => {
+                    const absent = data.teachers.find((t) => t.id === s.absentTeacherId)?.name
+                    const sub = data.teachers.find((t) => t.id === a?.substituteTeacherId)?.name
+                    return (
+                      <li key={s.id} className="flex items-center gap-2 rounded-md border border-paper/25 px-3 py-1.5 text-[13px]">
+                        <b className="text-point">{s.period}교시</b>
+                        <span>{s.room}{s.group ?? ''} {s.subject}</span>
+                        <span className="text-paper/60">·</span>
+                        <span className="text-paper/80">{absent} →</span>
+                        <span className={sub ? 'font-bold' : 'font-bold text-point'}>
+                          {sub ?? '미정'}
+                          {a?.status === '제안' && <span className="ml-1 text-[11px] font-normal text-paper/50">제안</span>}
+                        </span>
+                      </li>
+                    )
+                  })}
+                  {todaySlots.length > 4 && (
+                    <li className="flex items-center px-1 text-[13px] text-paper/70">외 {todaySlots.length - 4}건</li>
+                  )}
+                </ul>
+              </>
+            ) : (
+              <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+                {todayOff ? (
+                  <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+                ) : todayEvents.length ? (
+                  todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
+                ) : (
+                  <li className="text-paper/60">오늘 등록된 학사일정 · 보강이 없습니다</li>
+                )}
+              </ul>
+            )}
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             <button
