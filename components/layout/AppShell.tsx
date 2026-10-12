@@ -90,7 +90,7 @@ export function AppShell() {
 
   const Logo = () => (
     <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="첫 화면">
-      <span className="grid size-9 place-items-center bg-ink text-paper">
+      <span className="grid size-9 place-items-center bg-point text-on-point">
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
