@@ -54,7 +54,7 @@ export function MiniCalendar({ data }: { data: AppData }) {
               <span
                 className={`grid size-8 place-items-center rounded-full text-sm tabular-nums ${
                   d === today
-                    ? 'bg-iris font-semibold text-white'
+                    ? 'bg-point font-bold text-on-point'
                     : holidays.has(d) || i % 7 === 0
                       ? 'text-bad'
                       : i % 7 === 6

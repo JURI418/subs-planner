@@ -23,6 +23,9 @@
   --color-iris-container: #e9e5ef;
   --color-on-iris-container: #1b1a18;
   --color-gold: #d8c08c;
+  /* 포인트 색 */
+  --color-point: #c6f432;
+  --color-on-point: #1b1a18;
   /* 예비 교사 표시(자주), 연속 수업 표시(청회색) */
   --color-plum: #6a3f7a;
   --color-plum-soft: #efe5f2;

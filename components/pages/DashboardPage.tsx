@@ -68,13 +68,13 @@ export function DashboardPage({ data }: { data: AppData }) {
       <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink shadow-[0_0_0_100vmax_var(--color-ink)] [clip-path:inset(0_-100vmax)] px-6 pb-7 pt-6 text-paper md:-mx-10 md:px-12 md:pb-8 md:pt-7">
         <p
           aria-hidden
-          className="pointer-events-none absolute -bottom-3 right-4 select-none text-[4.5rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-5 md:text-[7.5rem]"
+          className="pointer-events-none absolute -bottom-3 right-4 select-none text-[4.5rem] font-extrabold leading-none tracking-[-0.05em] text-point/[.16] md:-bottom-5 md:text-[7.5rem]"
         >
           {today.slice(5).replace('-', '.')}
         </p>
         <div className="relative">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-paper/60">
+            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point">
               Today · {englishDate(today)}
             </p>
             <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
@@ -94,7 +94,7 @@ export function DashboardPage({ data }: { data: AppData }) {
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               onClick={() => router.push('/absence')}
-              className="m3-btn h-11 border border-paper bg-paper px-6 text-ink hover:bg-transparent hover:text-paper"
+              className="m3-btn h-11 border border-point bg-point px-6 text-on-point hover:bg-transparent hover:text-point"
             >
               <Plus size={18} /> 결강 등록
             </button>
