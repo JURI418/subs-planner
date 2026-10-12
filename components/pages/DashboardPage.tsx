@@ -64,7 +64,8 @@ export function DashboardPage({ data }: { data: AppData }) {
   return (
     <>
       {/* 첫 화면 상단: 화면을 가로지르는 어두운 큰 배너 */}
-      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink px-6 pb-7 pt-6 text-paper md:-mx-10 md:px-12 md:pb-8 md:pt-7">
+      {/* 넓은 화면에서도 검정 배경이 양옆 끝까지 이어지도록 그림자로 확장 */}
+      <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink shadow-[0_0_0_100vmax_var(--color-ink)] [clip-path:inset(0_-100vmax)] px-6 pb-7 pt-6 text-paper md:-mx-10 md:px-12 md:pb-8 md:pt-7">
         <p
           aria-hidden
           className="pointer-events-none absolute -bottom-3 right-4 select-none text-[4.5rem] font-extrabold leading-none tracking-[-0.05em] text-paper/[.07] md:-bottom-5 md:text-[7.5rem]"
