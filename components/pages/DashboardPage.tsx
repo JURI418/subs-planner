@@ -31,6 +31,12 @@ export function DashboardPage({ data }: { data: AppData }) {
   const weekStart = iso(new Date(ty, tm - 1, monday))
   const weekEnd = iso(new Date(ty, tm - 1, monday + 4))
   const weekSlots = data.slots.filter((s) => s.date >= weekStart && s.date <= weekEnd).length
+  // 요일별 결강 수업 수 (배너 막대그래프)
+  const weekBars = ['월', '화', '수', '목', '금'].map((label, i) => {
+    const date = iso(new Date(ty, tm - 1, monday + i))
+    return { label, date, count: data.slots.filter((s) => s.date === date).length }
+  })
+  const barMax = Math.max(4, ...weekBars.map((b) => b.count))
   const monthDone = data.assignments.filter((a) => {
     const s = data.slots.find((x) => x.id === a.slotId)
     return a.status === '확정' && s?.date.startsWith(today.slice(0, 7))
@@ -50,10 +56,10 @@ export function DashboardPage({ data }: { data: AppData }) {
     return a.substituteTeacherId && s && s.date >= today
   }).length
   const actions = [
-    { key: 'absence', en: 'Absence', title: '결강 등록', value: todayAbsences, unit: '건 오늘', mark: 'bg-ink', desc: `${weekend ? '다음 주' : '이번 주'} 결강 수업 ${weekSlots}개`, run: () => router.push('/absence') },
-    { key: 'assignments', en: 'Assignments', title: '배정 확인', value: pending, unit: '건 미확정', mark: pending ? 'bg-warn' : 'bg-faint', desc: pending ? '확정을 기다리는 배정이 있어요' : '모든 배정을 확정했어요', run: () => router.push('/assignments') },
-    { key: 'stats', en: 'Statistics', title: '보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
-    { key: 'copy', en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강 · 나이스·메신저용', run: copyUpcoming },
+    { key: 'absence', hot: false, en: 'Absence', title: '결강 등록', value: todayAbsences, unit: '건 오늘', mark: 'bg-ink', desc: `${weekend ? '다음 주' : '이번 주'} 결강 수업 ${weekSlots}개`, run: () => router.push('/absence') },
+    { key: 'assignments', hot: pending > 0, en: 'Assignments', title: '배정 확인', value: pending, unit: '건 미확정', mark: pending ? 'bg-warn' : 'bg-faint', desc: pending ? '확정을 기다리는 배정이 있어요' : '모든 배정을 확정했어요', run: () => router.push('/assignments') },
+    { key: 'stats', hot: false, en: 'Statistics', title: '보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
+    { key: 'copy', hot: false, en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강 · 나이스·메신저용', run: copyUpcoming },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -66,13 +72,8 @@ export function DashboardPage({ data }: { data: AppData }) {
       {/* 첫 화면 상단: 화면을 가로지르는 어두운 큰 배너 */}
       {/* 넓은 화면에서도 검정 배경이 양옆 끝까지 이어지도록 그림자로 확장 */}
       <section className="relative -mx-5 -mt-10 overflow-hidden bg-ink shadow-[0_0_0_100vmax_var(--color-ink)] [clip-path:inset(0_-100vmax)] px-6 pb-7 pt-6 text-paper md:-mx-10 md:px-12 md:pb-8 md:pt-7">
-        <p
-          aria-hidden
-          className="pointer-events-none absolute -bottom-3 right-4 select-none text-[4.5rem] font-extrabold leading-none tracking-[-0.05em] text-point/[.16] md:-bottom-5 md:text-[7.5rem]"
-        >
-          {today.slice(5).replace('-', '.')}
-        </p>
-        <div className="relative">
+        <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+          <div className="min-w-0">
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point">
               Today · {englishDate(today)}
@@ -105,32 +106,63 @@ export function DashboardPage({ data }: { data: AppData }) {
               배정 확인 {pending > 0 && `· ${pending}건`}
             </button>
           </div>
+          </div>
+
+          {/* 이번 주 요일별 결강 수업 막대그래프: 오늘만 포인트 색 */}
+          <div className="shrink-0" aria-label="요일별 결강 수업 수">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[.22em] text-paper/55">
+              {weekend ? 'Next week' : 'This week'} · 결강 수업 {weekSlots}
+            </p>
+            <div className="flex h-28 items-end gap-3 md:gap-4">
+              {weekBars.map((b) => {
+                const isToday = b.date === today
+                const off = data.settings.holidays.includes(b.date)
+                return (
+                  <div key={b.date} className="flex h-full w-7 flex-col items-center justify-end gap-1.5 md:w-8" title={`${b.label} ${b.count}개`}>
+                    <span className={`text-[13px] font-bold tabular-nums ${isToday ? 'text-point' : 'text-paper/85'}`}>
+                      {off ? '휴' : b.count}
+                    </span>
+                    <span
+                      className={`w-full rounded-[3px] transition-[height] duration-500 ${isToday ? 'bg-point' : off ? 'bg-paper/[.06]' : 'bg-paper/20'}`}
+                      style={{ height: `${Math.max(4, (b.count / barMax) * 72)}px` }}
+                    />
+                    <span className={`text-[12px] ${isToday ? 'font-bold text-point' : 'text-paper/60'}`}>{b.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* 바로가기 + 숫자: 테두리로 나눈 4칸 타일 */}
       <nav className="mt-8 grid grid-cols-2 gap-px border border-line bg-line xl:grid-cols-4" aria-label="바로가기">
-        {actions.map(({ key, en, title, value, unit, mark, desc, run }, i) => (
+        {actions.map(({ key, en, title, value, unit, mark, desc, run, hot }, i) => (
           <button
             key={key}
             onClick={run}
-            className="group flex flex-col items-stretch bg-surface p-5 text-left transition-colors hover:bg-wash md:p-6"
+            className={`group flex flex-col items-stretch p-5 text-left transition-colors md:p-6 ${hot ? 'bg-point text-on-point hover:brightness-95' : 'bg-surface hover:bg-wash'}`}
           >
-            <span className="truncate text-[11px] font-bold uppercase tracking-[.14em] text-subtle md:tracking-[.2em]">
+            <span className={`truncate text-[11px] font-bold uppercase tracking-[.14em] md:tracking-[.2em] ${hot ? 'text-on-point/70' : 'text-subtle'}`}>
               {String(i + 1).padStart(2, '0')} · {en}
             </span>
             <span className="mt-2 flex items-center justify-between gap-2 text-[18px] font-bold md:text-[19px]">
-              {title}
-              <ChevronRight size={18} className="shrink-0 text-subtle transition-transform group-hover:translate-x-1 group-hover:text-ink" />
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                {title}
+                {hot && (
+                  <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-point">확인 필요</span>
+                )}
+              </span>
+              <ChevronRight size={18} className={`shrink-0 transition-transform group-hover:translate-x-1 ${hot ? 'text-on-point' : 'text-subtle group-hover:text-ink'}`} />
             </span>
             <span className="mt-5 flex items-baseline gap-2">
               <span className="text-[2.75rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
-              <span className="flex items-center gap-1.5 text-[13px] text-subtle">
-                <span className={`size-1.5 rounded-full ${mark}`} aria-hidden />
+              <span className={`flex items-center gap-1.5 text-[13px] ${hot ? 'text-on-point/70' : 'text-subtle'}`}>
+                <span className={`size-1.5 rounded-full ${hot ? 'bg-on-point' : mark}`} aria-hidden />
                 {unit}
               </span>
             </span>
-            <span className="mt-2 text-[13px] leading-5 text-subtle">{desc}</span>
+            <span className={`mt-2 text-[13px] leading-5 ${hot ? 'text-on-point/80' : 'text-subtle'}`}>{desc}</span>
           </button>
         ))}
       </nav>
