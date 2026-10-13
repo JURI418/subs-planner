@@ -4,7 +4,7 @@ import { Check, Copy, ExternalLink } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import type { AppData, SetData } from '@/lib/types'
-import { appsScript, newKey, pingSheet, unsent } from '@/lib/sheet'
+import { appsScript, newKey, pingSheet } from '@/lib/sheet'
 
 /** 구글 시트 연결: Apps Script 웹 앱을 통해 확정된 보강을 '보강' 탭 아래에 한 줄씩 추가 */
 export function SheetCard({ data, setData }: { data: AppData; setData: SetData }) {
@@ -29,18 +29,9 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
       setMsg({ ok: false, text: r.error ?? '연결하지 못했습니다.' })
       return
     }
-    // 처음 연결할 때: 이미 확정된 배정은 시트에 직접 적어 두었을 수 있으니 물어본다
-    const already = unsent(data).map(({ a }) => a.slotId)
-    const first = !s.sheetUrl
-    let skip = false
-    if (first && already.length)
-      skip = confirm(
-        `이미 확정된 보강 ${already.length}건이 있습니다.\n시트에 직접 적어 두셨다면 [확인]을 눌러 보내지 않음으로 표시하세요.\n[취소]를 누르면 다음 전송 때 함께 올라갑니다 (같은 줄이 이미 있으면 건너뜁니다).`,
-      )
     setData((d) => ({
       ...d,
-      settings: { ...d.settings, sheetUrl: u, sheetKey: key, sheetAuto: d.settings.sheetAuto ?? true },
-      assignments: skip ? d.assignments.map((a) => (already.includes(a.slotId) ? { ...a, sheetSent: 'skip' } : a)) : d.assignments,
+      settings: { ...d.settings, sheetUrl: u, sheetKey: key },
     }))
     setMsg({ ok: true, text: `연결됐어요 · "${r.sheet}" 탭에 올라갑니다.` })
   }
@@ -52,20 +43,11 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
         {s.sheetUrl ? <Badge tone="green">연결됨</Badge> : <Badge>연결 안 됨</Badge>}
       </div>
       <p className="mt-2 text-[14px] leading-6 text-ink-2">
-        보강을 <b>확정</b>하면 내 구글 시트의 <b>‘보강’ 탭</b> 맨 아래에 한 줄씩 자동으로 추가됩니다. (결강 교사 · 보강 날짜 · 보강 교시 · 보강 교사 · 대상 학급 · 과목 → B~G열)
+        <b>배정 확인</b>에서 보낼 배정을 체크하고 <b>‘구글 시트에 올리기’</b>를 누르면, 내 구글 시트의 <b>‘보강’ 탭</b> 맨 아래에 한 줄씩 추가됩니다. (결강 교사 · 보강 날짜 · 보강 교시 · 보강 교사 · 대상 학급 · 과목 → B~G열)
       </p>
 
       {s.sheetUrl ? (
         <div className="mt-4 flex flex-col gap-3">
-          <label className="flex items-center gap-2 text-[14px]">
-            <input
-              type="checkbox"
-              checked={s.sheetAuto ?? true}
-              onChange={(e) => setSettings({ sheetAuto: e.target.checked })}
-              className="size-4 accent-ink"
-            />
-            확정하면 바로 시트에 올리기 <span className="text-subtle">(끄면 배정 확인의 ‘시트로 보내기’ 버튼으로 보냅니다)</span>
-          </label>
           <p className="break-all text-[12px] text-subtle">연결 주소: {s.sheetUrl}</p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -80,7 +62,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
             <button
               onClick={() => {
                 if (confirm('구글 시트 연결을 끊습니다. 시트에 이미 올라간 내용은 그대로 남습니다.'))
-                  setSettings({ sheetUrl: undefined, sheetAuto: undefined })
+                  setSettings({ sheetUrl: undefined })
               }}
               className="m3-btn m3-btn-sm m3-text"
             >

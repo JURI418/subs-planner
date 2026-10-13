@@ -37,7 +37,7 @@ export function AppShell() {
   const path = usePathname()
   const router = useRouter()
   const { data, setData, ready } = useAppData()
-  const sheet = useSheetSync(data, setData, ready)
+  const sheet = useSheetSync(data, setData)
   const [mobile, setMobile] = useState(false)
   const [noticeIdx, setNoticeIdx] = useState(0)
   const [paused, setPaused] = useState(false)

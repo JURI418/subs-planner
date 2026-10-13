@@ -1,14 +1,13 @@
 'use client'
 import { Fragment, useState } from 'react'
-import { ChevronDown, Copy, Sheet } from 'lucide-react'
-import { unsent } from '@/lib/sheet'
+import { CheckCheck, ChevronDown, Copy, Sheet, Trash2, X } from 'lucide-react'
 import { AssignmentDetail, type DetailActions } from '@/components/assignments/AssignmentDetail'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
 import { exportText, formatDate, type AppData, type Assignment, type SetData } from '@/lib/types'
 import { validateAssignment } from '@/lib/scheduling'
-import { cancelConfirm } from '@/lib/dataOps'
+import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 
 export function AssignmentsPage({ data, setData }: { data: AppData; setData: SetData }) {
   const [filter, setFilter] = useState('all')
@@ -20,8 +19,61 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
       else n.add(id)
       return n
     })
-  const unsentCount = unsent(data).length
   const rows = data.assignments.filter((a) => filter === 'all' || a.status === filter)
+  // 체크 선택 (보이는 목록 기준)
+  const [picked, setPicked] = useState<Set<string>>(new Set())
+  const visibleIds = rows.map((a) => a.slotId)
+  const sel = visibleIds.filter((id) => picked.has(id))
+  const allOn = visibleIds.length > 0 && sel.length === visibleIds.length
+  const pick = (id: string, on: boolean) =>
+    setPicked((s) => {
+      const n = new Set(s)
+      if (on) n.add(id)
+      else n.delete(id)
+      return n
+    })
+  const pickAll = (on: boolean) => setPicked(on ? new Set(visibleIds) : new Set())
+  const selRows = data.assignments.filter((a) => sel.includes(a.slotId))
+  const selProposed = selRows.filter((a) => a.status === '제안' && a.substituteTeacherId)
+  const selNoTeacher = selRows.filter((a) => !a.substituteTeacherId)
+
+  const confirmSelected = () => {
+    setData((d) => confirmMany(d, selProposed.map((a) => a.slotId)))
+    setPicked(new Set())
+  }
+  const deleteSelected = () => {
+    const confirmed = selRows.filter((a) => a.status === '확정').length
+    if (
+      !window.confirm(
+        `선택한 ${sel.length}건을 삭제합니다.` +
+          (confirmed ? `\n확정된 ${confirmed}건은 누적 보강 횟수에서도 빠집니다.` : '') +
+          '\n구글 시트에 이미 올린 줄은 지워지지 않습니다. 계속할까요?',
+      )
+    )
+      return
+    setData((d) => deleteSlots(d, sel))
+    setPicked(new Set())
+  }
+  const sendSelected = () => {
+    if (!data.settings.sheetUrl) {
+      alert('먼저 설정 > 구글 시트 연결에서 시트를 연결하세요.')
+      return
+    }
+    let ids = selRows.filter((a) => a.substituteTeacherId).map((a) => a.slotId)
+    if (selProposed.length) {
+      const ok = window.confirm(
+        `아직 확정 전인 배정이 ${selProposed.length}건 있습니다.\n[확인] 확정하고 함께 올리기\n[취소] 확정된 것만 올리기`,
+      )
+      if (ok) setData((d) => confirmMany(d, selProposed.map((a) => a.slotId)))
+      else ids = selRows.filter((a) => a.status === '확정').map((a) => a.slotId)
+    }
+    if (!ids.length) {
+      alert('올릴 배정이 없습니다. 보강 교사가 정해진 배정만 올릴 수 있어요.')
+      return
+    }
+    window.dispatchEvent(new CustomEvent('sheet-send', { detail: ids }))
+    setPicked(new Set())
+  }
   const confirmOne = (id: string) =>
     setData((d) => {
       const target = d.assignments.find((x) => x.slotId === id)
@@ -128,12 +180,6 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
         desc="추천 근거를 확인한 뒤 개별 또는 일괄 확정하세요."
         action={
           <div className="flex flex-wrap gap-2">
-            {data.settings.sheetUrl && unsentCount > 0 && (
-              <button onClick={() => window.dispatchEvent(new Event('sheet-sync'))} className="m3-btn m3-outlined border-ok text-ok">
-                <Sheet size={16} strokeWidth={1.5} />
-                시트로 보내기 · {unsentCount}건
-              </button>
-            )}
             <button onClick={copy} className="m3-btn m3-outlined">
               <Copy size={16} strokeWidth={1.5} />
               복사
@@ -160,7 +206,10 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
         ].map(([v, l]) => (
           <button
             key={v}
-            onClick={() => setFilter(v)}
+            onClick={() => {
+              setFilter(v)
+              setPicked(new Set())
+            }}
             className={`m3-chip ${filter === v ? 'm3-chip-on' : ''}`}
             aria-pressed={filter === v}
           >
@@ -168,11 +217,48 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           </button>
         ))}
       </div>
+      {/* 선택 도구 막대: 체크한 것이 있을 때만 */}
+      {sel.length > 0 && (
+        <div className="sticky top-16 z-[5] mb-3 flex flex-wrap items-center gap-2 bg-ink px-4 py-2.5 text-paper shadow-[0_6px_18px_rgb(0_0_0/.18)] lg:top-3">
+          <span className="mr-2 text-[14px] font-bold">
+            <span className="text-point">{sel.length}건</span> 선택
+          </span>
+          {selProposed.length > 0 && (
+            <button onClick={confirmSelected} className="m3-btn m3-btn-sm border border-paper/40 text-paper hover:bg-paper hover:text-ink">
+              <CheckCheck size={15} /> 선택 확정 · {selProposed.length}
+            </button>
+          )}
+          <button onClick={sendSelected} className="m3-btn m3-btn-sm bg-point text-on-point hover:brightness-95">
+            <Sheet size={15} /> 구글 시트에 올리기
+          </button>
+          <button onClick={deleteSelected} className="m3-btn m3-btn-sm border border-paper/40 text-paper hover:border-bad hover:bg-bad">
+            <Trash2 size={15} /> 선택 삭제
+          </button>
+          {selNoTeacher.length > 0 && (
+            <span className="text-[12px] text-paper/60">보강 교사 없는 {selNoTeacher.length}건은 확정·올리기에서 빠져요</span>
+          )}
+          <button onClick={() => pickAll(false)} aria-label="선택 해제" className="ml-auto grid size-8 place-items-center rounded-full text-paper/70 hover:text-paper">
+            <X size={17} />
+          </button>
+        </div>
+      )}
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead>
               <tr className="border-b text-xs text-subtle">
+                <th className="w-10 p-3">
+                  <input
+                    type="checkbox"
+                    aria-label="전체 선택"
+                    checked={allOn}
+                    ref={(el) => {
+                      if (el) el.indeterminate = sel.length > 0 && !allOn
+                    }}
+                    onChange={(e) => pickAll(e.target.checked)}
+                    className="size-4 accent-ink"
+                  />
+                </th>
                 <th className="p-3">일자</th>
                 <th className="p-3">수업</th>
                 <th className="p-3">결강 교사</th>
@@ -188,7 +274,16 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                 const isOpen = open.has(a.slotId)
                 return (
                   <Fragment key={a.slotId}>
-                    <tr className={isOpen ? '' : 'border-b border-line'}>
+                    <tr className={`${isOpen ? '' : 'border-b border-line'} ${picked.has(a.slotId) ? 'bg-point/15' : ''}`}>
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          aria-label={`${formatDate(s?.date || '')} ${s?.period}교시 선택`}
+                          checked={picked.has(a.slotId)}
+                          onChange={(e) => pick(a.slotId, e.target.checked)}
+                          className="size-4 accent-ink"
+                        />
+                      </td>
                       <td className="p-3 font-semibold">
                         {formatDate(s?.date || '')}
                         <br />
@@ -250,7 +345,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         >
                           {a.status}
                         </Badge>
-                        {a.status === '확정' && data.settings.sheetUrl && a.sheetSent && a.sheetSent !== 'skip' && (
+                        {data.settings.sheetUrl && a.sheetSent && a.sheetSent !== 'skip' && (
                           <span className="mt-1 block text-[11px] font-bold text-ok" title="구글 시트에 올림">시트 ✓</span>
                         )}
                       </td>
@@ -279,7 +374,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                     </tr>
                     {isOpen && s && (
                       <tr className="border-b border-line">
-                        <td colSpan={7} className="px-1 pb-4">
+                        <td colSpan={8} className="px-1 pb-4">
                           <AssignmentDetail a={a} slot={s} data={data} actions={actionsFor(a)} />
                         </td>
                       </tr>

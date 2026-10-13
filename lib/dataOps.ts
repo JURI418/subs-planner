@@ -124,3 +124,40 @@ export function cleanExcluded(d: AppData): AppData {
   }
   return [...stuck].reduce((acc, id) => excludeTeacher(acc, id).data, d)
 }
+
+/** 배정 여러 건 삭제: 슬롯·배정을 지우고, 확정됐던 보강은 누적 횟수에서 빼며, 수업이 하나도 안 남은 결강도 지운다 */
+export function deleteSlots(d: AppData, slotIds: string[]): AppData {
+  const ids = new Set(slotIds)
+  const minus = new Map<string, number>()
+  d.assignments
+    .filter((a) => ids.has(a.slotId) && a.status === '확정' && a.substituteTeacherId)
+    .forEach((a) => minus.set(a.substituteTeacherId!, (minus.get(a.substituteTeacherId!) ?? 0) + 1))
+  const slots = d.slots.filter((s) => !ids.has(s.id))
+  const alive = new Set(slots.map((s) => s.absenceId))
+  const touched = new Set(d.slots.filter((s) => ids.has(s.id)).map((s) => s.absenceId))
+  return {
+    ...d,
+    slots,
+    assignments: d.assignments.filter((a) => !ids.has(a.slotId)),
+    absences: d.absences.filter((a) => !touched.has(a.id) || alive.has(a.id)),
+    teachers: d.teachers.map((t) =>
+      minus.has(t.id) ? { ...t, totalAssignments: Math.max(0, t.totalAssignments - minus.get(t.id)!) } : t,
+    ),
+  }
+}
+
+/** 제안 상태 배정 여러 건 확정 (보강 교사가 있는 것만) */
+export function confirmMany(d: AppData, slotIds: string[]): AppData {
+  const ids = new Set(slotIds)
+  const plus = new Map<string, number>()
+  const assignments = d.assignments.map((a) => {
+    if (!ids.has(a.slotId) || a.status !== '제안' || !a.substituteTeacherId) return a
+    plus.set(a.substituteTeacherId, (plus.get(a.substituteTeacherId) ?? 0) + 1)
+    return { ...a, status: '확정' as const }
+  })
+  return {
+    ...d,
+    assignments,
+    teachers: d.teachers.map((t) => (plus.has(t.id) ? { ...t, totalAssignments: t.totalAssignments + plus.get(t.id)! } : t)),
+  }
+}
