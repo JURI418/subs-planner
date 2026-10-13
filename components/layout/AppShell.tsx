@@ -27,7 +27,7 @@ const primary = [
 ] as const
 const secondary = [
   ['/teachers', '교사 관리', Users],
-  ['/stats', '통계', BarChart3],
+  ['/stats', '보강 통계', BarChart3],
   ['/messages', '시간강사 안내 문자', MessageSquareText],
   ['/settings', '설정', Settings],
 ] as const
