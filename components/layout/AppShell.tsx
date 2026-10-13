@@ -1,8 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, ChevronRight, Copy, Menu, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
+import { BarChart3, HardDriveDownload, MessageSquareText, ChevronRight, Copy, Menu, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
 import { formatDotDate, seedData, todayISO } from '@/lib/types'
+import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 import { useAppData } from '@/hooks/useAppData'
 import { DashboardPage } from '@/components/pages/DashboardPage'
 import { AbsencePage } from '@/components/pages/AbsencePage'
@@ -13,6 +14,7 @@ import { StatsPage } from '@/components/pages/StatsPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
 import { CalendarPage } from '@/components/pages/CalendarPage'
 import { WeekPage } from '@/components/pages/WeekPage'
+import { MessagesPage } from '@/components/pages/MessagesPage'
 
 // 메뉴: 위쪽은 매일 쓰는 일(› 화살표 목록), 아래쪽은 관리 메뉴(아이콘 목록)
 const primary = [
@@ -26,6 +28,7 @@ const primary = [
 const secondary = [
   ['/teachers', '교사 관리', Users],
   ['/stats', '통계', BarChart3],
+  ['/messages', '시간강사 안내 문자', MessageSquareText],
   ['/settings', '설정', Settings],
 ] as const
 
@@ -52,6 +55,8 @@ export function AppShell() {
         return <AbsencePage data={data} setData={setData} />
       case 'assignments':
         return <AssignmentsPage data={data} setData={setData} />
+      case 'messages':
+        return <MessagesPage data={data} setData={setData} />
       case 'week':
         return <WeekPage data={data} />
       case 'timetable':
@@ -76,6 +81,11 @@ export function AppShell() {
   }
   const isActive = (href: string) => path === href || (href === '/dashboard' && page === 'dashboard')
   const home = page === 'dashboard'
+  const backupDays = daysSinceBackup(data)
+  const needBackup =
+    data.timetable.length > 0 &&
+    (backupDays === null || backupDays >= 7) &&
+    !(data.settings.backupSnoozeUntil && data.settings.backupSnoozeUntil > today)
   const pending = data.assignments.filter((a) => a.status === '제안').length
   const todayEvent = data.events.find((e) => e.date === today && e.kind !== '방학')
   const nextOff = data.events.find((e) => e.date > today && e.kind !== '행사' && e.kind !== '방학')
@@ -84,6 +94,9 @@ export function AppShell() {
       ? `오늘은 휴업일입니다${todayEvent ? ` · ${todayEvent.title}` : ''}`
       : `${formatDotDate(today)}${todayEvent ? ` · ${todayEvent.title}` : ''}`,
     pending ? `확정을 기다리는 배정 ${pending}건이 있습니다` : '모든 배정이 확정되었습니다',
+    ...(Number(today.slice(8)) >= 24 && data.teachers.some((t) => t.employmentType === '시간강사')
+      ? ['월말이에요 · 시간강사 선생님께 다음 달 안내 문자를 보내세요']
+      : []),
     nextOff ? `다음 휴업일 ${formatDotDate(nextOff.date)} ${nextOff.title}` : '학사일정을 올리면 휴업일이 자동으로 반영됩니다',
   ]
   const notice = notices[noticeIdx % notices.length]
@@ -204,6 +217,40 @@ export function AppShell() {
           <Logo />
           <span className="w-16" />
         </header>
+
+        {/* 백업 알림: 데이터가 이 브라우저에만 있으므로 7일마다 백업 파일 받기를 권한다 */}
+        {needBackup && (
+          <div className="border-b border-warn/30 bg-warn-soft px-5 py-3 md:px-10">
+            <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-4 gap-y-2 text-[14px] text-warn">
+              <span className="flex items-center gap-2 font-bold">
+                <HardDriveDownload size={17} />
+                {backupDays === null ? '아직 백업 파일을 받은 적이 없어요.' : `마지막 백업이 ${backupDays}일 전이에요.`}
+              </span>
+              <span className="text-ink-2">데이터는 이 브라우저에만 저장돼서, 기록을 지우거나 컴퓨터를 바꾸면 사라질 수 있어요.</span>
+              <span className="ml-auto flex gap-2">
+                <button
+                  onClick={() => {
+                    downloadBackup(data)
+                    setData((d) => ({ ...d, settings: { ...d.settings, lastBackupAt: new Date().toISOString() } }))
+                  }}
+                  className="m3-btn m3-btn-sm m3-filled"
+                >
+                  백업 파일 받기
+                </button>
+                <button
+                  onClick={() => {
+                    const t = new Date(Date.now() + 86400000)
+                    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
+                    setData((d) => ({ ...d, settings: { ...d.settings, backupSnoozeUntil: iso } }))
+                  }}
+                  className="m3-btn m3-btn-sm m3-text"
+                >
+                  내일 다시 알림
+                </button>
+              </span>
+            </div>
+          </div>
+        )}
 
         <main className="mx-auto max-w-[1280px] px-5 pb-24 pt-10 md:px-10">{content}</main>
       </div>

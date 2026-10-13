@@ -86,13 +86,13 @@ export function recomputeProposals(d: AppData): { data: AppData; total: number; 
  * - 확정 전 배정: 그 교사가 보강·예비로 들어가 있으면 다시 추천
  * - 확정된 배정: 예비에서만 빼고(빈자리는 다시 추천), 보강 교사인 경우는 목록으로 알려 준다
  */
-export function excludeTeacher(d: AppData, teacherId: string) {
+export function excludeTeacher(d: AppData, teacherId: string, onlySlot?: (s: Slot) => boolean) {
   let assignments = d.assignments
   let replaced = 0
   const conflicts: Slot[] = []
   for (const a of d.assignments) {
     const slot = d.slots.find((s) => s.id === a.slotId)
-    if (!slot) continue
+    if (!slot || (onlySlot && !onlySlot(slot))) continue
     const involved = a.substituteTeacherId === teacherId || a.backups.includes(teacherId)
     if (!involved) continue
     const prior = assignments.filter((x) => x.slotId !== a.slotId)

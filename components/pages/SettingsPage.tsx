@@ -8,6 +8,7 @@ import type { AppData, SetData } from '@/lib/types'
 import { STORAGE_KEY } from '@/hooks/useAppData'
 import { parseBackup } from '@/lib/dataOps'
 import { WeightsCard } from '@/components/settings/WeightsCard'
+import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 
 export function SettingsPage({ data, setData }: { data: AppData; setData: SetData }) {
   const fileRef = useRef<HTMLInputElement>(null)
@@ -127,11 +128,8 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
           </button>
           <button
             onClick={() => {
-              const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-              const a = document.createElement('a')
-              a.href = URL.createObjectURL(blob)
-              a.download = '결보강-백업.json'
-              a.click()
+              downloadBackup(data)
+              setData((d) => ({ ...d, settings: { ...d.settings, lastBackupAt: new Date().toISOString() } }))
             }}
             className="m3-btn m3-outlined"
           >
@@ -158,6 +156,16 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
             }}
           />
         </div>
+        {(() => {
+          const days = daysSinceBackup(data)
+          return (
+            <p className={`mt-3 text-sm ${days === null || days >= 7 ? 'font-bold text-warn' : 'text-subtle'}`}>
+              {days === null
+                ? '아직 백업 파일을 받은 적이 없습니다. 데이터는 이 브라우저에만 저장되니 꼭 받아 두세요.'
+                : `마지막 백업: ${data.settings.lastBackupAt!.slice(0, 10).replaceAll('-', '.')} (${days === 0 ? '오늘' : `${days}일 전`})`}
+            </p>
+          )
+        })()}
         {importMsg && (
           <p className={`mt-3 text-sm ${importMsg.ok ? 'text-ok' : 'text-bad'}`}>
             {importMsg.text}

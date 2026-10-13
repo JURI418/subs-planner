@@ -10,6 +10,9 @@ export type Teacher = {
   employmentType: EmploymentType
   poolStatus: PoolStatus
   totalAssignments: number
+  /** 보강 불가 시간 (요일·교시). 회의, 육아시간 등 */
+  blocked?: { day: Day; period: number }[]
+  blockedNote?: string
 }
 export type TimetableEntry = {
   id: string
@@ -63,6 +66,13 @@ export type Settings = {
   maxConsecutive: number
   recentDays: number
   weights: { grade: number; daily: number; fairness: number }
+  /** 마지막으로 백업 파일을 내려받은 시각 (ISO) */
+  lastBackupAt?: string
+  /** 백업 알림을 다시 띄울 날짜 (나중에 누르면 하루 미룸) */
+  backupSnoozeUntil?: string
+  /** 시간강사 안내 문자 머리말·맺음말 */
+  smsHeader?: string
+  smsFooter?: string
 }
 export type AppData = {
   teachers: Teacher[]
