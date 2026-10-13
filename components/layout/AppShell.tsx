@@ -81,6 +81,16 @@ export function AppShell() {
   }
   const isActive = (href: string) => path === href || (href === '/dashboard' && page === 'dashboard')
   const home = page === 'dashboard'
+  const variant = Number(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('bv') ?? '1' : '1')
+  const backupNow = () => {
+    downloadBackup(data)
+    setData((d) => ({ ...d, settings: { ...d.settings, lastBackupAt: new Date().toISOString() } }))
+  }
+  const snooze = () => {
+    const t = new Date(Date.now() + 86400000)
+    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
+    setData((d) => ({ ...d, settings: { ...d.settings, backupSnoozeUntil: iso } }))
+  }
   const backupDays = daysSinceBackup(data)
   const needBackup =
     data.timetable.length > 0 &&
@@ -218,39 +228,8 @@ export function AppShell() {
           <span className="w-16" />
         </header>
 
-        {/* 백업 알림: 데이터가 이 브라우저에만 있으므로 7일마다 백업 파일 받기를 권한다 */}
-        {needBackup && (
-          <div className="border-b border-warn/30 bg-warn-soft px-5 py-3 md:px-10">
-            <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-4 gap-y-2 text-[14px] text-warn">
-              <span className="flex items-center gap-2 font-bold">
-                <HardDriveDownload size={17} />
-                {backupDays === null ? '아직 백업 파일을 받은 적이 없어요.' : `마지막 백업이 ${backupDays}일 전이에요.`}
-              </span>
-              <span className="text-ink-2">데이터는 이 브라우저에만 저장돼서, 기록을 지우거나 컴퓨터를 바꾸면 사라질 수 있어요.</span>
-              <span className="ml-auto flex gap-2">
-                <button
-                  onClick={() => {
-                    downloadBackup(data)
-                    setData((d) => ({ ...d, settings: { ...d.settings, lastBackupAt: new Date().toISOString() } }))
-                  }}
-                  className="m3-btn m3-btn-sm m3-filled"
-                >
-                  백업 파일 받기
-                </button>
-                <button
-                  onClick={() => {
-                    const t = new Date(Date.now() + 86400000)
-                    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
-                    setData((d) => ({ ...d, settings: { ...d.settings, backupSnoozeUntil: iso } }))
-                  }}
-                  className="m3-btn m3-btn-sm m3-text"
-                >
-                  내일 다시 알림
-                </button>
-              </span>
-            </div>
-          </div>
-        )}
+        {/* 백업 알림 (디자인 미리보기: ?bv=1~4) */}
+        {needBackup && <BackupNotice variant={variant} days={backupDays} onBackup={backupNow} onSnooze={snooze} />}
 
         <main className="mx-auto max-w-[1280px] px-5 pb-24 pt-10 md:px-10">{content}</main>
       </div>
@@ -266,6 +245,83 @@ export function AppShell() {
           <Plus size={24} strokeWidth={1.75} />
         </button>
       )}
+    </div>
+  )
+}
+
+function BackupNotice({
+  variant,
+  days,
+  onBackup,
+  onSnooze,
+}: {
+  variant: number
+  days: number | null
+  onBackup: () => void
+  onSnooze: () => void
+}) {
+  const title = days === null ? '아직 백업 파일을 받은 적이 없어요' : `마지막 백업이 ${days}일 전이에요`
+  const sub = '데이터는 이 브라우저에만 저장돼요. 일주일에 한 번 받아 두세요.'
+  if (variant === 3)
+    return (
+      <div className="fixed bottom-6 left-4 z-30 w-[min(360px,calc(100vw-2rem))] bg-ink p-5 text-paper shadow-[0_10px_30px_rgb(0_0_0/.3)] lg:left-[324px]">
+        <p className="flex items-center gap-2 text-[15px] font-bold">
+          <HardDriveDownload size={18} className="text-point" /> {title}
+        </p>
+        <p className="mt-1.5 text-[13px] leading-5 text-paper/70">{sub}</p>
+        <div className="mt-4 flex gap-2">
+          <button onClick={onBackup} className="m3-btn m3-btn-sm bg-point text-on-point hover:brightness-95">백업 파일 받기</button>
+          <button onClick={onSnooze} className="m3-btn m3-btn-sm text-paper/80 hover:text-paper">내일 다시</button>
+        </div>
+      </div>
+    )
+  const wrap = 'mx-auto max-w-[1280px] px-5 pt-5 md:px-10'
+  if (variant === 2)
+    return (
+      <div className={wrap}>
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-3 gap-y-2 rounded-full bg-ink py-2 pl-5 pr-2 text-paper">
+          <HardDriveDownload size={17} className="text-point" />
+          <span className="text-[14px] font-bold">{title}</span>
+          <span className="hidden text-[13px] text-paper/60 md:inline">· 이 브라우저에만 저장돼요</span>
+          <span className="ml-auto flex gap-1">
+            <button onClick={onSnooze} className="m3-btn m3-btn-sm text-paper/70 hover:text-paper">내일 다시</button>
+            <button onClick={onBackup} className="m3-btn m3-btn-sm bg-point text-on-point hover:brightness-95">백업 받기</button>
+          </span>
+        </div>
+      </div>
+    )
+  if (variant === 4)
+    return (
+      <div className={wrap}>
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-point bg-[#f4fbdc] px-5 py-3">
+          <span className="grid size-9 place-items-center rounded-full bg-point text-on-point">
+            <HardDriveDownload size={17} />
+          </span>
+          <span>
+            <span className="block text-[14px] font-bold">{title}</span>
+            <span className="block text-[12.5px] text-ink-2">{sub}</span>
+          </span>
+          <span className="ml-auto flex gap-1">
+            <button onClick={onSnooze} className="m3-btn m3-btn-sm m3-text">내일 다시</button>
+            <button onClick={onBackup} className="m3-btn m3-btn-sm m3-filled">백업 파일 받기</button>
+          </span>
+        </div>
+      </div>
+    )
+  // 1: 흰 카드 + 라임 왼쪽 띠
+  return (
+    <div className={wrap}>
+      <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 border border-line border-l-4 border-l-point bg-surface px-5 py-3 shadow-[0_1px_3px_rgb(0_0_0/.06)]">
+        <HardDriveDownload size={18} className="text-ink" />
+        <span>
+          <span className="block text-[14px] font-bold">{title}</span>
+          <span className="block text-[12.5px] text-subtle">{sub}</span>
+        </span>
+        <span className="ml-auto flex gap-1">
+          <button onClick={onSnooze} className="m3-btn m3-btn-sm m3-text">내일 다시</button>
+          <button onClick={onBackup} className="m3-btn m3-btn-sm m3-filled">백업 파일 받기</button>
+        </span>
+      </div>
     </div>
   )
 }
