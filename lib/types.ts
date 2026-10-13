@@ -54,6 +54,8 @@ export type Assignment = {
   reasons: string[]
   /** 보강 교사가 못 들어갈 때를 대비한 예비 교사 [예비1, 예비2] */
   backups: [string | null, string | null]
+  /** 구글 시트로 보낸 시각 (ISO). 'skip'이면 연결 전에 이미 시트에 적혀 있던 건 */
+  sheetSent?: string
 }
 export type Settings = {
   semester: string
@@ -73,6 +75,10 @@ export type Settings = {
   /** 시간강사 안내 문자 머리말·맺음말 */
   smsHeader?: string
   smsFooter?: string
+  /** 구글 시트 연결 (Apps Script 웹 앱 주소, 확인용 비밀 키, 확정 시 자동 전송) */
+  sheetUrl?: string
+  sheetKey?: string
+  sheetAuto?: boolean
 }
 export type AppData = {
   teachers: Teacher[]

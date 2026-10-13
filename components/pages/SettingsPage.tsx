@@ -8,6 +8,7 @@ import type { AppData, SetData } from '@/lib/types'
 import { STORAGE_KEY } from '@/hooks/useAppData'
 import { parseBackup } from '@/lib/dataOps'
 import { WeightsCard } from '@/components/settings/WeightsCard'
+import { SheetCard } from '@/components/settings/SheetCard'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 
 export function SettingsPage({ data, setData }: { data: AppData; setData: SetData }) {
@@ -112,6 +113,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
         </Card>
       </div>
       <WeightsCard data={data} setData={setData} />
+      <SheetCard data={data} setData={setData} />
       <Card className="mt-6">
         <h2 className="font-display text-lg font-semibold">데이터 관리</h2>
         <div className="mt-4 flex flex-wrap gap-3">

@@ -5,6 +5,7 @@ import { BarChart3, HardDriveDownload, MessageSquareText, ChevronRight, Copy, Me
 import { formatDotDate, seedData, todayISO } from '@/lib/types'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 import { useAppData } from '@/hooks/useAppData'
+import { useSheetSync } from '@/hooks/useSheetSync'
 import { DashboardPage } from '@/components/pages/DashboardPage'
 import { AbsencePage } from '@/components/pages/AbsencePage'
 import { AssignmentsPage } from '@/components/pages/AssignmentsPage'
@@ -36,6 +37,7 @@ export function AppShell() {
   const path = usePathname()
   const router = useRouter()
   const { data, setData, ready } = useAppData()
+  const sheet = useSheetSync(data, setData, ready)
   const [mobile, setMobile] = useState(false)
   const [noticeIdx, setNoticeIdx] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -232,6 +234,17 @@ export function AppShell() {
 
         <main className="mx-auto max-w-[1280px] px-5 pb-24 pt-10 md:px-10">{content}</main>
       </div>
+
+      {/* 구글 시트 전송 결과 알림 */}
+      {sheet.status && (
+        <div
+          role="status"
+          className={`fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] px-4 py-3 text-[14px] font-bold shadow-[0_8px_24px_rgb(0_0_0/.2)] ${sheet.status.ok ? 'bg-ink text-paper' : 'bg-bad text-white'}`}
+        >
+          {sheet.status.ok && <span className="mr-2 text-point">●</span>}
+          {sheet.status.text}
+        </div>
+      )}
 
       {/* 오른쪽 아래 둥근 검정 버튼: 결강 등록 */}
       {page !== 'absence' && (

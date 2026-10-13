@@ -1,6 +1,7 @@
 'use client'
 import { Fragment, useState } from 'react'
-import { ChevronDown, Copy } from 'lucide-react'
+import { ChevronDown, Copy, Sheet } from 'lucide-react'
+import { unsent } from '@/lib/sheet'
 import { AssignmentDetail, type DetailActions } from '@/components/assignments/AssignmentDetail'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
@@ -19,6 +20,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
       else n.add(id)
       return n
     })
+  const unsentCount = unsent(data).length
   const rows = data.assignments.filter((a) => filter === 'all' || a.status === filter)
   const confirmOne = (id: string) =>
     setData((d) => {
@@ -125,7 +127,13 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
         title="배정 확인"
         desc="추천 근거를 확인한 뒤 개별 또는 일괄 확정하세요."
         action={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {data.settings.sheetUrl && unsentCount > 0 && (
+              <button onClick={() => window.dispatchEvent(new Event('sheet-sync'))} className="m3-btn m3-outlined border-ok text-ok">
+                <Sheet size={16} strokeWidth={1.5} />
+                시트로 보내기 · {unsentCount}건
+              </button>
+            )}
             <button onClick={copy} className="m3-btn m3-outlined">
               <Copy size={16} strokeWidth={1.5} />
               복사
@@ -242,6 +250,9 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         >
                           {a.status}
                         </Badge>
+                        {a.status === '확정' && data.settings.sheetUrl && a.sheetSent && a.sheetSent !== 'skip' && (
+                          <span className="mt-1 block text-[11px] font-bold text-ok" title="구글 시트에 올림">시트 ✓</span>
+                        )}
                       </td>
                       <td className="p-3">
                         {a.status === '제안' && a.substituteTeacherId && (

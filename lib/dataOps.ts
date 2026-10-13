@@ -7,7 +7,7 @@ export function cancelConfirm(d: AppData, slotId: string): AppData {
   if (!target || target.status !== '확정') return d
   return {
     ...d,
-    assignments: d.assignments.map((a) => (a.slotId === slotId ? { ...a, status: '제안' } : a)),
+    assignments: d.assignments.map((a) => (a.slotId === slotId ? { ...a, status: '제안', sheetSent: undefined } : a)),
     teachers: d.teachers.map((t) =>
       t.id === target.substituteTeacherId
         ? { ...t, totalAssignments: Math.max(0, t.totalAssignments - 1) }
