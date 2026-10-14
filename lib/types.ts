@@ -80,6 +80,9 @@ export type Settings = {
   /** 구글 시트 연결 (Apps Script 웹 앱 주소, 확인용 비밀 키, 확정 시 자동 전송) */
   sheetUrl?: string
   sheetKey?: string
+  /** 기록할 구글 시트 파일 ID와 이름 (연결 확인 때 받아 옴) */
+  sheetId?: string
+  sheetFile?: string
   sheetAuto?: boolean
 }
 export type AppData = {

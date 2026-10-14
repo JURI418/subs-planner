@@ -27,7 +27,7 @@ export function useSheetSync(data: AppData, setData: SetData) {
       busy.current = true
       setStatus({ ok: true, text: `구글 시트에 ${list.length}건 올리는 중…` })
       try {
-        const r = await postRows(sheetUrl, sheetKey, list.map(({ a, s }) => sheetRow(d, a, s)))
+        const r = await postRows(sheetUrl, sheetKey, list.map(({ a, s }) => sheetRow(d, a, s)), d.settings.sheetId)
         if (!r.ok) {
           setStatus({ ok: false, text: `구글 시트로 보내지 못했어요: ${r.error ?? '알 수 없는 오류'}` })
           return
