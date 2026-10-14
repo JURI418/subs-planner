@@ -59,7 +59,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
   const actions = [
     { key: 'absence', hot: false, en: 'Absence', title: '결강 등록', value: todayAbsences, unit: '건 오늘', mark: 'bg-ink', desc: `${weekend ? '다음 주' : '이번 주'} 결강 수업 ${weekSlots}개`, run: () => router.push('/absence') },
     { key: 'assignments', hot: pending > 0, en: 'Assignments', title: '배정 확인', value: pending, unit: '건 미확정', mark: pending ? 'bg-warn' : 'bg-faint', desc: pending ? '확정을 기다리는 배정이 있어요' : '모든 배정을 확정했어요', run: () => router.push('/assignments') },
-    { key: 'stats', hot: false, en: 'Statistics', title: '보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '교사별 누적 보강 횟수 확인', run: () => router.push('/stats') },
+    { key: 'stats', hot: false, en: 'Statistics', title: '결보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '보강 순위 · 결강 순위 확인', run: () => router.push('/stats') },
     { key: 'copy', hot: false, en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강 · 나이스·메신저용', run: copyUpcoming },
   ]
   const checklist: [string, string, boolean, string][] = [
