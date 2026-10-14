@@ -72,6 +72,9 @@ export type Settings = {
   lastBackupAt?: string
   /** 백업 알림을 다시 띄울 날짜 (나중에 누르면 하루 미룸) */
   backupSnoozeUntil?: string
+  /** 매일 처음 열 때 백업 파일 자동 저장 (기본 켜짐) 과 마지막 자동 저장 날짜 */
+  autoBackup?: boolean
+  lastAutoBackup?: string
   /** 시간강사 안내 문자 머리말·맺음말 */
   smsHeader?: string
   smsFooter?: string

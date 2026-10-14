@@ -158,6 +158,18 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
             }}
           />
         </div>
+        <label className="mt-4 flex items-center gap-2 text-[14px]">
+          <input
+            type="checkbox"
+            checked={data.settings.autoBackup !== false}
+            onChange={(e) => setData((d) => ({ ...d, settings: { ...d.settings, autoBackup: e.target.checked } }))}
+            className="size-4 accent-ink"
+          />
+          매일 처음 사이트를 열 때 백업 파일을 자동으로 내려받기
+          <span className="text-subtle">
+            {data.settings.lastAutoBackup ? `(마지막 자동 저장 ${data.settings.lastAutoBackup.replaceAll('-', '.')})` : ''}
+          </span>
+        </label>
         {(() => {
           const days = daysSinceBackup(data)
           return (

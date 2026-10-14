@@ -40,6 +40,20 @@ export function AppShell() {
   const router = useRouter()
   const { data, setData, ready } = useAppData()
   const sheet = useSheetSync(data, setData)
+  // 매일 처음 열 때 백업 파일을 한 번 자동으로 내려받기 (실제 시간표가 있을 때만)
+  const [autoSaved, setAutoSaved] = useState(false)
+  useEffect(() => {
+    if (!ready) return
+    const day = todayISO()
+    const sample = data.teachers.every((t) => /^교사\d{2}$|^가상E$/.test(t.name))
+    if (data.settings.autoBackup === false || !data.timetable.length || sample || data.settings.lastAutoBackup === day) return
+    downloadBackup(data)
+    setData((d) => ({ ...d, settings: { ...d.settings, lastAutoBackup: day, lastBackupAt: new Date().toISOString() } }))
+    setAutoSaved(true)
+    const t = setTimeout(() => setAutoSaved(false), 6000)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready])
   const [mobile, setMobile] = useState(false)
   const [noticeIdx, setNoticeIdx] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -240,6 +254,11 @@ export function AppShell() {
       </div>
 
       {/* 구글 시트 전송 결과 알림 */}
+      {autoSaved && !sheet.status && (
+        <div role="status" className="fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] bg-ink px-4 py-3 text-[14px] font-bold text-paper shadow-[0_8px_24px_rgb(0_0_0/.2)]">
+          <span className="mr-2 text-point">●</span>오늘 백업 파일을 다운로드 폴더에 저장했어요
+        </div>
+      )}
       {sheet.status && (
         <div
           role="status"
