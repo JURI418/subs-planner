@@ -5,7 +5,7 @@ import { AssignmentDetail, type DetailActions } from '@/components/assignments/A
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { exportText, formatDate, type AppData, type Assignment, type SetData } from '@/lib/types'
+import { exportText, formatDate, isVirtual, type AppData, type Assignment, type SetData } from '@/lib/types'
 import { validateAssignment } from '@/lib/scheduling'
 import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 
@@ -308,7 +308,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         >
                           <option value="">배정불가</option>
                           {data.teachers
-                            .filter((t) => t.poolStatus !== '제외')
+                            .filter((t) => t.poolStatus !== '제외' && !isVirtual(t))
                             .map((t) => (
                               <option key={t.id} value={t.id}>
                                 {t.name}

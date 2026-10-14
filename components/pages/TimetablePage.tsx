@@ -4,7 +4,7 @@ import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
 import { FileDrop } from '@/components/common/FileDrop'
-import { days, parseTimetable, samplePaste, type AppData, type SetData } from '@/lib/types'
+import { days, isVirtual, parseTimetable, samplePaste, type AppData, type SetData } from '@/lib/types'
 import { readPdfText } from '@/lib/import/pdfText'
 import { parseTimetablePdf } from '@/lib/import/timetablePdf'
 
@@ -174,7 +174,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
               onChange={(e) => setSelected(e.target.value)}
               className="m3-field m3-field-sm"
             >
-              {data.teachers.map((t) => (
+              {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name} · {t.subject}
                 </option>

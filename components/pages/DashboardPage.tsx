@@ -1,16 +1,17 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { ChevronRight, Plus } from 'lucide-react'
+import { BookOpen, ChevronRight, Plus } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar'
-import { exportText, formatDotDate, todayISO, type AppData } from '@/lib/types'
+import { exportText, formatDotDate, todayISO, type AppData, type SetData } from '@/lib/types'
 
 const KIND_TONE: Record<string, string> = { 공휴일: 'red', 휴업일: 'yellow', 방학: 'blue', 행사: 'slate' }
 
-export function DashboardPage({ data }: { data: AppData }) {
+export function DashboardPage({ data, setData }: { data: AppData; setData: SetData }) {
   const router = useRouter()
   const today = todayISO()
+  const showGuide = !(data.settings.guideHiddenUntil && data.settings.guideHiddenUntil > today)
   const pending = data.assignments.filter((a) => a.status === '제안').length
   const todayAbsences = data.absences.filter((a) => a.startDate <= today && today <= a.endDate).length
   const todayEvents = data.events.filter((e) => e.date === today && e.kind !== '방학')
@@ -198,6 +199,31 @@ export function DashboardPage({ data }: { data: AppData }) {
           </button>
         ))}
       </nav>
+
+      {/* 사용법 안내: 작게, 한 달 동안 안 보기 가능 */}
+      {showGuide && (
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border border-line bg-surface px-5 py-3">
+          <BookOpen size={18} className="text-ink" />
+          <span className="text-[14px]">
+            <b>처음이신가요?</b> <span className="text-ink-2">사용 순서와 보강 추천 조건을 한 페이지에 정리해 두었어요.</span>
+          </span>
+          <span className="ml-auto flex gap-1">
+            <button
+              onClick={() => {
+                const t = new Date(Date.now() + 30 * 86400000)
+                const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
+                setData((d) => ({ ...d, settings: { ...d.settings, guideHiddenUntil: iso } }))
+              }}
+              className="m3-btn m3-btn-sm m3-text"
+            >
+              한 달 동안 안 보기
+            </button>
+            <button onClick={() => router.push('/guide')} className="m3-btn m3-btn-sm m3-filled">
+              사용법 보기
+            </button>
+          </span>
+        </div>
+      )}
 
       <div className="mt-12 grid gap-8 xl:grid-cols-[1.5fr_1fr]">
         <div className="flex min-w-0 flex-col gap-8">

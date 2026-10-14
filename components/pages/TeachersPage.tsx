@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { days, formatDate, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
+import { days, formatDate, isVirtual, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
 import { excludeTeacher } from '@/lib/dataOps'
 
 export function TeachersPage({ data, setData }: { data: AppData; setData: SetData }) {
@@ -49,7 +49,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
     if (r.replaced || r.conflicts.length) alert(lines.join('\n'))
     setData(next)
   }
-  const list = data.teachers.filter(
+  const list = data.teachers.filter((t) => !isVirtual(t)).filter(
     (t) => t.name.includes(q) && (grade === 'all' || t.grades.includes(Number(grade))),
   )
   return (

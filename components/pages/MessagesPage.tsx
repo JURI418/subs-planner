@@ -4,7 +4,7 @@ import { Check, ChevronLeft, ChevronRight, Copy } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { todayISO, type AppData, type SetData } from '@/lib/types'
+import { isVirtual, todayISO, type AppData, type SetData } from '@/lib/types'
 import {
   DEFAULT_SMS_FOOTER,
   DEFAULT_SMS_HEADER,
@@ -38,7 +38,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
   const setSetting = (k: 'smsHeader' | 'smsFooter', v: string) =>
     setData((d) => ({ ...d, settings: { ...d.settings, [k]: v } }))
 
-  const lecturers = data.teachers.filter((t) => t.employmentType === '시간강사')
+  const lecturers = data.teachers.filter((t) => t.employmentType === '시간강사' && !isVirtual(t))
   const common = buildMessage({ month: ym.m, items: chosen, header, footer })
 
   const copy = (id: string, text: string) => {

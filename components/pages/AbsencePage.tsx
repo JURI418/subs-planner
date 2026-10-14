@@ -5,7 +5,7 @@ import { CalendarDays } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { formatDate, todayISO, uid, type Absence, type AppData, type SetData, type Slot } from '@/lib/types'
+import { dateDay, formatDate, isVirtual, todayISO, uid, type Absence, type AppData, type SetData, type Slot } from '@/lib/types'
 import { autoAssign, isAbsentAt, makeSlots, runScheduling } from '@/lib/scheduling'
 import { absenceSummary, deleteAbsence } from '@/lib/dataOps'
 
@@ -34,14 +34,31 @@ const specialLeaves = [
   '장기재직',
 ]
 
+/** [5,6,7] → '5~7교시', [1,3] → '1·3교시' */
+function periodLabel(ps: number[]) {
+  const sorted = [...ps].sort((a, b) => a - b)
+  const run = sorted.every((p, i) => i === 0 || p === sorted[i - 1] + 1)
+  return run && sorted.length > 1 ? `${sorted[0]}~${sorted[sorted.length - 1]}교시` : `${sorted.join('·')}교시`
+}
+
 export function AbsencePage({ data, setData }: { data: AppData; setData: SetData }) {
   const router = useRouter()
-  const [teacherId, setTeacherId] = useState(data.teachers[0]?.id || '')
+  const [teacherId, setTeacherId] = useState(data.teachers.find((t) => !isVirtual(t))?.id || '')
   const [start, setStart] = useState(todayISO)
   const [end, setEnd] = useState(todayISO)
   const [kind, setKind] = useState('병가')
   const [detail, setDetail] = useState('')
   const reason = [kind, detail.trim()].filter(Boolean).join(' · ')
+  // 결강 범위: 하루 전체 또는 교시 선택 (조퇴·외출·지각은 교시 선택이 기본)
+  const [scope, setScope] = useState<'day' | 'periods'>('day')
+  const [periods, setPeriods] = useState<number[]>([])
+  const allPeriods = Array.from({ length: data.settings.periodCount }, (_, i) => i + 1)
+  const togglePeriod = (p: number) =>
+    setPeriods((ps) => (ps.includes(p) ? ps.filter((x) => x !== p) : [...ps, p].sort((a, b) => a - b)))
+  const dayTeaching =
+    start === end && teacherId
+      ? new Set(data.timetable.filter((e) => e.teacherId === teacherId && e.dayOfWeek === dateDay(start)).map((e) => e.period))
+      : null
   const [preview, setPreview] = useState<Slot[]>([])
   const [selected, setSelected] = useState<string[]>([])
   // 미리보기 때 만든 결강 id를 저장해 두었다가 저장할 때 그대로 사용 (슬롯의 absenceId와 일치시키기 위함)
@@ -50,7 +67,8 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
     if (!teacherId) return alert('결강 교사를 선택하세요.')
     if (end < start) return alert('종료일이 시작일보다 빠릅니다.')
     const id = uid('a')
-    const slots = makeSlots(id, teacherId, start, end, data)
+    if (scope === 'periods' && periods.length === 0) return alert('결강할 교시를 고르세요.')
+    const slots = makeSlots(id, teacherId, start, end, data, scope === 'periods' ? periods : undefined)
     setAbsenceId(id)
     setPreview(slots)
     setSelected(slots.map((s) => s.id))
@@ -62,7 +80,8 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
       teacherId,
       startDate: start,
       endDate: end,
-      mode: '종일',
+      mode: scope === 'periods' ? '교시선택' : '종일',
+      ...(scope === 'periods' ? { periods } : {}),
       reason,
     }
     const slots = preview.filter((s) => selected.includes(s.id))
@@ -140,7 +159,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 className="m3-field mt-2 w-full"
               >
                 <option value="">선택</option>
-                {data.teachers.map((t) => (
+                {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name} · {t.subject}
                   </option>
@@ -176,6 +195,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   onChange={(e) => {
                     setKind(e.target.value)
                     setDetail('')
+                    if (['조퇴', '외출', '지각'].includes(e.target.value)) setScope('periods')
                   }}
                   className="m3-field mt-2 w-full"
                 >
@@ -207,6 +227,63 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   />
                 )}
               </label>
+            </div>
+            <div className="text-sm font-semibold">
+              결강 범위
+              <div className="mt-2 inline-flex border border-line bg-surface p-0.5" role="radiogroup">
+                {(
+                  [
+                    ['day', '하루 전체'],
+                    ['periods', '교시 선택'],
+                  ] as const
+                ).map(([v, l]) => (
+                  <button
+                    key={v}
+                    role="radio"
+                    aria-checked={scope === v}
+                    onClick={() => setScope(v)}
+                    className={`px-4 py-1.5 text-[14px] ${scope === v ? 'bg-ink font-bold text-paper' : 'font-normal text-ink-2 hover:bg-wash'}`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+              {scope === 'periods' && (
+                <div className="mt-3 font-normal">
+                  <div className="flex flex-wrap gap-1.5">
+                    {allPeriods.map((p) => {
+                      const on = periods.includes(p)
+                      const teach = dayTeaching?.has(p)
+                      return (
+                        <button
+                          key={p}
+                          onClick={() => togglePeriod(p)}
+                          aria-pressed={on}
+                          aria-label={`${p}교시`}
+                          className={`relative grid h-10 w-11 place-items-center rounded-md text-[14px] font-bold transition-colors ${
+                            on ? 'bg-ink text-paper' : 'border border-line bg-surface text-ink-2 hover:border-ink'
+                          }`}
+                        >
+                          {p}
+                          {teach && <span className={`absolute bottom-1 size-1 rounded-full ${on ? 'bg-point' : 'bg-ink/50'}`} aria-hidden />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px]">
+                    <button onClick={() => setPeriods(allPeriods.filter((p) => p <= 4))} className="m3-btn m3-btn-sm m3-text h-7 px-2">
+                      오전 1~4
+                    </button>
+                    <button onClick={() => setPeriods(allPeriods.filter((p) => p >= 5))} className="m3-btn m3-btn-sm m3-text h-7 px-2">
+                      오후 5~{data.settings.periodCount}
+                    </button>
+                    <button onClick={() => setPeriods([])} className="m3-btn m3-btn-sm m3-text h-7 px-2">
+                      지우기
+                    </button>
+                    {dayTeaching && <span className="text-subtle">· 점은 그날 수업 있는 교시</span>}
+                  </div>
+                </div>
+              )}
             </div>
             <button onClick={make} className="m3-btn m3-filled">
               슬롯 미리보기
@@ -291,6 +368,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   <span className="text-sm text-ink-2">
                     {formatDate(a.startDate)}
                     {a.endDate !== a.startDate && ` ~ ${formatDate(a.endDate)}`}
+                    {a.mode === '교시선택' && a.periods?.length ? ` · ${periodLabel(a.periods)}` : ''}
                   </span>
                   <span className="text-sm text-subtle">{a.reason}</span>
                   <span className="ml-auto flex items-center gap-2">

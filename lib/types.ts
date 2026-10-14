@@ -75,6 +75,8 @@ export type Settings = {
   /** 시간강사 안내 문자 머리말·맺음말 */
   smsHeader?: string
   smsFooter?: string
+  /** 첫 화면 사용법 안내를 다시 띄울 날짜 (한 달 동안 안 보기) */
+  guideHiddenUntil?: string
   /** 구글 시트 연결 (Apps Script 웹 앱 주소, 확인용 비밀 키, 확정 시 자동 전송) */
   sheetUrl?: string
   sheetKey?: string
@@ -93,6 +95,8 @@ export type AppData = {
 export type EventKind = '공휴일' | '휴업일' | '방학' | '행사'
 export type CalendarEvent = { date: string; title: string; kind: EventKind }
 export const days: Day[] = ['월', '화', '수', '목', '금']
+/** 시간표의 '가상' 교사(아직 배정되지 않은 수업 자리)는 화면 목록에서 숨긴다 */
+export const isVirtual = (t: { name: string }) => t.name.startsWith('가상')
 export const defaultSettings: Settings = {
   semester: '2026학년도 2학기',
   startDate: '2026-08-17',
@@ -162,9 +166,9 @@ export function emptyData(): AppData {
   }
 }
 export function seedData(): AppData {
-  // 샘플용 가상 이름 (실명 사용 안 함). 21번째 '가상E'는 자동 제외 규칙 확인용으로 유지
+  // 샘플용 이름 (실명 사용 안 함)
   const names = Array.from({ length: 24 }, (_, i) =>
-    i === 20 ? '가상E' : `교사${String(i + 1).padStart(2, '0')}`,
+    `교사${String(i + 1).padStart(2, '0')}`,
   )
   const partTime = ['교사22', '교사23', '교사24'] // 시간강사 + 보강 후보 제외
   const extraPool = ['교사17', '교사19'] // 보강 후보 추가 포함

@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { days, formatDotDate, todayISO, type AppData } from '@/lib/types'
+import { days, formatDotDate, isVirtual, todayISO, type AppData } from '@/lib/types'
 import { isAbsentAt } from '@/lib/scheduling'
 
 const iso = (x: Date) =>
@@ -29,7 +29,7 @@ export function WeekPage({ data }: { data: AppData }) {
   const [offset, setOffset] = useState(0)
   const [q, setQ] = useState('')
   const withTimetable = useMemo(
-    () => data.teachers.filter((t) => data.timetable.some((e) => e.teacherId === t.id)),
+    () => data.teachers.filter((t) => !isVirtual(t) && data.timetable.some((e) => e.teacherId === t.id)),
     [data.teachers, data.timetable],
   )
   const [teacherId, setTeacherId] = useState(withTimetable[0]?.id ?? '')
