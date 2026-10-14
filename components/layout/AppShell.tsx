@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { BarChart3, BookOpen, HardDriveDownload, MessageSquareText, ChevronRight, Copy, Menu, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
 import { formatDotDate, seedData, todayISO } from '@/lib/types'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
+import { canOverwrite, chooseBackupFile, overwriteBackup } from '@/lib/fileBackup'
 import { useAppData } from '@/hooks/useAppData'
 import { useSheetSync } from '@/hooks/useSheetSync'
 import { DashboardPage } from '@/components/pages/DashboardPage'
@@ -40,18 +41,30 @@ export function AppShell() {
   const router = useRouter()
   const { data, setData, ready } = useAppData()
   const sheet = useSheetSync(data, setData)
-  // 매일 처음 열 때 백업 파일을 한 번 자동으로 내려받기 (실제 시간표가 있을 때만)
-  const [autoSaved, setAutoSaved] = useState(false)
+  // 매일 처음 열 때 백업 한 번: 정해 둔 파일에 덮어쓰기(크롬·엣지) 또는 새 파일로 내려받기
+  const [autoSaved, setAutoSaved] = useState<string | null>(null)
+  const [backupAsk, setBackupAsk] = useState<null | 'choose' | 'permit'>(null)
+  const markSaved = (text: string) => {
+    setData((d) => ({ ...d, settings: { ...d.settings, lastAutoBackup: todayISO(), lastBackupAt: new Date().toISOString() } }))
+    setBackupAsk(null)
+    setAutoSaved(text)
+    setTimeout(() => setAutoSaved(null), 6000)
+  }
   useEffect(() => {
     if (!ready) return
-    const day = todayISO()
+    const s = data.settings
     const sample = data.teachers.every((t) => /^교사\d{2}$|^가상E$/.test(t.name))
-    if (data.settings.autoBackup === false || !data.timetable.length || sample || data.settings.lastAutoBackup === day) return
-    downloadBackup(data)
-    setData((d) => ({ ...d, settings: { ...d.settings, lastAutoBackup: day, lastBackupAt: new Date().toISOString() } }))
-    setAutoSaved(true)
-    const t = setTimeout(() => setAutoSaved(false), 6000)
-    return () => clearTimeout(t)
+    if (s.autoBackup === false || !data.timetable.length || sample || s.lastAutoBackup === todayISO()) return
+    ;(async () => {
+      if (canOverwrite() && s.backupMode !== 'download') {
+        const r = await overwriteBackup(data)
+        if (r === 'saved') return markSaved(`오늘 백업을 ${s.backupFileName ?? '백업 파일'}에 덮어썼어요`)
+        setBackupAsk(r === 'need-click' ? 'permit' : 'choose')
+        return
+      }
+      downloadBackup(data)
+      markSaved('오늘 백업 파일을 다운로드 폴더에 저장했어요')
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
   const [mobile, setMobile] = useState(false)
@@ -256,7 +269,57 @@ export function AppShell() {
       {/* 구글 시트 전송 결과 알림 */}
       {autoSaved && !sheet.status && (
         <div role="status" className="fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] bg-ink px-4 py-3 text-[14px] font-bold text-paper shadow-[0_8px_24px_rgb(0_0_0/.2)]">
-          <span className="mr-2 text-point">●</span>오늘 백업 파일을 다운로드 폴더에 저장했어요
+          <span className="mr-2 text-point">●</span>
+          {autoSaved}
+        </div>
+      )}
+      {/* 오늘 백업: 저장 위치를 아직 안 정했거나(처음), 이번 방문에서 덮어쓰기 허락이 필요할 때 */}
+      {backupAsk && (
+        <div className="fixed bottom-24 right-6 z-30 w-[min(400px,calc(100vw-3rem))] bg-ink p-4 text-paper shadow-[0_8px_24px_rgb(0_0_0/.25)]">
+          <p className="text-[14px] font-bold">
+            {backupAsk === 'choose' ? '백업 파일 저장 위치를 한 번만 정해 주세요' : '오늘 백업을 덮어쓸까요?'}
+          </p>
+          <p className="mt-1 text-[12.5px] leading-5 text-paper/70">
+            {backupAsk === 'choose'
+              ? '정해 두면 매일 같은 파일 하나에 덮어써서 파일이 쌓이지 않아요.'
+              : `${data.settings.backupFileName ?? '백업 파일'}에 오늘 내용을 덮어씁니다. 브라우저가 물으면 ‘방문할 때마다 허용’을 고르면 다음부터는 묻지 않아요.`}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  if (backupAsk === 'choose') {
+                    const name = await chooseBackupFile(data)
+                    if (!name) return
+                    setData((d) => ({ ...d, settings: { ...d.settings, backupMode: 'overwrite', backupFileName: name } }))
+                    markSaved(`${name}에 저장했어요. 내일부터 여기에 덮어써요`)
+                  } else if ((await overwriteBackup(data, true)) === 'saved') {
+                    markSaved(`오늘 백업을 ${data.settings.backupFileName ?? '백업 파일'}에 덮어썼어요`)
+                  }
+                } catch {
+                  /* 저장 창을 닫은 경우 */
+                }
+              }}
+              className="m3-btn m3-btn-sm bg-point text-on-point hover:brightness-95"
+            >
+              {backupAsk === 'choose' ? '저장 위치 정하기' : '덮어쓰기'}
+            </button>
+            {backupAsk === 'choose' && (
+              <button
+                onClick={() => {
+                  setData((d) => ({ ...d, settings: { ...d.settings, backupMode: 'download' } }))
+                  downloadBackup(data)
+                  markSaved('오늘 백업 파일을 다운로드 폴더에 저장했어요')
+                }}
+                className="m3-btn m3-btn-sm border border-paper/40 text-paper"
+              >
+                매일 새 파일로 받기
+              </button>
+            )}
+            <button onClick={() => setBackupAsk(null)} className="m3-btn m3-btn-sm text-paper/70 hover:text-paper">
+              나중에
+            </button>
+          </div>
         </div>
       )}
       {sheet.status && (

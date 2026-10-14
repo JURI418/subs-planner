@@ -75,6 +75,9 @@ export type Settings = {
   /** 매일 처음 열 때 백업 파일 자동 저장 (기본 켜짐) 과 마지막 자동 저장 날짜 */
   autoBackup?: boolean
   lastAutoBackup?: string
+  /** 'overwrite': 정해 둔 파일 하나에 덮어쓰기 / 'download': 매일 새 파일로 내려받기 */
+  backupMode?: 'overwrite' | 'download'
+  backupFileName?: string
   /** 시간강사 안내 문자 머리말·맺음말 */
   smsHeader?: string
   smsFooter?: string

@@ -4,12 +4,13 @@ import { Download, Upload } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import type { AppData, SetData } from '@/lib/types'
+import { todayISO, type AppData, type SetData } from '@/lib/types'
 import { STORAGE_KEY } from '@/hooks/useAppData'
 import { parseBackup } from '@/lib/dataOps'
 import { WeightsCard } from '@/components/settings/WeightsCard'
 import { SheetCard } from '@/components/settings/SheetCard'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
+import { canOverwrite, chooseBackupFile, forgetBackupFile } from '@/lib/fileBackup'
 
 export function SettingsPage({ data, setData }: { data: AppData; setData: SetData }) {
   const fileRef = useRef<HTMLInputElement>(null)
@@ -170,6 +171,36 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
             {data.settings.lastAutoBackup ? `(마지막 자동 저장 ${data.settings.lastAutoBackup.replaceAll('-', '.')})` : ''}
           </span>
         </label>
+        {data.settings.autoBackup !== false && canOverwrite() && (
+          <div className="ml-6 mt-2 flex flex-wrap items-center gap-2 text-[13px]">
+            <span className="text-subtle">저장 방식</span>
+            <button
+              onClick={async () => {
+                try {
+                  const name = await chooseBackupFile(data)
+                  if (name)
+                    setData((d) => ({ ...d, settings: { ...d.settings, backupMode: 'overwrite', backupFileName: name, lastAutoBackup: todayISO(), lastBackupAt: new Date().toISOString() } }))
+                } catch {
+                  /* 저장 창을 닫음 */
+                }
+              }}
+              className={`m3-btn m3-btn-sm ${data.settings.backupMode !== 'download' && data.settings.backupFileName ? 'm3-filled' : 'm3-outlined'}`}
+            >
+              {data.settings.backupMode !== 'download' && data.settings.backupFileName
+                ? `같은 파일에 덮어쓰기 · ${data.settings.backupFileName} (위치 바꾸기)`
+                : '같은 파일에 덮어쓰기 (위치 정하기)'}
+            </button>
+            <button
+              onClick={async () => {
+                await forgetBackupFile()
+                setData((d) => ({ ...d, settings: { ...d.settings, backupMode: 'download', backupFileName: undefined } }))
+              }}
+              className={`m3-btn m3-btn-sm ${data.settings.backupMode === 'download' ? 'm3-filled' : 'm3-outlined'}`}
+            >
+              매일 새 파일로 받기
+            </button>
+          </div>
+        )}
         {(() => {
           const days = daysSinceBackup(data)
           return (
