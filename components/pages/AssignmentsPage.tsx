@@ -9,13 +9,39 @@ import { exportText, formatDate, isVirtual, type AppData, type Assignment, type 
 import { validateAssignment } from '@/lib/scheduling'
 import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 
-/** 추천 근거 칩 색: 좋은 점은 초록, 문제는 빨강, 수동 변경은 자주, 나머지는 회색 */
-function reasonTone(r: string) {
-  if (/위반|수업 있음|다른 보강|결강|초과|불가|제외|후보 없음|본인/.test(r)) return 'bg-bad-soft text-bad'
-  if (/수동|예비.*변경/.test(r)) return 'bg-plum-soft text-plum'
-  if (/같은 학년|추가 포함/.test(r)) return 'bg-ok-soft text-ok'
-  if (/연속/.test(r)) return 'bg-sky-soft text-sky'
-  return 'bg-wash text-ink-2'
+/** 추천 근거 종류: 좋은 점(초록) · 연속(청회) · 문제(빨강) · 수동 변경(자주) · 그 밖의 숫자(회색) */
+function reasonKind(r: string) {
+  if (/위반|수업 있음|다른 보강|결강|초과|불가|제외|후보 없음|본인/.test(r)) return 'bad'
+  if (/수동|예비.*변경/.test(r)) return 'manual'
+  if (/같은 학년|추가 포함/.test(r)) return 'good'
+  if (/연속/.test(r)) return 'run'
+  return 'plain'
+}
+const BAR: Record<string, string> = {
+  good: 'border-ok text-ink',
+  run: 'border-sky text-ink',
+  bad: 'border-bad text-bad',
+  manual: 'border-plum text-plum',
+  plain: 'border-line-strong/20 text-ink-2',
+}
+
+/** 추천 근거를 한 줄에 하나씩, 왼쪽 가는 색 막대로 구분 (회색 숫자들은 한 줄로 묶음) */
+function ReasonList({ reasons }: { reasons: string[] }) {
+  const order = ['bad', 'manual', 'good', 'run'] as const
+  const plain = reasons.filter((r) => reasonKind(r) === 'plain')
+  const rows = [
+    ...order.flatMap((k) => reasons.filter((r) => reasonKind(r) === k).map((r) => ({ k, text: r }))),
+    ...(plain.length ? [{ k: 'plain', text: plain.join(' · ') }] : []),
+  ]
+  return (
+    <span className="flex flex-col gap-1">
+      {rows.map(({ k, text }) => (
+        <span key={text} className={`border-l-[3px] pl-2 text-[12.5px] leading-[1.35] ${BAR[k]}`}>
+          {text}
+        </span>
+      ))}
+    </span>
+  )
 }
 
 export function AssignmentsPage({ data, setData }: { data: AppData; setData: SetData }) {
@@ -333,13 +359,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         )}
                       </td>
                       <td className="max-w-72 p-3 text-xs text-subtle">
-                        <span className="flex flex-wrap gap-1">
-                          {a.reasons.map((r) => (
-                            <span key={r} className={`rounded-full px-2 py-0.5 text-[11.5px] leading-5 ${reasonTone(r)}`}>
-                              {r}
-                            </span>
-                          ))}
-                        </span>
+                        <ReasonList reasons={a.reasons} />
                         {s && (
                           <button
                             onClick={() => toggle(a.slotId)}
