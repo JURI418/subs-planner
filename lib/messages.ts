@@ -68,8 +68,11 @@ export function itemsForTeacher(items: OffItem[], data: AppData, teacherId: stri
 export const DEFAULT_SMS_HEADER = '[학교 안내]'
 export const DEFAULT_SMS_FOOTER = '일정이 바뀌면 다시 안내드리겠습니다. 감사합니다.'
 
-export function buildMessage(opts: { month: number; items: OffItem[]; name?: string; header: string; footer: string }) {
-  const { month, items, name, header, footer } = opts
+/** months: 문자에 넣을 달 번호들 (예: [10, 11] → '10·11월') */
+export function buildMessage(opts: { months: number[]; items: OffItem[]; name?: string; header: string; footer: string }) {
+  const { months, items, name, header, footer } = opts
+  if (!months.length) return '(위에서 문자에 넣을 달을 먼저 골라 주세요)'
+  const month = months.join('·')
   const lines: string[] = []
   if (header.trim()) lines.push(header.trim())
   if (name) lines.push(`${name} 선생님, 안녕하세요.`)

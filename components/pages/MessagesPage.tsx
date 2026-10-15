@@ -28,8 +28,16 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
   const items = useMemo(() => monthOffItems(data, ymKey), [data, ymKey])
   // 휴업일·방학은 기본 선택, 공휴일·행사는 골라서 넣기
   const [picked, setPicked] = useState<Record<string, boolean>>({})
-  const isOn = (k: string, kind: string) => picked[`${ymKey}|${k}`] ?? (kind === '휴업일' || kind === '방학')
-  const chosen = items.filter((it) => isOn(it.key, it.kind))
+  const isOnIn = (key: string, k: string, kind: string) => picked[`${key}|${k}`] ?? (kind === '휴업일' || kind === '방학')
+  const isOn = (k: string, kind: string) => isOnIn(ymKey, k, kind)
+  // 문자에 넣을 달 (여러 달을 모아 한 번에 보내기). 기본은 처음 보이는 달 하나
+  const [months, setMonths] = useState<string[]>(() => [ymKey])
+  const included = months.includes(ymKey)
+  const toggleMonth = (key: string) =>
+    setMonths((ms) => (ms.includes(key) ? ms.filter((x) => x !== key) : [...ms, key].sort()))
+  const sortedMonths = [...months].sort()
+  const chosen = sortedMonths.flatMap((key) => monthOffItems(data, key).filter((it) => isOnIn(key, it.key, it.kind)))
+  const monthNums = sortedMonths.map((k) => Number(k.slice(5)))
   const [perTeacher, setPerTeacher] = useState(true)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -39,7 +47,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
     setData((d) => ({ ...d, settings: { ...d.settings, [k]: v } }))
 
   const lecturers = data.teachers.filter((t) => t.employmentType === '시간강사' && !isVirtual(t))
-  const common = buildMessage({ month: ym.m, items: chosen, header, footer })
+  const common = buildMessage({ months: monthNums, items: chosen, header, footer })
 
   const copy = (id: string, text: string) => {
     navigator.clipboard?.writeText(text)
@@ -77,6 +85,28 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                 </button>
               </div>
             </div>
+            {/* 문자에 넣을 달: 여러 달을 모아 한 문자로 */}
+            <div className="mt-4 flex flex-wrap items-center gap-2 border border-line bg-wash px-3 py-2.5">
+              <span className="text-[13px] font-bold">문자에 넣을 달</span>
+              {sortedMonths.length === 0 && <span className="text-[13px] text-subtle">없음</span>}
+              {sortedMonths.map((k) => (
+                <span key={k} className={`flex items-center gap-1 rounded-full py-0.5 pl-3 pr-1 text-[13px] font-bold ${k === ymKey ? 'bg-ink text-paper' : 'border border-ink/30 bg-surface'}`}>
+                  {Number(k.slice(5))}월
+                  <button onClick={() => toggleMonth(k)} aria-label={`${Number(k.slice(5))}월 빼기`} className="grid size-5 place-items-center rounded-full opacity-70 hover:opacity-100">
+                    ×
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={() => toggleMonth(ymKey)}
+                className={`m3-btn m3-btn-sm ml-auto h-8 ${included ? 'm3-text' : 'm3-filled'}`}
+              >
+                {included ? `${ym.m}월 빼기` : `+ ${ym.m}월도 넣기`}
+              </button>
+            </div>
+            {!included && (
+              <p className="mt-2 text-[12px] text-warn">지금 보는 {ym.m}월은 문자에 들어가지 않아요. ‘+ {ym.m}월도 넣기’를 누르면 함께 들어가요.</p>
+            )}
             {items.length === 0 ? (
               <p className="mt-5 text-sm text-subtle">
                 {data.events.length
@@ -106,6 +136,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
             )}
             <p className="mt-3 text-[12px] leading-5 text-subtle">
               휴업일·방학은 기본으로 선택돼요. 체육대회처럼 수업이 없는 행사는 직접 체크하세요. 행사에는 ‘(수업 없음)’이 붙어요.
+              ‹ › 로 다른 달로 넘겨 ‘+ 이 달도 넣기’를 누르면 여러 달을 한 문자로 모을 수 있어요.
             </p>
           </Card>
 
@@ -159,7 +190,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
               <div className="mt-2 flex flex-col">
                 {lecturers.map((t) => {
                   const mine = perTeacher ? itemsForTeacher(chosen, data, t.id) : chosen
-                  const text = buildMessage({ month: ym.m, items: mine, name: t.name, header, footer })
+                  const text = buildMessage({ months: monthNums, items: mine, name: t.name, header, footer })
                   return (
                     <MessageBox
                       key={t.id}
