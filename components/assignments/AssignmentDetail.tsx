@@ -10,175 +10,24 @@ export type DetailActions = {
 }
 
 const CELL: Record<string, string> = {
-  class: 'bg-iris-soft text-on-iris-container',
+  class: 'bg-iris-soft text-ink-2',
   cover: 'bg-warn-soft text-warn',
-  this: 'bg-iris text-white',
-  free: 'border border-dashed border-line text-faint',
+  this: 'bg-ink font-bold text-white',
+  free: 'border border-dashed border-line',
   // 다른 후보: 아직 배정 전이므로 이번 보강 칸을 점선으로
-  maybe: 'border-2 border-dashed border-ink/70 bg-surface font-bold text-ink',
+  maybe: 'border-[1.5px] border-dashed border-ink/80 bg-surface font-bold text-ink',
 }
 
-const TONE = { ink: 'text-ink', sky: 'text-sky', bad: 'text-bad', warn: 'text-warn' } as const
-
-function Stat({
-  label,
-  value,
-  unit,
-  meta,
-  extra,
-  tone,
-}: {
-  label: string
-  value: number
-  unit: string
-  meta: string
-  extra?: string
-  tone: keyof typeof TONE
-}) {
-  return (
-    <div className="min-w-0 border-line pt-2.5 [&:not(:first-child)]:border-l [&:not(:first-child)]:pl-3 sm:[&:not(:first-child)]:pl-4">
-      <p className="text-[12px] text-subtle">{label}</p>
-      <p className={`mt-0.5 flex items-baseline gap-0.5 ${TONE[tone]}`}>
-        <span className="text-[1.6rem] font-bold leading-none tabular-nums">{value}</span>
-        <span className="text-[13px]">{unit}</span>
-      </p>
-      <p className={`mt-1 truncate text-[11px] ${tone === 'bad' ? 'font-bold text-bad' : 'text-subtle'}`}>
-        {meta}
-        {extra && ` · ${extra}`}
-      </p>
-    </div>
-  )
-}
-
-/** 한 교사의 그날 교시 막대 + 수업 수·연속·누적 */
-function DayStrip({
-  teacherId,
-  slot,
-  data,
-  avg,
-  candidate,
-}: {
+type Row = {
   teacherId: string
-  slot: Slot
-  data: AppData
-  avg: number
-  candidate?: boolean
-}) {
-  const day = teacherDay(teacherId, slot, data)
-  const heavy = day.total >= data.settings.maxDaily
-  const longRun = day.maxRun >= data.settings.maxConsecutive
-  const many = day.totalAssignments > avg + 1
-  return (
-    <div className="min-w-0">
-      <div className="flex gap-1">
-        {day.cells.map((c) => (
-          <div key={c.period} className="flex min-w-0 flex-1 flex-col items-center gap-1">
-            <span className="text-[11px] text-subtle">{c.period}</span>
-            <span
-              className={`flex h-9 w-full items-center justify-center rounded-md px-0.5 text-center text-[11px] leading-tight ${CELL[candidate && c.kind === 'this' ? 'maybe' : c.kind]}`}
-              title={
-                c.kind === 'class'
-                  ? `${c.period}교시 수업 ${c.label}`
-                  : c.kind === 'cover'
-                    ? `${c.period}교시 다른 보강`
-                    : c.kind === 'this'
-                      ? '이번 보강'
-                      : '빈 시간'
-              }
-            >
-              {c.kind === 'free' ? '' : c.kind === 'this' ? (candidate ? '후보' : '보강') : c.label}
-            </span>
-          </div>
-        ))}
-      </div>
-      {/* 수치 3칸: 큰 숫자 + 이름표 + 한도·평균 */}
-      <div className="mt-3 grid grid-cols-3 border-t border-line">
-        <Stat
-          label="총 수업"
-          value={day.total}
-          unit="시간"
-          meta={heavy ? '한도 도달' : `한도 ${data.settings.maxDaily}시간`}
-          extra={day.covers > 0 ? `보강 ${day.covers + 1} 포함` : undefined}
-          tone={heavy ? 'bad' : 'ink'}
-        />
-        <Stat
-          label="연속 수업"
-          value={day.maxRun}
-          unit="교시"
-          meta={longRun ? '한도 도달' : `한도 ${data.settings.maxConsecutive}교시`}
-          tone={longRun ? 'bad' : 'sky'}
-        />
-        <Stat
-          label="누적 보강"
-          value={day.totalAssignments}
-          unit="회"
-          meta={`학교 평균 ${avg.toFixed(1)}회`}
-          tone={many ? 'warn' : 'ink'}
-        />
-      </div>
-      {day.clash && (
-        <p className="mt-2 text-[13px] font-bold text-bad">같은 교시에 수업이 있습니다</p>
-      )}
-    </div>
-  )
-}
-
-function Row({
-  role,
-  teacherId,
-  slot,
-  data,
-  avg,
-  note,
-  actions,
-  rank,
-}: {
+  role: '보강' | '예비1' | '예비2' | null
   rank?: number
-  role?: string
-  teacherId: string
-  slot: Slot
-  data: AppData
-  avg: number
+  score?: number
   note?: string
-  actions?: React.ReactNode
-}) {
-  const t = data.teachers.find((x) => x.id === teacherId)
-  return (
-    <div
-      className={
-        rank
-          ? 'border border-dashed border-ink/25 p-4 transition-colors hover:border-solid hover:border-ink/40 hover:bg-surface'
-          : `border-l-4 bg-surface p-4 shadow-[0_1px_2px_rgba(0,0,0,.06)] ${role === '보강' ? 'border-ink' : 'border-plum'}`
-      }
-    >
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        {rank && (
-          <span className="grid size-6 place-items-center rounded-full border border-ink/40 text-[12px] font-bold text-ink-2">
-            {rank}
-          </span>
-        )}
-        {role &&
-          (role === '보강' ? (
-            <span className="bg-ink px-2 py-0.5 text-[12px] font-bold text-paper">보강</span>
-          ) : (
-            <span
-              className={`px-2 py-0.5 text-[12px] font-bold ${role === '예비1' ? 'bg-plum text-white' : 'border border-plum bg-plum-soft text-plum'}`}
-            >
-              {role}
-            </span>
-          ))}
-        <span className="text-[15px] font-bold">{t?.name ?? '알 수 없음'}</span>
-        <span className="text-[13px] text-subtle">
-          {t?.subject} · {t?.grades.map((g) => `${g}학년`).join('·') || '학년 정보 없음'}
-        </span>
-        {note && <span className="text-[13px] text-bad">{note}</span>}
-        <span className="ml-auto flex flex-wrap gap-1">{actions}</span>
-      </div>
-      <DayStrip teacherId={teacherId} slot={slot} data={data} avg={avg} candidate={!!rank} />
-    </div>
-  )
+  actions: React.ReactNode
 }
 
+/** 배정 상세: 보강·예비·다른 후보를 한 표에 한 줄씩 놓고 그날 시간표와 숫자를 같은 열로 비교 */
 export function AssignmentDetail({
   a,
   slot,
@@ -190,9 +39,7 @@ export function AssignmentDetail({
   data: AppData
   actions: DetailActions
 }) {
-  const avg = data.teachers.length
-    ? data.teachers.reduce((n, t) => n + t.totalAssignments, 0) / data.teachers.length
-    : 0
+  const avg = data.teachers.length ? data.teachers.reduce((n, t) => n + t.totalAssignments, 0) / data.teachers.length : 0
   const confirmed = a.status === '확정'
   const assigned = new Set([a.substituteTeacherId, ...a.backups].filter(Boolean) as string[])
   const rec = recommend(
@@ -203,125 +50,197 @@ export function AssignmentDetail({
   const others = rec.ranked.filter((r) => !assigned.has(r.t.id)).slice(0, 5)
   const problemsOf = (id: string) => validateAssignment(slot, id, data)
 
-  return (
-    <div className="grid gap-5 rounded-none bg-wash p-4 md:p-5 xl:grid-cols-2 xl:gap-0">
-      <section className="flex min-w-0 flex-col gap-3 xl:pr-5">
-        <div className="flex items-baseline justify-between">
-          <h3 className="flex items-center gap-2 font-bold">
-            <span className="size-2.5 bg-ink" aria-hidden />
-            배정된 교사
-          </h3>
-          <Legend />
-        </div>
-        {a.substituteTeacherId ? (
-          <Row role="보강" teacherId={a.substituteTeacherId} slot={slot} data={data} avg={avg} />
-        ) : (
-          <p className="rounded-none bg-surface p-4 text-sm text-subtle">
-            보강 교사가 없습니다. 오른쪽 후보에서 고르세요.
-          </p>
+  const mine: Row[] = []
+  if (a.substituteTeacherId) mine.push({ teacherId: a.substituteTeacherId, role: '보강', actions: null })
+  ;([0, 1] as const).forEach((i) => {
+    const id = a.backups[i]
+    if (!id) return
+    const p = problemsOf(id)
+    mine.push({
+      teacherId: id,
+      role: i === 0 ? '예비1' : '예비2',
+      note: p.length ? p.join(', ') : undefined,
+      actions: (
+        <>
+          <button onClick={() => actions.promote(i)} className="m3-btn m3-btn-sm m3-outlined h-8 px-3">
+            <ArrowUp size={14} /> 보강으로
+          </button>
+          <button
+            onClick={() => actions.setBackup(i, null)}
+            aria-label={`예비${i + 1} 해제`}
+            className="grid size-8 place-items-center rounded-full text-subtle hover:bg-ink/[.08]"
+          >
+            <X size={15} />
+          </button>
+        </>
+      ),
+    })
+  })
+  const cand: Row[] = others.map((r, i) => ({
+    teacherId: r.t.id,
+    role: null,
+    rank: i + 1,
+    score: Math.round(r.score),
+    actions: (
+      <>
+        {!confirmed && (
+          <button onClick={() => actions.setMain(r.t.id)} className="m3-btn m3-btn-sm m3-filled h-8 px-3">
+            보강
+          </button>
         )}
-        {([0, 1] as const).map((i) => {
-          const id = a.backups[i]
-          if (!id)
-            return (
-              <p
-                key={i}
-                className="rounded-none border border-dashed border-plum/40 px-4 py-3 text-sm text-subtle"
-              >
-                <b className="text-plum">예비{i + 1}</b> 없음 · 오른쪽 후보에서 지정할 수 있습니다.
-              </p>
-            )
-          const p = problemsOf(id)
-          return (
-            <Row
-              key={i}
-              role={`예비${i + 1}`}
-              teacherId={id}
-              slot={slot}
-              data={data}
-              avg={avg}
-              note={p.length ? p.join(', ') : undefined}
-              actions={
-                <>
-                  <button onClick={() => actions.promote(i)} className="m3-btn m3-btn-sm m3-tonal">
-                    <ArrowUp size={15} /> 보강으로
-                  </button>
-                  <button
-                    onClick={() => actions.setBackup(i, null)}
-                    aria-label={`예비${i + 1} 해제`}
-                    className="grid size-8 place-items-center rounded-full text-subtle hover:bg-ink/[.08]"
-                  >
-                    <X size={16} />
-                  </button>
-                </>
-              }
-            />
-          )
-        })}
-      </section>
+        <button onClick={() => actions.setBackup(0, r.t.id)} className="m3-btn m3-btn-sm h-8 border border-plum px-3 text-plum hover:bg-plum hover:text-white">
+          예비1
+        </button>
+        <button onClick={() => actions.setBackup(1, r.t.id)} className="m3-btn m3-btn-sm h-8 border border-plum px-3 text-plum hover:bg-plum hover:text-white">
+          예비2
+        </button>
+      </>
+    ),
+  }))
+  const cols = 8
 
-      <section className="flex min-w-0 flex-col gap-3 border-t border-line pt-5 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
-        <h3 className="flex flex-wrap items-baseline gap-x-2 font-bold">
-          <span className="flex items-center gap-2 self-center">
-            <span className="size-2.5 border border-dashed border-ink" aria-hidden />
-            다른 후보
-          </span>
-          <span className="text-[13px] font-normal text-subtle">
-            추천 점수 순 · 조건 때문에 빠진 교사 {rec.blocked.length}명
-          </span>
-        </h3>
-        {others.length === 0 ? (
-          <p className="rounded-none bg-surface p-4 text-sm text-subtle">
-            조건을 만족하는 다른 후보가 없습니다.
-          </p>
-        ) : (
-          others.map((r, ri) => (
-            <Row
-              key={r.t.id}
-              rank={ri + 1}
-              teacherId={r.t.id}
-              slot={slot}
-              data={data}
-              avg={avg}
-              actions={
-                <>
-                  <span className="mr-1 self-center text-[13px] text-subtle">{Math.round(r.score)}점</span>
-                  {!confirmed && (
-                    <button onClick={() => actions.setMain(r.t.id)} className="m3-btn m3-btn-sm m3-filled">
-                      보강
-                    </button>
-                  )}
-                  <button
-                    onClick={() => actions.setBackup(0, r.t.id)}
-                    className="m3-btn m3-btn-sm border border-plum text-plum hover:bg-plum hover:text-white"
-                  >
-                    예비1
-                  </button>
-                  <button
-                    onClick={() => actions.setBackup(1, r.t.id)}
-                    className="m3-btn m3-btn-sm border border-plum text-plum hover:bg-plum hover:text-white"
-                  >
-                    예비2
-                  </button>
-                </>
-              }
-            />
-          ))
-        )}
-        {confirmed && (
-          <p className="text-[13px] text-subtle">
-            확정된 배정입니다. 보강 교사를 바꾸려면 예비 교사를 &lsquo;보강으로&rsquo; 올리거나 확정을
-            취소하세요.
-          </p>
-        )}
-      </section>
+  return (
+    <div className="bg-wash p-3 md:p-4">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[860px] border-collapse bg-surface text-[13px]">
+          <thead>
+            <tr className="border-b border-line text-left text-[11px] font-bold text-subtle">
+              <th className="w-16 px-3 py-2.5">역할</th>
+              <th className="w-52 px-2 py-2.5">교사</th>
+              <th className="px-2 py-2.5">그날 시간표 (1~{data.settings.periodCount}교시)</th>
+              <th className="w-16 px-2 py-2.5 text-center">총 수업</th>
+              <th className="w-14 px-2 py-2.5 text-center">연속</th>
+              <th className="w-14 px-2 py-2.5 text-center">누적</th>
+              <th className="w-14 px-2 py-2.5 text-center">점수</th>
+              <th className="w-56 px-3 py-2.5" />
+            </tr>
+          </thead>
+          <tbody>
+            <Section cols={cols} label="배정된 교사" right={<Legend />} />
+            {mine.length === 0 ? (
+              <tr>
+                <td colSpan={cols} className="px-3 py-3 text-subtle">
+                  보강 교사가 없습니다. 아래 후보에서 고르세요.
+                </td>
+              </tr>
+            ) : (
+              mine.map((r) => <Line key={r.teacherId} row={r} slot={slot} data={data} avg={avg} />)
+            )}
+            {mine.length > 0 && !a.backups[0] && !a.backups[1] && (
+              <tr className="border-b border-line">
+                <td colSpan={cols} className="px-3 py-2 text-[12px] text-subtle">
+                  <b className="text-plum">예비1·2</b> 없음 · 아래 후보에서 지정할 수 있습니다.
+                </td>
+              </tr>
+            )}
+            <Section cols={cols} label={`다른 후보 · 추천 점수 순 · 조건 때문에 빠진 교사 ${rec.blocked.length}명`} />
+            {cand.length === 0 ? (
+              <tr>
+                <td colSpan={cols} className="px-3 py-3 text-subtle">
+                  조건을 만족하는 다른 후보가 없습니다.
+                </td>
+              </tr>
+            ) : (
+              cand.map((r) => <Line key={r.teacherId} row={r} slot={slot} data={data} avg={avg} candidate />)
+            )}
+          </tbody>
+        </table>
+      </div>
+      {confirmed && (
+        <p className="mt-2 text-[12px] text-subtle">
+          확정된 배정입니다. 보강 교사를 바꾸려면 예비 교사를 &lsquo;보강으로&rsquo; 올리거나 확정을 취소하세요.
+        </p>
+      )}
     </div>
+  )
+}
+
+function Section({ cols, label, right }: { cols: number; label: string; right?: React.ReactNode }) {
+  return (
+    <tr className="bg-wash-2/60">
+      <td colSpan={cols} className="px-3 py-1.5">
+        <span className="flex items-center justify-between gap-3">
+          <span className="text-[11px] font-bold tracking-[.08em] text-subtle">{label}</span>
+          {right}
+        </span>
+      </td>
+    </tr>
+  )
+}
+
+function Line({
+  row,
+  slot,
+  data,
+  avg,
+  candidate,
+}: {
+  row: Row
+  slot: Slot
+  data: AppData
+  avg: number
+  candidate?: boolean
+}) {
+  const t = data.teachers.find((x) => x.id === row.teacherId)
+  const day = teacherDay(row.teacherId, slot, data)
+  const heavy = day.total >= data.settings.maxDaily
+  const longRun = day.maxRun >= data.settings.maxConsecutive
+  const many = day.totalAssignments > avg + 1
+  const note = row.note ?? (day.clash ? '같은 교시 수업 있음' : undefined)
+  return (
+    <tr className="border-b border-line align-middle">
+      <td className="px-3 py-2">
+        {row.role === '보강' && <span className="bg-ink px-2 py-0.5 text-[11px] font-bold text-paper">보강</span>}
+        {row.role === '예비1' && <span className="bg-plum px-2 py-0.5 text-[11px] font-bold text-white">예비1</span>}
+        {row.role === '예비2' && (
+          <span className="border border-plum bg-plum-soft px-2 py-0.5 text-[11px] font-bold text-plum">예비2</span>
+        )}
+        {row.rank && (
+          <span className="grid size-6 place-items-center rounded-full border border-ink/40 text-[11px] font-bold text-ink-2">
+            {row.rank}
+          </span>
+        )}
+      </td>
+      <td className="px-2 py-2">
+        <span className="text-[14px] font-bold">{t?.name ?? '알 수 없음'}</span>{' '}
+        <span className="text-[11.5px] text-subtle">
+          {t?.subject} · {t?.grades.map((g) => `${g}학년`).join('·') || '학년 정보 없음'}
+        </span>
+        {note && <span className="mt-0.5 block text-[11.5px] font-bold text-bad">{note}</span>}
+      </td>
+      <td className="px-2 py-2">
+        <div className="flex gap-0.5">
+          {day.cells.map((c) => (
+            <span
+              key={c.period}
+              title={`${c.period}교시 ${c.kind === 'class' ? `수업 ${c.label}` : c.kind === 'cover' ? '다른 보강' : c.kind === 'this' ? '이번 보강' : '빈 시간'}`}
+              className={`grid h-7 w-9 shrink-0 place-items-center rounded-[3px] text-[10.5px] leading-none ${CELL[candidate && c.kind === 'this' ? 'maybe' : c.kind]}`}
+            >
+              {c.kind === 'free' ? '' : c.kind === 'this' ? (candidate ? '후보' : '보강') : c.kind === 'cover' ? '보강' : c.label}
+            </span>
+          ))}
+        </div>
+      </td>
+      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${heavy ? 'text-bad' : ''}`}>
+        {day.total}
+        <span className="text-[11px] font-normal text-subtle">/{data.settings.maxDaily}</span>
+      </td>
+      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${longRun ? 'text-bad' : 'text-sky'}`}>{day.maxRun}</td>
+      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${many ? 'text-warn' : ''}`}>
+        {day.totalAssignments}
+        <span className="text-[11px] font-normal text-subtle">회</span>
+      </td>
+      <td className="px-2 py-2 text-center text-[15px] font-bold tabular-nums">{row.score ?? <span className="text-faint">–</span>}</td>
+      <td className="px-3 py-2">
+        <span className="flex justify-end gap-1">{row.actions}</span>
+      </td>
+    </tr>
   )
 }
 
 function Legend() {
   return (
-    <span className="flex flex-wrap gap-3 text-[12px] text-subtle">
+    <span className="flex flex-wrap gap-3 text-[11px] font-normal text-subtle">
       <span className="flex items-center gap-1">
         <span className="size-2.5 rounded-sm bg-iris-soft" /> 수업
       </span>
@@ -329,7 +248,10 @@ function Legend() {
         <span className="size-2.5 rounded-sm bg-warn-soft" /> 다른 보강
       </span>
       <span className="flex items-center gap-1">
-        <span className="size-2.5 rounded-sm bg-iris" /> 이번 보강
+        <span className="size-2.5 rounded-sm bg-ink" /> 이번 보강
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="size-2.5 rounded-sm border border-dashed border-ink" /> 후보
       </span>
     </span>
   )
