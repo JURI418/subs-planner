@@ -64,7 +64,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-extrabold">1. 쉬는 날 선택</h2>
+              <h2 className="text-lg font-extrabold">1. 안내할 날짜</h2>
               <div className="flex items-center gap-1">
                 <button onClick={() => move(-1)} aria-label="이전 달" className="grid size-9 place-items-center rounded-full hover:bg-ink/[.06]">
                   <ChevronLeft size={18} />
@@ -110,7 +110,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
           </Card>
 
           <Card>
-            <h2 className="text-lg font-extrabold">2. 인사말·맺음말</h2>
+            <h2 className="text-lg font-extrabold">2. 문자 앞뒤 문구</h2>
             <label className="mt-4 block text-sm font-semibold">
               머리말
               <input
@@ -140,7 +140,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-extrabold">3. 복사해서 보내기</h2>
+              <h2 className="text-lg font-extrabold">3. 완성된 문자</h2>
               <Badge>시간강사 {lecturers.length}명</Badge>
             </div>
 
