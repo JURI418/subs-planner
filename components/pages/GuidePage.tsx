@@ -29,7 +29,7 @@ export function GuidePage({ data }: { data: AppData }) {
       when: '결강이 생길 때',
       steps: [
         ['결강 등록', '교사·날짜·사유를 고르고, 조퇴·외출이면 ‘교시 선택’으로 빠지는 교시만 고르세요.', '/absence'],
-        ['배정 확인', '추천된 보강 교사와 예비1·2를 확인하고, 근거·시간표를 펼쳐 바꿀 수 있어요.', '/assignments'],
+        ['배정 확인', '추천된 보강 교사와 예비1·2를 확인하고, ‘시간표 보기’를 펼쳐 바꿀 수 있어요.', '/assignments'],
         ['체크 → 확정 → 시트에 올리기', '확정할 줄을 체크해 ‘선택 확정’, 그다음 ‘구글 시트에 올리기’를 누르세요.', '/assignments'],
       ],
     },
@@ -109,7 +109,6 @@ export function GuidePage({ data }: { data: AppData }) {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-[13px] text-subtle">휴업일·방학 날에는 결강 수업 자체가 만들어지지 않아요.</p>
         </Card>
         <Card>
           <h2 className="text-lg font-extrabold">추천 점수</h2>

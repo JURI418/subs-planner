@@ -229,8 +229,8 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               </label>
             </div>
             <div className="text-sm font-semibold">
-              결강 범위
-              <div className="mt-2 inline-flex border border-line bg-surface p-0.5" role="radiogroup">
+              <span className="block">결강 범위</span>
+              <div className="mt-2 grid grid-cols-2 border border-line bg-surface p-0.5" role="radiogroup">
                 {(
                   [
                     ['day', '하루 전체'],
@@ -242,7 +242,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     role="radio"
                     aria-checked={scope === v}
                     onClick={() => setScope(v)}
-                    className={`px-4 py-1.5 text-[14px] ${scope === v ? 'bg-ink font-bold text-paper' : 'font-normal text-ink-2 hover:bg-wash'}`}
+                    className={`py-2 text-[14px] ${scope === v ? 'bg-ink font-bold text-paper' : 'font-normal text-ink-2 hover:bg-wash'}`}
                   >
                     {l}
                   </button>
@@ -250,7 +250,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               </div>
               {scope === 'periods' && (
                 <div className="mt-3 font-normal">
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${allPeriods.length}, minmax(0, 1fr))` }}>
                     {allPeriods.map((p) => {
                       const on = periods.includes(p)
                       const teach = dayTeaching?.has(p)
@@ -260,7 +260,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                           onClick={() => togglePeriod(p)}
                           aria-pressed={on}
                           aria-label={`${p}교시`}
-                          className={`relative grid h-10 w-11 place-items-center rounded-md text-[14px] font-bold transition-colors ${
+                          className={`relative grid h-10 w-full place-items-center rounded-md text-[14px] font-bold transition-colors ${
                             on ? 'bg-ink text-paper' : 'border border-line bg-surface text-ink-2 hover:border-ink'
                           }`}
                         >

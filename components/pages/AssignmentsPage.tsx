@@ -9,6 +9,15 @@ import { exportText, formatDate, isVirtual, type AppData, type Assignment, type 
 import { validateAssignment } from '@/lib/scheduling'
 import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 
+/** 추천 근거 칩 색: 좋은 점은 초록, 문제는 빨강, 수동 변경은 자주, 나머지는 회색 */
+function reasonTone(r: string) {
+  if (/위반|수업 있음|다른 보강|결강|초과|불가|제외|후보 없음|본인/.test(r)) return 'bg-bad-soft text-bad'
+  if (/수동|예비.*변경/.test(r)) return 'bg-plum-soft text-plum'
+  if (/같은 학년|추가 포함/.test(r)) return 'bg-ok-soft text-ok'
+  if (/연속/.test(r)) return 'bg-sky-soft text-sky'
+  return 'bg-wash text-ink-2'
+}
+
 export function AssignmentsPage({ data, setData }: { data: AppData; setData: SetData }) {
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState<Set<string>>(new Set())
@@ -323,15 +332,21 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                           </span>
                         )}
                       </td>
-                      <td className="max-w-64 p-3 text-xs text-subtle">
-                        {a.reasons.join(' · ')}
+                      <td className="max-w-72 p-3 text-xs text-subtle">
+                        <span className="flex flex-wrap gap-1">
+                          {a.reasons.map((r) => (
+                            <span key={r} className={`rounded-full px-2 py-0.5 text-[11.5px] leading-5 ${reasonTone(r)}`}>
+                              {r}
+                            </span>
+                          ))}
+                        </span>
                         {s && (
                           <button
                             onClick={() => toggle(a.slotId)}
                             aria-expanded={isOpen}
                             className="m3-btn m3-btn-sm m3-text -ml-3 mt-1 flex"
                           >
-                            근거·시간표 {isOpen ? '접기' : '보기'}
+                            시간표 {isOpen ? '접기' : '보기'}
                             <ChevronDown
                               size={16}
                               className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
