@@ -12,6 +12,7 @@ import {
   itemLine,
   itemsForTeacher,
   monthOffItems,
+  weekSummary,
 } from '@/lib/messages'
 
 const KIND_TONE: Record<string, string> = { 휴업일: 'red', 방학: 'blue', 공휴일: 'slate', 행사: 'yellow' }
@@ -179,7 +180,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
               title="공통 문자 (단체방·전체 발송용)"
               text={common}
               copied={copied === 'common'}
-              onCopy={() => copy('common', common)}
+              onCopy={(t) => copy('common', t)}
             />
 
             {lecturers.length === 0 ? (
@@ -196,9 +197,11 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                       key={t.id}
                       title={`${t.name} 선생님`}
                       sub={`${t.subject} · ${mine.length}건`}
+                      schedule={weekSummary(data, t.id)}
+                      grid={<MiniWeek data={data} teacherId={t.id} />}
                       text={text}
                       copied={copied === t.id}
-                      onCopy={() => copy(t.id, text)}
+                      onCopy={(x) => copy(t.id, x)}
                     />
                   )
                 })}
@@ -214,27 +217,94 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
 function MessageBox({
   title,
   sub,
+  schedule,
+  grid,
   text,
   copied,
   onCopy,
 }: {
   title: string
   sub?: string
+  schedule?: string
+  grid?: React.ReactNode
   text: string
   copied: boolean
-  onCopy: () => void
+  onCopy: (text: string) => void
 }) {
+  // 완성된 문자를 직접 고칠 수 있음. 고친 뒤에는 고친 내용이 복사되고, '원래대로'로 되돌릴 수 있음
+  const [edited, setEdited] = useState<string | null>(null)
+  const value = edited ?? text
   return (
     <div className="mt-4 border-t border-line pt-4">
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-bold">{title}</span>
         {sub && <span className="text-[13px] text-subtle">{sub}</span>}
-        <button onClick={onCopy} className={`m3-btn m3-btn-sm ml-auto ${copied ? 'm3-tonal' : 'm3-outlined'}`}>
-          {copied ? <Check size={15} /> : <Copy size={15} />}
-          {copied ? '복사됨' : '복사'}
-        </button>
+        <span className="ml-auto flex gap-1">
+          {edited !== null && (
+            <button onClick={() => setEdited(null)} className="m3-btn m3-btn-sm m3-text">
+              원래대로
+            </button>
+          )}
+          <button onClick={() => onCopy(value)} className={`m3-btn m3-btn-sm ${copied ? 'm3-tonal' : 'm3-outlined'}`}>
+            {copied ? <Check size={15} /> : <Copy size={15} />}
+            {copied ? '복사됨' : '복사'}
+          </button>
+        </span>
       </div>
-      <pre className="whitespace-pre-wrap break-words rounded-md bg-wash p-3.5 font-sans text-[13.5px] leading-6 text-ink-2">{text}</pre>
+      {schedule !== undefined && (
+        <details className="mb-2 text-[12.5px]">
+          <summary className="cursor-pointer text-ink-2">
+            <b className="text-ink">수업</b> {schedule || '시간표 없음'}
+          </summary>
+          {grid}
+        </details>
+      )}
+      <textarea
+        value={value}
+        onChange={(e) => setEdited(e.target.value)}
+        rows={Math.max(5, value.split('\n').length + 1)}
+        aria-label={`${title} 문자 (직접 고칠 수 있어요)`}
+        className="w-full resize-y rounded-md border border-transparent bg-wash p-3.5 font-sans text-[13.5px] leading-6 text-ink-2 outline-none focus:border-ink/40 focus:bg-surface"
+      />
+      {edited !== null && <p className="mt-1 text-[11.5px] text-warn">직접 고친 문자예요. 위에서 날짜를 바꿔도 이 문자는 그대로예요.</p>}
     </div>
+  )
+}
+
+/** 시간강사 주간 시간표 미리보기 (월~금 × 교시) */
+function MiniWeek({ data, teacherId }: { data: AppData; teacherId: string }) {
+  const own = data.timetable.filter((e) => e.teacherId === teacherId)
+  const periods = Array.from({ length: data.settings.periodCount }, (_, i) => i + 1)
+  const D = ['월', '화', '수', '목', '금'] as const
+  return (
+    <table className="mt-2 border-collapse text-[11px]">
+      <thead>
+        <tr>
+          <th className="w-6" />
+          {D.map((d) => (
+            <th key={d} className="w-14 pb-1 font-bold text-ink-2">
+              {d}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {periods.map((p) => (
+          <tr key={p}>
+            <td className="pr-1 text-right text-subtle">{p}</td>
+            {D.map((d) => {
+              const e = own.find((x) => x.dayOfWeek === d && x.period === p)
+              return (
+                <td key={d} className="p-0.5">
+                  <span className={`grid h-6 place-items-center rounded-[3px] ${e ? 'bg-iris-soft text-ink' : 'border border-dashed border-line'}`}>
+                    {e ? `${e.room}${e.group ?? ''}` : ''}
+                  </span>
+                </td>
+              )
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

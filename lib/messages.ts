@@ -68,11 +68,11 @@ export function itemsForTeacher(items: OffItem[], data: AppData, teacherId: stri
 export const DEFAULT_SMS_HEADER = '[학교 안내]'
 export const DEFAULT_SMS_FOOTER = '일정이 바뀌면 다시 안내드리겠습니다. 감사합니다.'
 
-/** months: 문자에 넣을 달 번호들 (예: [10, 11] → '10·11월') */
+/** months: 문자에 넣을 달 번호들 (예: [10, 11] → '10, 11월') */
 export function buildMessage(opts: { months: number[]; items: OffItem[]; name?: string; header: string; footer: string }) {
   const { months, items, name, header, footer } = opts
   if (!months.length) return '(위에서 문자에 넣을 달을 먼저 골라 주세요)'
-  const month = months.join('·')
+  const month = months.join(', ')
   const lines: string[] = []
   if (header.trim()) lines.push(header.trim())
   if (name) lines.push(`${name} 선생님, 안녕하세요.`)
@@ -84,4 +84,15 @@ export function buildMessage(opts: { months: number[]; items: OffItem[]; name?: 
   }
   if (footer.trim()) lines.push('', footer.trim())
   return lines.join('\n')
+}
+
+/** 선생님 주간 수업 요약: '월 1·3교시 · 수 2교시' */
+export function weekSummary(data: AppData, teacherId: string) {
+  const own = data.timetable.filter((e) => e.teacherId === teacherId)
+  return DAY.map((d) => {
+    const ps = [...new Set(own.filter((e) => e.dayOfWeek === d).map((e) => e.period))].sort((a, b) => a - b)
+    return ps.length ? `${d} ${ps.join('·')}교시` : null
+  })
+    .filter(Boolean)
+    .join(' · ')
 }
