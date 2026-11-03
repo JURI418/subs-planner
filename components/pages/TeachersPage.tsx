@@ -5,7 +5,7 @@ import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
 import { days, formatDate, isVirtual, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
 import { excludeTeacher } from '@/lib/dataOps'
-import { CLASS_OPTIONS, classLabel } from '@/lib/rules'
+import { CLASS_OPTIONS, classLabel, parseHomerooms } from '@/lib/rules'
 
 export function TeachersPage({ data, setData }: { data: AppData; setData: SetData }) {
   // 교사 정보 변경. 보강 후보에서 빠지게 되면 이미 만든 배정도 다시 추천한다
@@ -57,6 +57,17 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       .map((x) => x.name)
       .join(', ')
   const homeroomCount = data.teachers.filter((t) => t.homeroom).length
+  // 담임 한꺼번에 넣기 (엑셀·한글 표에서 복사해 붙여넣기)
+  const [bulkOpen, setBulkOpen] = useState(false)
+  const [bulk, setBulk] = useState('')
+  const parsed = bulk.trim() ? parseHomerooms(bulk, data.teachers) : null
+  const applyBulk = () => {
+    if (!parsed?.found.length) return
+    const map = new Map(parsed.found.map((f) => [f.teacherId, f.cls]))
+    setData((d) => ({ ...d, teachers: d.teachers.map((t) => (map.has(t.id) ? { ...t, homeroom: map.get(t.id) } : t)) }))
+    setBulk('')
+    setBulkOpen(false)
+  }
   const list = data.teachers.filter((t) => !isVirtual(t)).filter(
     (t) => t.name.includes(q) && (grade === 'all' || t.grades.includes(Number(grade))),
   )
@@ -67,7 +78,10 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
         title="교사 관리"
         desc={`시간표에서 담당 학년을 자동으로 계산합니다. 담임 반은 직접 골라 주세요 (지금 ${homeroomCount}명 입력).`}
         action={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setBulkOpen((v) => !v)} className={`m3-btn m3-btn-sm ${bulkOpen ? 'm3-filled' : 'm3-outlined'}`}>
+              담임 한꺼번에 넣기
+            </button>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -83,6 +97,56 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
           </div>
         }
       />
+      {bulkOpen && (
+        <Card className="mb-6">
+          <h2 className="text-lg font-bold">담임 한꺼번에 넣기</h2>
+          <p className="mt-1 text-[13px] leading-5 text-subtle">
+            담임 명단(엑셀, 한글 표, 업무분장표 등)을 복사해 붙여 넣으세요. 한 줄에 반과 선생님 이름이 있으면 돼요.
+            예: <code className="bg-wash px-1">1-1 교사13</code>, <code className="bg-wash px-1">2학년 3반 교사02</code>,{' '}
+            엑셀의 <code className="bg-wash px-1">2 [칸] 3 [칸] 교사02</code>
+          </p>
+          <textarea
+            value={bulk}
+            onChange={(e) => setBulk(e.target.value)}
+            rows={6}
+            placeholder={'1-1\t교사13\n1-2\t교사07\n2학년 3반 교사02'}
+            aria-label="담임 명단 붙여넣기"
+            className="m3-field mt-3 w-full font-mono text-[13px]"
+          />
+          {parsed && (
+            <div className="mt-3 text-[13px]">
+              <p>
+                <b className="text-ok">{parsed.found.length}명</b> 찾음
+                {parsed.missed.length > 0 && (
+                  <>
+                    {' '}
+                    · <b className="text-bad">{parsed.missed.length}줄</b>은 반이나 이름을 못 찾았어요
+                  </>
+                )}
+                {homeroomCount > 0 && <span className="text-subtle"> · 이미 넣은 담임은 새 값으로 바뀌어요</span>}
+              </p>
+              <p className="mt-1 flex flex-wrap gap-1.5">
+                {parsed.found.map((f) => (
+                  <span key={f.teacherId} className="border border-line bg-surface px-2 py-0.5">
+                    {classLabel(f.cls)} <b>{data.teachers.find((t) => t.id === f.teacherId)?.name}</b>
+                  </span>
+                ))}
+              </p>
+              {parsed.missed.length > 0 && (
+                <p className="mt-1 text-[12px] text-bad">못 찾은 줄: {parsed.missed.slice(0, 5).join(' / ')}</p>
+              )}
+            </div>
+          )}
+          <div className="mt-3 flex gap-2">
+            <button onClick={applyBulk} disabled={!parsed?.found.length} className="m3-btn m3-filled">
+              {parsed?.found.length ? `${parsed.found.length}명 담임 넣기` : '담임 넣기'}
+            </button>
+            <button onClick={() => setBulkOpen(false)} className="m3-btn m3-outlined">
+              닫기
+            </button>
+          </div>
+        </Card>
+      )}
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[840px] text-left text-sm">

@@ -100,3 +100,33 @@ export function ruleMatch(
       return !t.homeroom || t.homeroom === cls ? { ratio: 1 } : { ratio: 0, reason: '담임이라 뒤로' }
   }
 }
+
+/**
+ * 담임 명단 붙여넣기 읽기: 한 줄에서 반(1-1, 1학년 1반, 엑셀의 '1 [탭] 1')과 교사 이름을 찾는다.
+ * 이름은 등록된 교사 이름과 그대로 맞는 것만 (긴 이름부터 찾아 '교사1'과 '교사13' 같은 혼동을 막음)
+ */
+export function parseHomerooms(text: string, teachers: Pick<Teacher, 'id' | 'name'>[]) {
+  const names = [...teachers].filter((t) => !t.name.startsWith('가상')).sort((a, b) => b.name.length - a.name.length)
+  const found: { teacherId: string; cls: string }[] = []
+  const missed: string[] = []
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim()
+    if (!line) continue
+    const m =
+      line.match(/([1-3])\s*학년\s*(\d{1,2})\s*반/) ??
+      line.match(/(?<!\d)([1-3])\s*-\s*(\d{1,2})(?!\d)/) ??
+      line.match(/^\s*([1-3])\s*[\t,]\s*(\d{1,2})(?!\d)/)
+    const n = m ? Number(m[2]) : 0
+    const t = names.find((x) => line.includes(x.name))
+    if (!m || n < 1 || n > 12 || !t) {
+      // 머리글 줄(학년, 반, 담임 ...)은 조용히 건너뜀
+      if (!/학년|반|담임|성명|이름/.test(line) || m || t) missed.push(line)
+      continue
+    }
+    const cls = `${m[1]}-${n}`
+    const prev = found.findIndex((f) => f.teacherId === t.id)
+    if (prev >= 0) found.splice(prev, 1)
+    found.push({ teacherId: t.id, cls })
+  }
+  return { found, missed }
+}

@@ -36,12 +36,12 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
     <>
       <PageHeader
         eyebrow="Settings"
-        title="학기·교시·규칙 설정"
-        desc="추천 알고리즘의 하드 제약과 점수를 조정합니다."
+        title="설정"
+        desc="학기, 보강 추천 방식, 구글 시트 연결, 백업을 한곳에서 관리해요."
       />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <h2 className="font-display text-lg font-semibold">학기 설정</h2>
+          <h2 className="font-display text-lg font-semibold">학기</h2>
           <div className="mt-5 flex flex-col gap-4">
             <label className="text-sm font-semibold">
               학기명
@@ -83,12 +83,12 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
           </div>
         </Card>
         <Card>
-          <h2 className="font-display text-lg font-semibold">추천 규칙</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <h2 className="font-display text-lg font-semibold">보강 한도</h2>
+          <p className="mt-1 text-xs text-subtle">보강을 넣었을 때 이 한도에 닿는 선생님은 추천하지 않아요.</p>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {[
-              ['maxDaily', '일 최대 수업', '개'],
-              ['maxConsecutive', '최대 연속 수업', '교시'],
-              ['recentDays', '최근 보강 기간', '일'],
+              ['maxDaily', '하루 수업 (보강 포함)', '개 미만'],
+              ['maxConsecutive', '연속 수업', '교시 미만'],
             ].map(([key, label, unit]) => (
               <label key={key} className="text-sm font-semibold">
                 {label}
@@ -101,15 +101,15 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
                     }
                     className="m3-field w-full"
                   />
-                  <span className="text-xs text-subtle">{unit}</span>
+                  <span className="shrink-0 text-xs text-subtle">{unit}</span>
                 </div>
               </label>
             ))}
           </div>
-          <div className="mt-5 rounded-none bg-iris-soft p-4 text-sm leading-6 text-iris-deep">
-            하드 제약: 같은 시간 수업 없음 · 일 최대 수업 미만 · 연속 수업 제한
+          <div className="mt-5 bg-wash p-4 text-[13px] leading-6 text-ink-2">
+            그 밖에 항상 빠지는 선생님: 같은 교시 수업·보강, 그날 결강·출장, 보강 불가 시간, 보강 후보 ‘제외’(시간강사 등).
             <br />
-            소프트 우선: 같은 학년 · 당일 부담 · 누적 보강 횟수
+            누구를 먼저 추천할지는 아래 <b className="text-ink">보강 추천 방식</b>에서 정해요.
           </div>
         </Card>
       </div>
