@@ -57,7 +57,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       .map((x) => x.name)
       .join(', ')
   const homeroomCount = data.teachers.filter((t) => t.homeroom).length
-  // 담임 명단 붙여넣기 (엑셀·한글 표에서 복사해 붙여넣기)
+  // 담임 반 일괄 입력 (엑셀·한글 표에서 복사해 붙여넣기)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [bulk, setBulk] = useState('')
   const parsed = bulk.trim() ? parseHomerooms(bulk, data.teachers) : null
@@ -80,7 +80,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
         action={
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setBulkOpen((v) => !v)} className={`m3-btn m3-btn-sm ${bulkOpen ? 'm3-filled' : 'm3-outlined'}`}>
-              담임 명단 붙여넣기
+              담임 반 일괄 입력
             </button>
             <input
               value={q}
@@ -99,7 +99,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       />
       {bulkOpen && (
         <Card className="mb-6">
-          <h2 className="text-lg font-bold">담임 명단 붙여넣기</h2>
+          <h2 className="text-lg font-bold">담임 반 일괄 입력</h2>
           <p className="mt-1 text-[13px] leading-5 text-subtle">
             담임 명단(엑셀, 한글 표, 업무분장표 등)을 복사해 붙여 넣으세요. 한 줄에 반과 선생님 이름이 있으면 돼요.
             예: <code className="bg-wash px-1">1-1 교사13</code>, <code className="bg-wash px-1">2학년 3반 교사02</code>,{' '}
@@ -110,7 +110,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
             onChange={(e) => setBulk(e.target.value)}
             rows={6}
             placeholder={'1-1\t교사13\n1-2\t교사07\n2학년 3반 교사02'}
-            aria-label="담임 명단 붙여넣기"
+            aria-label="담임 반 일괄 입력"
             className="m3-field mt-3 w-full font-mono text-[13px]"
           />
           {parsed && (
