@@ -5,6 +5,7 @@ import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
 import { days, formatDate, isVirtual, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
 import { excludeTeacher } from '@/lib/dataOps'
+import { CLASS_OPTIONS, classLabel } from '@/lib/rules'
 
 export function TeachersPage({ data, setData }: { data: AppData; setData: SetData }) {
   // 교사 정보 변경. 보강 후보에서 빠지게 되면 이미 만든 배정도 다시 추천한다
@@ -49,6 +50,13 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
     if (r.replaced || r.conflicts.length) alert(lines.join('\n'))
     setData(next)
   }
+  // 같은 반을 담임으로 넣은 다른 선생님
+  const dupOf = (t: Teacher) =>
+    data.teachers
+      .filter((x) => x.id !== t.id && x.homeroom && x.homeroom === t.homeroom)
+      .map((x) => x.name)
+      .join(', ')
+  const homeroomCount = data.teachers.filter((t) => t.homeroom).length
   const list = data.teachers.filter((t) => !isVirtual(t)).filter(
     (t) => t.name.includes(q) && (grade === 'all' || t.grades.includes(Number(grade))),
   )
@@ -57,7 +65,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       <PageHeader
         eyebrow="Faculty"
         title="교사 관리"
-        desc="시간표에서 담당 학년을 자동으로 계산합니다."
+        desc={`시간표에서 담당 학년을 자동으로 계산합니다. 담임 반은 직접 골라 주세요 (지금 ${homeroomCount}명 입력).`}
         action={
           <div className="flex gap-2">
             <input
@@ -77,12 +85,13 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       />
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[840px] text-left text-sm">
             <thead>
               <tr className="border-b text-xs text-subtle">
                 <th className="p-3">이름</th>
                 <th className="p-3">교과</th>
                 <th className="p-3">담당 학년</th>
+                <th className="p-3">담임 반</th>
                 <th className="p-3">근무 구분</th>
                 <th className="p-3">보강 후보</th>
                 <th className="p-3">보강 불가 시간</th>
@@ -104,6 +113,28 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                         {g}학년
                       </Badge>
                     ))}
+                  </td>
+                  <td className="p-3">
+                    <select
+                      value={t.homeroom ?? ''}
+                      onChange={(e) => updateTeacher(t.id, { homeroom: e.target.value || undefined })}
+                      aria-label={`${t.name} 담임 반`}
+                      className={`m3-field m3-field-sm ${t.homeroom ? 'font-bold' : 'text-faint'}`}
+                    >
+                      <option value="">없음</option>
+                      {[1, 2, 3].map((g) => (
+                        <optgroup key={g} label={`${g}학년`}>
+                          {CLASS_OPTIONS.filter((c) => c.startsWith(`${g}-`)).map((c) => (
+                            <option key={c} value={c}>
+                              {classLabel(c)}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                    {t.homeroom && dupOf(t) && (
+                      <span className="mt-1 block text-[11.5px] font-bold text-bad">{dupOf(t)} 선생님과 겹쳐요</span>
+                    )}
                   </td>
                   <td className="p-3">
                     <select
@@ -147,7 +178,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                 </tr>
                 {openId === t.id && (
                   <tr className="border-b border-line bg-wash">
-                    <td colSpan={7} className="p-4">
+                    <td colSpan={8} className="p-4">
                       <BlockedEditor
                         teacher={t}
                         periodCount={data.settings.periodCount}

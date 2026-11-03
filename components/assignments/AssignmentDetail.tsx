@@ -2,6 +2,7 @@
 import { ArrowUp, X } from 'lucide-react'
 import { recommend, teacherDay, validateAssignment } from '@/lib/scheduling'
 import type { AppData, Assignment, Slot } from '@/lib/types'
+import { ruleLabel } from '@/lib/rules'
 
 export type DetailActions = {
   setMain: (teacherId: string) => void
@@ -146,6 +147,12 @@ export function AssignmentDetail({
           </tbody>
         </table>
       </div>
+      <p className="mt-2 text-[12px] text-subtle">
+        추천 방식: <b className="text-ink-2">{a.isManual ? '직접 고름' : (a.ruleName ?? '예전 방식')}</b>
+        {!a.isManual && !confirmed && a.ruleName && a.ruleName !== ruleLabel(data.settings.rule) && (
+          <> · 지금 방식({ruleLabel(data.settings.rule)})과 달라요. 설정이나 위 ‘추천 방식’에서 다시 추천할 수 있어요.</>
+        )}
+      </p>
       {confirmed && (
         <p className="mt-2 text-[12px] text-subtle">
           확정된 배정입니다. 보강 교사를 바꾸려면 예비 교사를 &lsquo;보강으로&rsquo; 올리거나 확정을 취소하세요.

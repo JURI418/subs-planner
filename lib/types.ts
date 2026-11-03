@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react'
+import { defaultRule, normalizeRule, type RuleSettings } from './rules'
 export type EmploymentType = '정규' | '시간강사'
 export type PoolStatus = '기본' | '제외' | '추가포함'
 export type Day = '월' | '화' | '수' | '목' | '금'
@@ -13,6 +14,8 @@ export type Teacher = {
   /** 보강 불가 시간 (요일·교시). 회의, 육아시간 등 */
   blocked?: { day: Day; period: number }[]
   blockedNote?: string
+  /** 담임 반 ('2-3'). 없으면 담임 아님 */
+  homeroom?: string
 }
 export type TimetableEntry = {
   id: string
@@ -54,6 +57,8 @@ export type Assignment = {
   reasons: string[]
   /** 보강 교사가 못 들어갈 때를 대비한 예비 교사 [예비1, 예비2] */
   backups: [string | null, string | null]
+  /** 추천할 때 쓴 방식 이름 (예: '담임·학년 우선') */
+  ruleName?: string
   /** 구글 시트로 보낸 시각 (ISO). 'skip'이면 연결 전에 이미 시트에 적혀 있던 건 */
   sheetSent?: string
 }
@@ -67,7 +72,8 @@ export type Settings = {
   maxDaily: number
   maxConsecutive: number
   recentDays: number
-  weights: { grade: number; daily: number; fairness: number }
+  /** 보강 추천 방식: 켜진 조건과 순서 (lib/rules.ts) */
+  rule: RuleSettings
   /** 마지막으로 백업 파일을 내려받은 시각 (ISO) */
   lastBackupAt?: string
   /** 백업 알림을 다시 띄울 날짜 (나중에 누르면 하루 미룸) */
@@ -124,7 +130,7 @@ export const defaultSettings: Settings = {
   maxDaily: 4,
   maxConsecutive: 4,
   recentDays: 14,
-  weights: { grade: 30, daily: 20, fairness: 15 },
+  rule: defaultRule,
 }
 export function dateDay(date: string): Day {
   const [y, m, d] = date.split('-').map(Number)
@@ -294,7 +300,7 @@ export function normalizeData(raw: Partial<AppData> & Record<string, unknown>): 
     settings: {
       ...defaultSettings,
       ...(raw.settings ?? {}),
-      weights: { ...defaultSettings.weights, ...(raw.settings?.weights ?? {}) },
+      rule: normalizeRule(raw.settings?.rule),
     },
     events: Array.isArray(raw.events) ? raw.events : [],
     // '기간제'는 근무 구분에서 빠졌으므로 정규로 본다

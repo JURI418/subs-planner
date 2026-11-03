@@ -4,12 +4,13 @@ import { ChevronRight } from 'lucide-react'
 import { Card } from '@/components/common/Card'
 import { PageHeader } from '@/components/common/PageHeader'
 import { isVirtual, type AppData } from '@/lib/types'
+import { RULES, ruleLabel, rulePoints } from '@/lib/rules'
 
 /** 사용법 + 지금 적용 중인 추천 조건 (설정값을 그대로 읽어 보여줌) */
 export function GuidePage({ data }: { data: AppData }) {
   const router = useRouter()
   const st = data.settings
-  const w = st.weights
+  const points = rulePoints(st.rule)
   const real = data.teachers.filter((t) => !isVirtual(t))
   const lecturers = real.filter((t) => t.employmentType === '시간강사').length
   const excluded = real.filter((t) => t.poolStatus === '제외').length
@@ -21,7 +22,7 @@ export function GuidePage({ data }: { data: AppData }) {
       steps: [
         ['시간표 올리기', '나이스 교사 시간표 PDF를 올리면 교사·담당 학년·수업이 한 번에 등록돼요.', '/timetable'],
         ['학사일정 올리기', '학사일정 PDF를 올리면 휴업일·방학이 자동으로 빠지고 행사가 달력에 표시돼요.', '/calendar'],
-        ['교사 관리', '시간강사로 바꾸면 보강 후보에서 빠져요. 회의·육아시간은 ‘보강 불가 시간’으로 막아 두세요.', '/teachers'],
+        ['교사 관리', '시간강사로 바꾸면 보강 후보에서 빠져요. 담임 반을 넣고, 회의·육아시간은 ‘보강 불가 시간’으로 막아 두세요.', '/teachers'],
         ['구글 시트 연결', '설정 맨 아래에서 한 번만 연결하면 체크한 보강을 시트 ‘보강’ 탭에 올릴 수 있어요.', '/settings'],
       ],
     },
@@ -55,10 +56,9 @@ export function GuidePage({ data }: { data: AppData }) {
     `보강을 넣으면 연속 수업이 ${st.maxConsecutive}교시 이상이 되는 교사`,
   ]
   const soft: [string, string][] = [
-    ['같은 학년 담당', `결강 수업과 같은 학년을 가르치면 +${w.grade}점 (보강 후보 ‘추가포함’ 교사도 같은 학년으로 봄)`],
-    ['그날 여유', `보강을 넣어도 그날 수업이 2개 이하면 +${w.daily}점, 3개면 +5점`],
-    ['보강 공평성', `누적 보강이 적을수록 높음: 0회면 +${w.fairness}점, 10회 이상이면 0점`],
-    ['연속 부담', '보강을 넣어도 연속 수업이 2교시 이하면 +10점'],
+    ...st.rule.order
+      .filter((k) => st.rule.on.includes(k))
+      .map((k): [string, string] => [RULES[k].label, `${RULES[k].desc} → +${points[k]}점`]),
     ['그날 이미 맡은 보강', '같은 날 이미 맡은 보강 1건마다 −5점'],
   ]
 
@@ -111,8 +111,10 @@ export function GuidePage({ data }: { data: AppData }) {
           </ul>
         </Card>
         <Card>
-          <h2 className="text-lg font-extrabold">추천 점수</h2>
-          <p className="mt-1 text-[13px] text-subtle">남은 후보 중 점수가 가장 높은 교사가 보강, 2·3위가 예비1·예비2가 돼요.</p>
+          <h2 className="text-lg font-extrabold">추천 순서</h2>
+          <p className="mt-1 text-[13px] text-subtle">
+            지금 방식: <b className="text-ink">{ruleLabel(st.rule)}</b>. 남은 후보 중 점수가 가장 높은 교사가 보강, 2·3위가 예비1·예비2가 돼요.
+          </p>
           <dl className="mt-4 flex flex-col divide-y divide-line">
             {soft.map(([k, v]) => (
               <div key={k} className="grid grid-cols-[110px_1fr] gap-3 py-2.5 text-[14px]">
@@ -122,7 +124,7 @@ export function GuidePage({ data }: { data: AppData }) {
             ))}
           </dl>
           <button onClick={() => router.push('/settings')} className="m3-btn m3-btn-sm m3-outlined mt-4">
-            점수·한도 바꾸기 (설정)
+            추천 방식·한도 바꾸기 (설정)
           </button>
         </Card>
       </div>

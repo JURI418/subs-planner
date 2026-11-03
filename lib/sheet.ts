@@ -1,4 +1,5 @@
 import type { AppData, Assignment, Slot } from './types'
+import { slotClass } from './rules'
 
 /** 시트 연결 코드 버전. 코드가 바뀌면 올리고, 예전 코드로는 보내지 않는다 */
 export const SCRIPT_VERSION = 2
@@ -9,9 +10,9 @@ export const SCRIPT_VERSION = 2
  */
 export function sheetRow(data: AppData, a: Assignment, s: Slot): string[] {
   const name = (id?: string | null) => data.teachers.find((t) => t.id === id)?.name ?? ''
-  const num = s.room.match(/^([1-3])(\d{2})/)
-  const n = num ? Number(num[2]) : 0
-  const cls = num && n >= 1 && n <= 10 ? `${num[1]}-${n}` : ''
+  const c = slotClass(s)
+  // 시트 '참고' 탭 목록은 1-1 ~ 3-10
+  const cls = c && Number(c.split('-')[1]) <= 10 ? c : ''
   return [name(s.absentTeacherId), s.date, `${s.period}교시`, name(a.substituteTeacherId), cls, s.subject]
 }
 

@@ -1,4 +1,5 @@
 import type { Absence, AppData, Assignment, Slot, Teacher, TimetableEntry } from './types'
+import { ruleLabel, ruleMatch, rulePoints, type RuleSettings } from './rules'
 
 /** 해당 교사가 그 날짜·교시에 결강 중인지 */
 export function isAbsentAt(teacherId: string, date: string, period: number, absences: Absence[]) {
@@ -13,8 +14,15 @@ export function isAbsentAt(teacherId: string, date: string, period: number, abse
 
 type Scored = { t: Teacher; score: number; reasons: string[] }
 
-export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.assignments) {
+export function recommend(
+  slot: Slot,
+  data: AppData,
+  prior: Assignment[] = data.assignments,
+  rule: RuleSettings = data.settings.rule,
+) {
   const tts = data.timetable
+  const points = rulePoints(rule)
+  const absentSubject = data.teachers.find((t) => t.id === slot.absentTeacherId)?.subject
   const candidates = data.teachers.filter(
     (t) => t.id !== slot.absentTeacherId && t.poolStatus !== '제외' && !t.name.startsWith('가상'),
   )
@@ -54,23 +62,17 @@ export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.
       reasonsById.set(t.id, reasons)
       if (reasons.length) return { t, score: -999, reasons }
 
-      const sameGrade = t.grades.includes(slot.grade) || t.poolStatus === '추가포함'
-      const w = data.settings.weights
-      const score =
-        (sameGrade ? w.grade : 0) +
-        (dayCount <= 2 ? w.daily : dayCount === 3 ? 5 : 0) +
-        (Math.max(0, 10 - t.totalAssignments) * w.fairness) / 10 +
-        (maxRun <= 2 ? 10 : 0) -
-        assigned.length * 5
+      let score = -assigned.length * 5
+      const good: string[] = []
+      for (const [key, pt] of Object.entries(points) as [keyof typeof points, number][]) {
+        const m = ruleMatch(key, { t, slot, absentSubject, dayCount, maxRun })
+        score += m.ratio * pt
+        if (m.reason) good.push(m.reason)
+      }
       return {
         t,
         score,
-        reasons: [
-          sameGrade ? '같은 학년 담당' : '추가 포함 후보',
-          `총 수업 ${dayCount - 1}개`,
-          `연속 ${maxRun}교시`,
-          `누적 보강 ${t.totalAssignments}회`,
-        ],
+        reasons: [...good, `총 수업 ${dayCount - 1}개`, `연속 ${maxRun}교시`, `누적 보강 ${t.totalAssignments}회`],
       }
     })
     .filter((x) => x.score > -999)
@@ -85,18 +87,23 @@ export function recommend(slot: Slot, data: AppData, prior: Assignment[] = data.
 }
 
 /** 슬롯 순서대로 자동 배정. 다른 슬롯의 기존 배정(제안·확정)은 그대로 두고 부담 계산에 반영 */
-export function runScheduling(data: AppData, slots: Slot[]) {
+export function runScheduling(data: AppData, slots: Slot[], rule: RuleSettings = data.settings.rule) {
   const targetIds = new Set(slots.map((s) => s.id))
   const assignments = data.assignments.filter((a) => !targetIds.has(a.slotId))
   for (const slot of [...slots].sort((a, b) => a.date.localeCompare(b.date) || a.period - b.period)) {
-    assignments.push(autoAssign(slot, { ...data, assignments }, assignments))
+    assignments.push(autoAssign(slot, { ...data, assignments }, assignments, rule))
   }
   return assignments
 }
 
 /** 슬롯 하나에 대한 자동 추천 결과를 Assignment로 만든다 */
-export function autoAssign(slot: Slot, data: AppData, prior: Assignment[]): Assignment {
-  const result = recommend(slot, data, prior)
+export function autoAssign(
+  slot: Slot,
+  data: AppData,
+  prior: Assignment[],
+  rule: RuleSettings = data.settings.rule,
+): Assignment {
+  const result = recommend(slot, data, prior, rule)
   return {
     slotId: slot.id,
     substituteTeacherId: result.winner?.t.id ?? null,
@@ -105,6 +112,7 @@ export function autoAssign(slot: Slot, data: AppData, prior: Assignment[]): Assi
     score: result.winner?.score ?? 0,
     reasons: result.winner?.reasons ?? ['조건을 만족하는 후보 없음'],
     backups: [result.top[1]?.t.id ?? null, result.top[2]?.t.id ?? null],
+    ruleName: ruleLabel(rule),
   }
 }
 

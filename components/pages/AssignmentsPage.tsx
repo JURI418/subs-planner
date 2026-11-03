@@ -2,6 +2,7 @@
 import { Fragment, useState } from 'react'
 import { CheckCheck, ChevronDown, Copy, Sheet, Trash2, X } from 'lucide-react'
 import { AssignmentDetail, type DetailActions } from '@/components/assignments/AssignmentDetail'
+import { RuleSwitch } from '@/components/assignments/RuleSwitch'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
@@ -13,7 +14,7 @@ import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 function reasonKind(r: string) {
   if (/위반|수업 있음|다른 보강|결강|초과|불가|제외|후보 없음|본인/.test(r)) return 'bad'
   if (/수동|예비.*변경/.test(r)) return 'manual'
-  if (/같은 학년|추가 포함/.test(r)) return 'good'
+  if (/같은 학년|추가 포함|같은 교과|반 담임/.test(r)) return 'good'
   if (/연속/.test(r)) return 'run'
   return 'plain'
 }
@@ -232,6 +233,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           </div>
         }
       />
+      <RuleSwitch data={data} setData={setData} />
       <div className="mb-4 flex gap-2">
         {[
           ['all', '전체'],

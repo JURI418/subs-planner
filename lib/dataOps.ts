@@ -1,5 +1,6 @@
 import { normalizeData, type AppData, type Slot } from './types'
 import { autoAssign, runScheduling } from './scheduling'
+import type { RuleSettings } from './rules'
 
 /** 확정 취소: 상태를 '제안'으로 되돌리고 보강 교사의 누적 보강 횟수를 1 줄인다 */
 export function cancelConfirm(d: AppData, slotId: string): AppData {
@@ -64,20 +65,28 @@ export function parseBackup(text: string): { data?: AppData; error?: string } {
  * 가중치 등을 바꾼 뒤, 자동으로 추천된 미확정 배정(제안·배정불가)을 현재 설정으로 다시 추천한다.
  * 확정된 배정과 사람이 직접 고른 수동 배정은 건드리지 않는다.
  */
-export function recomputeProposals(d: AppData): { data: AppData; total: number; changed: number } {
+export function recomputeProposals(
+  d: AppData,
+  rule: RuleSettings = d.settings.rule,
+): { data: AppData; total: number; changed: number; diffs: { slot: Slot; from: string | null; to: string | null }[] } {
   const targets = d.assignments.filter((a) => a.status !== '확정' && !a.isManual)
   const targetIds = new Set(targets.map((a) => a.slotId))
   const slots = d.slots.filter((s) => targetIds.has(s.id))
-  if (!slots.length) return { data: d, total: 0, changed: 0 }
-  const result = runScheduling(d, slots)
+  if (!slots.length) return { data: d, total: 0, changed: 0, diffs: [] }
+  const result = runScheduling(d, slots, rule)
   const redone = new Map(result.filter((a) => targetIds.has(a.slotId)).map((a) => [a.slotId, a]))
-  const changed = targets.filter(
-    (a) => redone.get(a.slotId)?.substituteTeacherId !== a.substituteTeacherId,
-  ).length
+  const diffs = slots
+    .sort((a, b) => a.date.localeCompare(b.date) || a.period - b.period)
+    .map((slot) => ({
+      slot,
+      from: targets.find((a) => a.slotId === slot.id)?.substituteTeacherId ?? null,
+      to: redone.get(slot.id)?.substituteTeacherId ?? null,
+    }))
   return {
-    data: { ...d, assignments: d.assignments.map((a) => redone.get(a.slotId) ?? a) },
+    data: { ...d, settings: { ...d.settings, rule }, assignments: d.assignments.map((a) => redone.get(a.slotId) ?? a) },
     total: slots.length,
-    changed,
+    changed: diffs.filter((x) => x.from !== x.to).length,
+    diffs,
   }
 }
 

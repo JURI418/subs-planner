@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/common/PageHeader'
 import { todayISO, type AppData, type SetData } from '@/lib/types'
 import { STORAGE_KEY } from '@/hooks/useAppData'
 import { parseBackup } from '@/lib/dataOps'
-import { WeightsCard } from '@/components/settings/WeightsCard'
+import { RuleCard } from '@/components/settings/RuleCard'
 import { SheetCard } from '@/components/settings/SheetCard'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 import { canOverwrite, chooseBackupFile, forgetBackupFile } from '@/lib/fileBackup'
@@ -113,7 +113,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
           </div>
         </Card>
       </div>
-      <WeightsCard data={data} setData={setData} />
+      <RuleCard data={data} setData={setData} />
       <SheetCard data={data} setData={setData} />
       <Card className="mt-6">
         <h2 className="font-display text-lg font-semibold">데이터 관리</h2>
