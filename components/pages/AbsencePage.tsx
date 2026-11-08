@@ -14,7 +14,7 @@ const reasonGroups: [string, string[]][] = [
   ['휴가', ['연가', '병가', '공가', '특별휴가']],
   ['근무', ['국내출장', '국외출장', '41조 연수']],
   ['시간 단위', ['외출', '조퇴', '지각']],
-  ['그 밖', ['결근', '기타']],
+  ['그 밖', ['결근', '기타', '담당 교사 없음']],
 ]
 const specialLeaves = [
   '경조사',
@@ -44,6 +44,16 @@ function periodLabel(ps: number[]) {
 export function AbsencePage({ data, setData }: { data: AppData; setData: SetData }) {
   const router = useRouter()
   const [teacherId, setTeacherId] = useState(data.teachers.find((t) => !isVirtual(t))?.id || '')
+  // 가상 교사: 시간표에 담당 선생님 없이 들어 있는 수업 자리 (수업이 있는 것만)
+  const virtuals = data.teachers.filter((t) => isVirtual(t) && data.timetable.some((e) => e.teacherId === t.id))
+  const pickedVirtual = virtuals.some((t) => t.id === teacherId)
+  /** 오늘(또는 시작일)부터 이번 주 금요일 / 이번 달 말일까지 */
+  const rangeTo = (to: 'week' | 'month') => {
+    const [y, m, d] = start.split('-').map(Number)
+    const s = new Date(y, m - 1, d)
+    const e = to === 'week' ? new Date(y, m - 1, d + Math.max(0, 5 - s.getDay())) : new Date(y, m, 0)
+    setEnd(`${e.getFullYear()}-${String(e.getMonth() + 1).padStart(2, '0')}-${String(e.getDate()).padStart(2, '0')}`)
+  }
   const [start, setStart] = useState(todayISO)
   const [end, setEnd] = useState(todayISO)
   const [kind, setKind] = useState('병가')
@@ -155,17 +165,50 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               결강 교사
               <select
                 value={teacherId}
-                onChange={(e) => setTeacherId(e.target.value)}
+                onChange={(e) => {
+                  const id = e.target.value
+                  setTeacherId(id)
+                  if (virtuals.some((t) => t.id === id)) {
+                    setKind('담당 교사 없음')
+                    setDetail('')
+                    setScope('day')
+                  } else if (kind === '담당 교사 없음') setKind('병가')
+                }}
                 className="m3-field mt-2 w-full"
               >
                 <option value="">선택</option>
-                {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name} · {t.subject}
-                  </option>
-                ))}
+                <optgroup label="선생님">
+                  {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name} · {t.subject}
+                    </option>
+                  ))}
+                </optgroup>
+                {virtuals.length > 0 && (
+                  <optgroup label="가상 교사 (담당 선생님이 없는 수업)">
+                    {virtuals.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} · {t.subject} · 주 {data.timetable.filter((e) => e.teacherId === t.id).length}시간
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </label>
+            {pickedVirtual && (
+              <div className="border-l-[3px] border-point bg-wash px-3 py-2.5 text-[13px] leading-5 text-ink-2">
+                <b className="text-ink">가상 교사 수업</b>은 담당 선생님이 없는 수업이에요. 기간을 길게 잡아 한 번에 등록하면
+                그 기간의 수업마다 보강 교사를 추천해요. 휴업일·방학은 자동으로 빠져요.
+                <span className="mt-2 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => rangeTo('week')} className="m3-btn m3-btn-sm m3-outlined">
+                    이번 주 금요일까지
+                  </button>
+                  <button type="button" onClick={() => rangeTo('month')} className="m3-btn m3-btn-sm m3-outlined">
+                    이번 달 말일까지
+                  </button>
+                </span>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <label className="text-sm font-semibold">
                 시작일
