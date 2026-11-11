@@ -49,6 +49,28 @@ export function AssignmentDetail({
     data.assignments.filter((x) => x.slotId !== slot.id),
   )
   const others = rec.ranked.filter((r) => !assigned.has(r.t.id)).slice(0, 5)
+  // 빠진 이유별 인원 (한 교사에 이유가 여러 개면 가장 앞의 이유로 셈)
+  const WHY: [RegExp, string][] = [
+    [/해당 교시 수업/, '같은 교시 수업'],
+    [/해당 교시 다른 보강/, '같은 교시 다른 보강'],
+    [/결강/, '그날 결강·출장'],
+    [/보강 불가/, '보강 불가 시간'],
+    [/총 수업/, `하루 수업 한도(${data.settings.maxDaily}개 미만)`],
+    [/연속/, `연속 수업 한도(${data.settings.maxConsecutive}교시 미만)`],
+  ]
+  const whyCount = new Map<string, number>()
+  for (const b of rec.blocked.filter((b) => !assigned.has(b.id))) {
+    const label = WHY.find(([re]) => b.reasons.some((r) => re.test(r)))?.[1] ?? '기타'
+    whyCount.set(label, (whyCount.get(label) ?? 0) + 1)
+  }
+  const whyText = [...whyCount.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}명`).join(' · ')
+  // 후보가 모자라면: 하루 한도를 1 올렸을 때 늘어나는 후보 수
+  const looser =
+    others.length < 3 && data.settings.maxDaily < 8
+      ? recommend(slot, { ...data, settings: { ...data.settings, maxDaily: data.settings.maxDaily + 1 } }, data.assignments.filter((x) => x.slotId !== slot.id)).ranked.filter(
+          (r) => !assigned.has(r.t.id),
+        ).length - others.length
+      : 0
   const problemsOf = (id: string) => validateAssignment(slot, id, data)
 
   const mine: Row[] = []
@@ -135,6 +157,18 @@ export function AssignmentDetail({
               </tr>
             )}
             <Section cols={cols} label={`다른 후보 · 추천 점수 순 · 조건 때문에 빠진 교사 ${rec.blocked.length}명`} />
+            {whyText && (
+              <tr className="border-b border-line">
+                <td colSpan={cols} className="px-3 py-2 text-[12px] text-ink-2">
+                  <b className="text-ink">빠진 이유</b> {whyText}
+                  {looser > 0 && (
+                    <span className="mt-1 block font-bold text-warn">
+                      설정 → 보강 한도에서 하루 수업을 {data.settings.maxDaily + 1}개 미만으로 올리면 후보가 {looser}명 더 생겨요.
+                    </span>
+                  )}
+                </td>
+              </tr>
+            )}
             {cand.length === 0 ? (
               <tr>
                 <td colSpan={cols} className="px-3 py-3 text-subtle">
