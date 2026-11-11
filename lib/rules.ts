@@ -1,9 +1,12 @@
 import type { Slot, Teacher } from './types'
 
 /** 보강 추천 조건 (켜진 것만, 순서대로 점수가 매겨짐) */
-export type RuleKey = 'homeroom' | 'grade' | 'subject' | 'fairness' | 'daily' | 'run' | 'homeroomLast'
+export type RuleKey = 'homeroom' | 'grade' | 'subject' | 'fairness' | 'daily' | 'run' | 'homeroomLast' | 'age'
 export type PresetKey = 'homeroom' | 'fair' | 'subject' | 'free'
-export type RuleSettings = { preset: PresetKey | 'custom'; order: RuleKey[]; on: RuleKey[] }
+/** 연령순 방향: young = 나이 적은 교사 우선, old = 나이 많은 교사 우선 */
+export type AgeDir = 'young' | 'old'
+export type RuleSettings = { preset: PresetKey | 'custom'; order: RuleKey[]; on: RuleKey[]; ageDir?: AgeDir }
+export const AGE_DIR_LABEL: Record<AgeDir, string> = { young: '나이 적은 교사 우선', old: '나이 많은 교사 우선' }
 
 export const RULES: Record<RuleKey, { label: string; desc: string }> = {
   homeroom: { label: '해당 학급 담임', desc: '결강 수업 학급의 담임 교사' },
@@ -13,6 +16,7 @@ export const RULES: Record<RuleKey, { label: string; desc: string }> = {
   daily: { label: '당일 수업 여유', desc: '보강을 포함한 당일 수업이 2시간 이하 (3시간이면 4분의 1 반영)' },
   run: { label: '연속 수업 부담 적음', desc: '보강을 포함한 연속 수업이 2교시 이하' },
   homeroomLast: { label: '담임 교사 후순위', desc: '담임 교사는 가급적 나중에 배정 (해당 학급 담임 제외)' },
+  age: { label: '연령순', desc: '교사 관리의 출생 연도 기준 (입력하지 않은 교사는 중간으로 계산)' },
 }
 export const ALL_RULES = Object.keys(RULES) as RuleKey[]
 
@@ -38,7 +42,7 @@ export function normalizeRule(raw: unknown): RuleSettings {
   const order = [...r.order.filter((k) => ALL_RULES.includes(k)), ...ALL_RULES.filter((k) => !r.order!.includes(k))]
   const on = r.on.filter((k) => ALL_RULES.includes(k))
   const preset = r.preset && (r.preset === 'custom' || PRESET_KEYS.includes(r.preset)) ? r.preset : 'custom'
-  return { preset, order, on }
+  return { preset, order, on, ageDir: r.ageDir === 'old' ? 'old' : 'young' }
 }
 
 /** 켜진 조건의 점수: 1번이 가장 높고 10점씩 줄어듦 (4개면 40·30·20·10) */
@@ -76,7 +80,16 @@ export const classLabel = (c: string) => {
 /** 조건별로 얼마나 해당하는지 (0~1)와 근거 문구 */
 export function ruleMatch(
   key: RuleKey,
-  ctx: { t: Teacher; slot: Slot; absentSubject?: string; dayCount: number; maxRun: number },
+  ctx: {
+    t: Teacher
+    slot: Slot
+    absentSubject?: string
+    dayCount: number
+    maxRun: number
+    /** 출생 연도를 넣은 교사들의 가장 이른·늦은 해 */
+    years?: [number, number]
+    ageDir?: AgeDir
+  },
 ): { ratio: number; reason?: string } {
   const { t, slot } = ctx
   const cls = slotClass(slot)
@@ -98,6 +111,13 @@ export function ruleMatch(
       return { ratio: ctx.maxRun <= 2 ? 1 : 0 }
     case 'homeroomLast':
       return !t.homeroom || t.homeroom === cls ? { ratio: 1 } : { ratio: 0, reason: '담임 교사 후순위' }
+    case 'age': {
+      // 나이는 근거 문구에 드러내지 않는다 (개인정보)
+      const [lo, hi] = ctx.years ?? [0, 0]
+      if (!t.birthYear || hi <= lo) return { ratio: t.birthYear || hi > lo ? 0.5 : 0 }
+      const young = (t.birthYear - lo) / (hi - lo) // 늦게 태어날수록 1
+      return { ratio: ctx.ageDir === 'old' ? 1 - young : young }
+    }
   }
 }
 
@@ -127,6 +147,38 @@ export function parseHomerooms(text: string, teachers: Pick<Teacher, 'id' | 'nam
     const prev = found.findIndex((f) => f.teacherId === t.id)
     if (prev >= 0) found.splice(prev, 1)
     found.push({ teacherId: t.id, cls })
+  }
+  return { found, missed }
+}
+
+/**
+ * 출생 연도 붙여넣기 읽기: 한 줄에서 교사 이름과 출생 연도(1985, 1985.03.02, 850302)를 찾는다.
+ * 연도만 저장한다 (생일 날짜는 버림)
+ */
+export function parseBirthYears(text: string, teachers: Pick<Teacher, 'id' | 'name'>[]) {
+  const names = [...teachers].filter((t) => !t.name.startsWith('가상')).sort((a, b) => b.name.length - a.name.length)
+  const found: { teacherId: string; year: number }[] = []
+  const missed: string[] = []
+  const now = new Date().getFullYear()
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim()
+    if (!line) continue
+    const t = names.find((x) => line.includes(x.name))
+    const rest = t ? line.replace(t.name, ' ') : line
+    let year = 0
+    const y4 = rest.match(/(?<!\d)(19[4-9]\d|20[0-1]\d)(?!\d)/) ?? rest.match(/(?<!\d)(19[4-9]\d|20[0-1]\d)[.\-/년]/)
+    if (y4) year = Number(y4[1])
+    else {
+      const y6 = rest.match(/(?<!\d)(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(?!\d)/)
+      if (y6) year = 1900 + Number(y6[1]) < now - 80 ? 2000 + Number(y6[1]) : 1900 + Number(y6[1])
+    }
+    if (!t || !year || year > now - 18) {
+      if (!/성명|이름|생년|출생|연도/.test(line) || t || year) missed.push(line)
+      continue
+    }
+    const prev = found.findIndex((f) => f.teacherId === t.id)
+    if (prev >= 0) found.splice(prev, 1)
+    found.push({ teacherId: t.id, year })
   }
   return { found, missed }
 }

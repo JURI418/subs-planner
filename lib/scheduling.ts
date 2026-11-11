@@ -23,6 +23,8 @@ export function recommend(
   const tts = data.timetable
   const points = rulePoints(rule)
   const absentSubject = data.teachers.find((t) => t.id === slot.absentTeacherId)?.subject
+  const ys = data.teachers.map((t) => t.birthYear).filter((y): y is number => !!y)
+  const years: [number, number] | undefined = ys.length ? [Math.min(...ys), Math.max(...ys)] : undefined
   const candidates = data.teachers.filter(
     (t) => t.id !== slot.absentTeacherId && t.poolStatus !== '제외' && !t.name.startsWith('가상'),
   )
@@ -65,7 +67,7 @@ export function recommend(
       let score = -assigned.length * 5
       const good: string[] = []
       for (const [key, pt] of Object.entries(points) as [keyof typeof points, number][]) {
-        const m = ruleMatch(key, { t, slot, absentSubject, dayCount, maxRun })
+        const m = ruleMatch(key, { t, slot, absentSubject, dayCount, maxRun, years, ageDir: rule.ageDir })
         score += m.ratio * pt
         if (m.reason) good.push(m.reason)
       }

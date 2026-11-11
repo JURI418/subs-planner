@@ -11,6 +11,7 @@ import {
   presetRule,
   rulePoints,
   samePreset,
+  AGE_DIR_LABEL,
   type PresetKey,
   type RuleKey,
   type RuleSettings,
@@ -23,6 +24,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
   const points = rulePoints(rule)
   const pending = data.assignments.filter((a) => a.status !== '확정' && !a.isManual).length
   const homerooms = data.teachers.filter((t) => t.homeroom).length
+  const births = data.teachers.filter((t) => t.birthYear).length
 
   const save = (next: RuleSettings) => {
     setMsg(null)
@@ -30,7 +32,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
     const match = PRESET_KEYS.find((k) => samePreset(next, k))
     setData((d) => ({ ...d, settings: { ...d.settings, rule: { ...next, preset: match ?? 'custom' } } }))
   }
-  const pick = (k: PresetKey) => save(presetRule(k))
+  const pick = (k: PresetKey) => save({ ...presetRule(k), ageDir: rule.ageDir })
   const toggle = (k: RuleKey) => {
     const on = rule.on.includes(k) ? rule.on.filter((x) => x !== k) : [...rule.on, k]
     // 새로 켠 조건은 켜진 것들 맨 뒤로
@@ -133,6 +135,23 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
                   <td className="px-2 py-2.5">
                     <span className={`block text-[14px] font-bold ${on ? 'text-ink' : ''}`}>{RULES[k].label}</span>
                     <span className="block text-[12px] text-subtle">{RULES[k].desc}</span>
+                    {k === 'age' && (
+                      <span className="mt-1.5 inline-flex border border-line" role="group" aria-label="연령순 방향">
+                        {(['young', 'old'] as const).map((dir) => (
+                          <button
+                            key={dir}
+                            onClick={() => save({ ...rule, ageDir: dir })}
+                            aria-pressed={(rule.ageDir ?? 'young') === dir}
+                            className={`px-2.5 py-1 text-[12px] font-bold ${(rule.ageDir ?? 'young') === dir ? 'bg-ink text-paper' : 'bg-surface text-ink-2 hover:bg-wash'}`}
+                          >
+                            {AGE_DIR_LABEL[dir]}
+                          </button>
+                        ))}
+                      </span>
+                    )}
+                    {on && k === 'age' && births === 0 && (
+                      <span className="mt-0.5 block text-[12px] font-bold text-warn">교사 관리에서 출생 연도를 넣어야 적용돼요</span>
+                    )}
                     {on && (k === 'homeroom' || k === 'homeroomLast') && homerooms === 0 && (
                       <span className="mt-0.5 block text-[12px] font-bold text-warn">
                         교사 관리에서 담임 반을 넣어야 적용돼요

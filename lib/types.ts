@@ -16,6 +16,8 @@ export type Teacher = {
   blockedNote?: string
   /** 담임 반 ('2-3'). 없으면 담임 아님 */
   homeroom?: string
+  /** 출생 연도 (연령순 추천에만 사용, 날짜는 저장하지 않음) */
+  birthYear?: number
 }
 export type TimetableEntry = {
   id: string

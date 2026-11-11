@@ -5,7 +5,7 @@ import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
 import { days, formatDate, isVirtual, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
 import { excludeTeacher } from '@/lib/dataOps'
-import { CLASS_OPTIONS, classLabel, parseHomerooms } from '@/lib/rules'
+import { CLASS_OPTIONS, classLabel, parseBirthYears, parseHomerooms } from '@/lib/rules'
 
 export function TeachersPage({ data, setData }: { data: AppData; setData: SetData }) {
   // 교사 정보 변경. 보강 후보에서 빠지게 되면 이미 만든 배정도 다시 추천한다
@@ -57,16 +57,62 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       .map((x) => x.name)
       .join(', ')
   const homeroomCount = data.teachers.filter((t) => t.homeroom).length
-  // 담임 반 일괄 입력 (엑셀·한글 표에서 복사해 붙여넣기)
-  const [bulkOpen, setBulkOpen] = useState(false)
+  const birthCount = data.teachers.filter((t) => t.birthYear).length
+  // 일괄 입력 (엑셀·한글 표에서 복사해 붙여넣기): 담임 반 / 출생 연도
+  const [bulkMode, setBulkMode] = useState<'homeroom' | 'birth' | null>(null)
   const [bulk, setBulk] = useState('')
-  const parsed = bulk.trim() ? parseHomerooms(bulk, data.teachers) : null
-  const applyBulk = () => {
-    if (!parsed?.found.length) return
-    const map = new Map(parsed.found.map((f) => [f.teacherId, f.cls]))
-    setData((d) => ({ ...d, teachers: d.teachers.map((t) => (map.has(t.id) ? { ...t, homeroom: map.get(t.id) } : t)) }))
+  const parsedH = bulkMode === 'homeroom' && bulk.trim() ? parseHomerooms(bulk, data.teachers) : null
+  const parsedB = bulkMode === 'birth' && bulk.trim() ? parseBirthYears(bulk, data.teachers) : null
+  const found: { teacherId: string; text: string }[] =
+    parsedH?.found.map((f) => ({ teacherId: f.teacherId, text: classLabel(f.cls) })) ??
+    parsedB?.found.map((f) => ({ teacherId: f.teacherId, text: `${f.year}년생` })) ??
+    []
+  const missed = parsedH?.missed ?? parsedB?.missed ?? []
+  const openBulk = (m: 'homeroom' | 'birth') => {
     setBulk('')
-    setBulkOpen(false)
+    setBulkMode((v) => (v === m ? null : m))
+  }
+  const applyBulk = () => {
+    if (parsedH?.found.length) {
+      const map = new Map(parsedH.found.map((f) => [f.teacherId, f.cls]))
+      setData((d) => ({ ...d, teachers: d.teachers.map((t) => (map.has(t.id) ? { ...t, homeroom: map.get(t.id) } : t)) }))
+    } else if (parsedB?.found.length) {
+      const map = new Map(parsedB.found.map((f) => [f.teacherId, f.year]))
+      setData((d) => ({ ...d, teachers: d.teachers.map((t) => (map.has(t.id) ? { ...t, birthYear: map.get(t.id) } : t)) }))
+    } else return
+    setBulk('')
+    setBulkMode(null)
+  }
+  const BULK = {
+    homeroom: {
+      title: '담임 반 일괄 입력',
+      help: (
+        <>
+          담임 명단(엑셀, 한글 표, 업무분장표 등)을 복사해 붙여 넣으세요. 한 줄에 반과 선생님 이름이 있으면 돼요. 예:{' '}
+          <code className="bg-wash px-1">1-1 교사13</code>, <code className="bg-wash px-1">2학년 3반 교사02</code>, 엑셀의{' '}
+          <code className="bg-wash px-1">2 [칸] 3 [칸] 교사02</code>
+        </>
+      ),
+      placeholder: '1-1\t교사13\n1-2\t교사07\n2학년 3반 교사02',
+      miss: '반이나 이름',
+      already: homeroomCount,
+      unit: '담임',
+    },
+    birth: {
+      title: '출생 연도 일괄 입력',
+      help: (
+        <>
+          연령순 추천에 쓰는 출생 연도예요. 교원 명단을 복사해 붙여 넣으세요. 한 줄에 선생님 이름과 출생 연도(또는 생년월일)가
+          있으면 돼요. 예: <code className="bg-wash px-1">교사02 1985</code>,{' '}
+          <code className="bg-wash px-1">교사07 1990.03.02</code>, <code className="bg-wash px-1">교사13 880515</code>.{' '}
+          <b className="text-ink">생일 날짜는 버리고 연도만 저장해요.</b>
+        </>
+      ),
+      placeholder: '교사02\t1985\n교사07\t1990.03.02\n교사13\t880515',
+      miss: '이름이나 연도',
+      already: birthCount,
+      unit: '출생 연도',
+    },
   }
   const list = data.teachers.filter((t) => !isVirtual(t)).filter(
     (t) => t.name.includes(q) && (grade === 'all' || t.grades.includes(Number(grade))),
@@ -76,11 +122,14 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       <PageHeader
         eyebrow="Faculty"
         title="교사 관리"
-        desc={`시간표에서 담당 학년을 자동으로 계산합니다. 담임 반은 직접 골라 주세요 (지금 ${homeroomCount}명 입력).`}
+        desc={`시간표에서 담당 학년을 자동으로 계산합니다. 담임 반(${homeroomCount}명 입력)과 출생 연도(${birthCount}명 입력)는 직접 넣어 주세요.`}
         action={
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setBulkOpen((v) => !v)} className={`m3-btn m3-btn-sm ${bulkOpen ? 'm3-filled' : 'm3-outlined'}`}>
+            <button onClick={() => openBulk('homeroom')} className={`m3-btn m3-btn-sm ${bulkMode === 'homeroom' ? 'm3-filled' : 'm3-outlined'}`}>
               담임 반 일괄 입력
+            </button>
+            <button onClick={() => openBulk('birth')} className={`m3-btn m3-btn-sm ${bulkMode === 'birth' ? 'm3-filled' : 'm3-outlined'}`}>
+              출생 연도 일괄 입력
             </button>
             <input
               value={q}
@@ -97,51 +146,45 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
           </div>
         }
       />
-      {bulkOpen && (
+      {bulkMode && (
         <Card className="mb-6">
-          <h2 className="text-lg font-bold">담임 반 일괄 입력</h2>
-          <p className="mt-1 text-[13px] leading-5 text-subtle">
-            담임 명단(엑셀, 한글 표, 업무분장표 등)을 복사해 붙여 넣으세요. 한 줄에 반과 선생님 이름이 있으면 돼요.
-            예: <code className="bg-wash px-1">1-1 교사13</code>, <code className="bg-wash px-1">2학년 3반 교사02</code>,{' '}
-            엑셀의 <code className="bg-wash px-1">2 [칸] 3 [칸] 교사02</code>
-          </p>
+          <h2 className="text-lg font-bold">{BULK[bulkMode].title}</h2>
+          <p className="mt-1 text-[13px] leading-5 text-subtle">{BULK[bulkMode].help}</p>
           <textarea
             value={bulk}
             onChange={(e) => setBulk(e.target.value)}
             rows={6}
-            placeholder={'1-1\t교사13\n1-2\t교사07\n2학년 3반 교사02'}
-            aria-label="담임 반 일괄 입력"
+            placeholder={BULK[bulkMode].placeholder}
+            aria-label={BULK[bulkMode].title}
             className="m3-field mt-3 w-full font-mono text-[13px]"
           />
-          {parsed && (
+          {bulk.trim() && (
             <div className="mt-3 text-[13px]">
               <p>
-                <b className="text-ok">{parsed.found.length}명</b> 찾음
-                {parsed.missed.length > 0 && (
+                <b className="text-ok">{found.length}명</b> 찾음
+                {missed.length > 0 && (
                   <>
                     {' '}
-                    · <b className="text-bad">{parsed.missed.length}줄</b>은 반이나 이름을 못 찾았어요
+                    · <b className="text-bad">{missed.length}줄</b>은 {BULK[bulkMode].miss}을 못 찾았어요
                   </>
                 )}
-                {homeroomCount > 0 && <span className="text-subtle"> · 이미 넣은 담임은 새 값으로 바뀌어요</span>}
+                {BULK[bulkMode].already > 0 && <span className="text-subtle"> · 이미 넣은 값은 새 값으로 바뀌어요</span>}
               </p>
               <p className="mt-1 flex flex-wrap gap-1.5">
-                {parsed.found.map((f) => (
+                {found.map((f) => (
                   <span key={f.teacherId} className="border border-line bg-surface px-2 py-0.5">
-                    {classLabel(f.cls)} <b>{data.teachers.find((t) => t.id === f.teacherId)?.name}</b>
+                    {f.text} <b>{data.teachers.find((t) => t.id === f.teacherId)?.name}</b>
                   </span>
                 ))}
               </p>
-              {parsed.missed.length > 0 && (
-                <p className="mt-1 text-[12px] text-bad">못 찾은 줄: {parsed.missed.slice(0, 5).join(' / ')}</p>
-              )}
+              {missed.length > 0 && <p className="mt-1 text-[12px] text-bad">못 찾은 줄: {missed.slice(0, 5).join(' / ')}</p>}
             </div>
           )}
           <div className="mt-3 flex gap-2">
-            <button onClick={applyBulk} disabled={!parsed?.found.length} className="m3-btn m3-filled">
-              {parsed?.found.length ? `${parsed.found.length}명 담임 넣기` : '담임 넣기'}
+            <button onClick={applyBulk} disabled={!found.length} className="m3-btn m3-filled">
+              {found.length ? `${found.length}명 ${BULK[bulkMode].unit} 넣기` : `${BULK[bulkMode].unit} 넣기`}
             </button>
-            <button onClick={() => setBulkOpen(false)} className="m3-btn m3-outlined">
+            <button onClick={() => setBulkMode(null)} className="m3-btn m3-outlined">
               닫기
             </button>
           </div>
@@ -149,13 +192,14 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       )}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[840px] text-left text-sm">
+          <table className="w-full min-w-[940px] text-left text-sm">
             <thead>
               <tr className="border-b text-xs text-subtle">
                 <th className="p-3">이름</th>
                 <th className="p-3">교과</th>
                 <th className="p-3">담당 학년</th>
                 <th className="p-3">담임 반</th>
+                <th className="p-3">출생 연도</th>
                 <th className="p-3">근무 구분</th>
                 <th className="p-3">보강 후보</th>
                 <th className="p-3">보강 불가 시간</th>
@@ -201,6 +245,27 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                     )}
                   </td>
                   <td className="p-3">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={1940}
+                      max={2010}
+                      placeholder="—"
+                      key={`${t.id}-${t.birthYear ?? ''}`}
+                      defaultValue={t.birthYear ?? ''}
+                      onBlur={(e) => {
+                        // 다 입력하고 칸을 벗어날 때 저장 (네 자리가 아니면 비움)
+                        const y = Number(e.target.value)
+                        const next = y >= 1940 && y <= 2010 ? y : undefined
+                        if (next !== t.birthYear) updateTeacher(t.id, { birthYear: next })
+                        else if (!next) e.target.value = ''
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                      aria-label={`${t.name} 출생 연도`}
+                      className="m3-field m3-field-sm w-24 tabular-nums"
+                    />
+                  </td>
+                  <td className="p-3">
                     <select
                       value={t.employmentType}
                       onChange={(e) =>
@@ -242,7 +307,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                 </tr>
                 {openId === t.id && (
                   <tr className="border-b border-line bg-wash">
-                    <td colSpan={8} className="p-4">
+                    <td colSpan={9} className="p-4">
                       <BlockedEditor
                         teacher={t}
                         periodCount={data.settings.periodCount}

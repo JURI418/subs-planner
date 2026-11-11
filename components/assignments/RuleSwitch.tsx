@@ -14,14 +14,14 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
   const pending = data.assignments.filter((a) => a.status !== '확정' && !a.isManual).length
   const name = (id: string | null) => data.teachers.find((t) => t.id === id)?.name ?? '없음'
 
-  const preview = ask ? recomputeProposals(data, presetRule(ask)) : null
+  const preview = ask ? recomputeProposals(data, { ...presetRule(ask), ageDir: rule.ageDir }) : null
   const choose = (k: string) => {
     if (k === rule.preset) return
     if (k === 'custom') return router.push('/settings')
     const key = k as PresetKey
     // 다시 추천할 배정이 없으면 바로 바꾼다
     if (pending === 0) {
-      setData((d) => ({ ...d, settings: { ...d.settings, rule: presetRule(key) } }))
+      setData((d) => ({ ...d, settings: { ...d.settings, rule: { ...presetRule(key), ageDir: d.settings.rule.ageDir } } }))
       return
     }
     setAsk(key)
