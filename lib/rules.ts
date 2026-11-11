@@ -6,21 +6,21 @@ export type PresetKey = 'homeroom' | 'fair' | 'subject' | 'free'
 export type RuleSettings = { preset: PresetKey | 'custom'; order: RuleKey[]; on: RuleKey[] }
 
 export const RULES: Record<RuleKey, { label: string; desc: string }> = {
-  homeroom: { label: '그 반 담임', desc: '결강 수업 반의 담임 선생님' },
-  grade: { label: '같은 학년', desc: '결강 수업과 같은 학년을 가르치는 선생님 (‘추가포함’ 교사도 포함)' },
-  subject: { label: '같은 교과', desc: '결강 수업과 같은 과목 선생님' },
-  fairness: { label: '보강 적게 한 사람', desc: '누적 보강이 적을수록 (0회면 만점, 10회 이상이면 0점)' },
-  daily: { label: '그날 여유', desc: '보강을 넣어도 그날 수업이 2개 이하 (3개면 4분의 1)' },
-  run: { label: '연속 부담 적음', desc: '보강을 넣어도 연속 수업이 2교시 이하' },
-  homeroomLast: { label: '담임은 뒤로', desc: '담임 선생님은 되도록 나중에 (그 반 담임은 예외)' },
+  homeroom: { label: '해당 학급 담임', desc: '결강 수업 학급의 담임 교사' },
+  grade: { label: '동일 학년 담당', desc: '결강 수업과 같은 학년을 가르치는 교사 (‘추가포함’ 교사 포함)' },
+  subject: { label: '동일 교과', desc: '결강 수업과 같은 교과를 가르치는 교사' },
+  fairness: { label: '누적 보강 적음', desc: '지금까지 맡은 보강이 적은 교사 우선 (0회 만점, 10회 이상 0점)' },
+  daily: { label: '당일 수업 여유', desc: '보강을 포함한 당일 수업이 2시간 이하 (3시간이면 4분의 1 반영)' },
+  run: { label: '연속 수업 부담 적음', desc: '보강을 포함한 연속 수업이 2교시 이하' },
+  homeroomLast: { label: '담임 교사 후순위', desc: '담임 교사는 가급적 나중에 배정 (해당 학급 담임 제외)' },
 }
 export const ALL_RULES = Object.keys(RULES) as RuleKey[]
 
 export const PRESETS: Record<PresetKey, { label: string; desc: string; on: RuleKey[] }> = {
-  homeroom: { label: '담임·학년 우선', desc: '그 반 담임, 같은 학년 선생님 먼저', on: ['homeroom', 'grade', 'daily', 'fairness', 'run'] },
-  fair: { label: '공평 우선', desc: '보강을 적게 한 선생님 먼저', on: ['fairness', 'daily', 'grade', 'run'] },
-  subject: { label: '같은 교과 우선', desc: '같은 과목 선생님 먼저 (자습 대신 수업 진행)', on: ['subject', 'grade', 'fairness', 'daily', 'run'] },
-  free: { label: '여유 우선', desc: '그날 수업이 적은 선생님 먼저 (시험 기간 등)', on: ['daily', 'run', 'fairness', 'grade'] },
+  homeroom: { label: '담임·학년 우선', desc: '해당 학급 담임과 동일 학년 교사 우선', on: ['homeroom', 'grade', 'daily', 'fairness', 'run'] },
+  fair: { label: '균등 배정 우선', desc: '누적 보강이 적은 교사 우선', on: ['fairness', 'daily', 'grade', 'run'] },
+  subject: { label: '동일 교과 우선', desc: '같은 교과 교사가 수업 진행 (자습 대신)', on: ['subject', 'grade', 'fairness', 'daily', 'run'] },
+  free: { label: '당일 여유 우선', desc: '당일 수업이 적은 교사 우선 (시험 기간 등)', on: ['daily', 'run', 'fairness', 'grade'] },
 }
 export const PRESET_KEYS = Object.keys(PRESETS) as PresetKey[]
 
@@ -84,11 +84,11 @@ export function ruleMatch(
     case 'homeroom':
       return t.homeroom && cls && t.homeroom === cls ? { ratio: 1, reason: `${classLabel(cls)} 담임` } : { ratio: 0 }
     case 'grade':
-      if (t.grades.includes(slot.grade)) return { ratio: 1, reason: '같은 학년 담당' }
+      if (t.grades.includes(slot.grade)) return { ratio: 1, reason: '동일 학년 담당' }
       return t.poolStatus === '추가포함' ? { ratio: 1, reason: '추가 포함 후보' } : { ratio: 0 }
     case 'subject': {
       const subj = [slot.subject, ctx.absentSubject].filter(Boolean)
-      return subj.includes(t.subject) ? { ratio: 1, reason: '같은 교과' } : { ratio: 0 }
+      return subj.includes(t.subject) ? { ratio: 1, reason: '동일 교과' } : { ratio: 0 }
     }
     case 'fairness':
       return { ratio: Math.max(0, 10 - t.totalAssignments) / 10 }
@@ -97,7 +97,7 @@ export function ruleMatch(
     case 'run':
       return { ratio: ctx.maxRun <= 2 ? 1 : 0 }
     case 'homeroomLast':
-      return !t.homeroom || t.homeroom === cls ? { ratio: 1 } : { ratio: 0, reason: '담임이라 뒤로' }
+      return !t.homeroom || t.homeroom === cls ? { ratio: 1 } : { ratio: 0, reason: '담임 교사 후순위' }
   }
 }
 

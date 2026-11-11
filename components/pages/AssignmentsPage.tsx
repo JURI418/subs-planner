@@ -14,7 +14,7 @@ import { cancelConfirm, confirmMany, deleteSlots } from '@/lib/dataOps'
 function reasonKind(r: string) {
   if (/위반|수업 있음|다른 보강|결강|초과|불가|제외|후보 없음|본인/.test(r)) return 'bad'
   if (/수동|예비.*변경/.test(r)) return 'manual'
-  if (/같은 학년|추가 포함|같은 교과|반 담임/.test(r)) return 'good'
+  if (/같은 학년|동일 학년|추가 포함|같은 교과|동일 교과|반 담임/.test(r)) return 'good'
   if (/연속/.test(r)) return 'run'
   return 'plain'
 }
