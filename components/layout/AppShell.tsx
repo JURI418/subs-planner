@@ -143,14 +143,15 @@ export function AppShell() {
   const notice = notices[noticeIdx % notices.length]
 
   const Logo = () => (
-    <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="홈으로" title="홈">
-      <span className="grid size-9 place-items-center bg-point text-on-point">
+    <button onClick={() => go('/dashboard')} className="group flex items-center gap-2.5 text-left" aria-label="홈으로" title="홈">
+      <span className="grid size-9 place-items-center bg-point text-on-point transition-colors group-hover:bg-ink group-hover:text-point">
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
         <span className="block text-[0.8824rem] font-extrabold">결보강 매니저</span>
         <span className="block text-[0.5882rem] font-bold tracking-[.22em] text-subtle">SUBS PLANNER</span>
       </span>
+      <span className="ml-1 border border-ink px-1.5 py-0.5 text-[0.6471rem] font-bold transition-colors group-hover:bg-point">홈</span>
     </button>
   )
 
