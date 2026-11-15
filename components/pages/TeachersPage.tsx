@@ -560,52 +560,58 @@ function DateBlocks({
   }
   const toggleP = (p: number) => setPs((x) => (x.includes(p) ? x.filter((y) => y !== p) : [...x, p]))
   return (
-    <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
-      <div className="min-w-0 lg:w-[460px]">
-        <p className="mb-3 text-[13px] text-subtle">
-          보강 불가 날짜 선택
-        </p>
-        <label className="block text-sm font-semibold">
-          날짜
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="m3-field m3-field-sm mt-1.5 w-48" />
-          {warn && <span className="ml-2 text-[12px] font-bold text-warn">{warn}</span>}
-        </label>
-        <p className="mt-3 text-sm font-semibold">교시</p>
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
-          <button
-            onClick={() => setPs([])}
-            aria-pressed={ps.length === 0}
-            className={`h-8 rounded-md px-3 text-[12px] font-bold ${ps.length === 0 ? 'bg-plum text-white' : 'border border-line bg-surface'}`}
-          >
-            하루 전체
-          </button>
-          {periods.map((p) => (
-            <button
-              key={p}
-              onClick={() => toggleP(p)}
-              aria-pressed={ps.includes(p)}
-              aria-label={`${p}교시`}
-              className={`h-8 w-9 rounded-md text-[12px] font-bold ${ps.includes(p) ? 'bg-plum text-white' : 'border border-dashed border-line bg-surface hover:border-plum'}`}
-            >
-              {p}
-            </button>
-          ))}
+    <div className="flex flex-col gap-6">
+      <p className="text-[13px] text-subtle">보강 불가 시간 선택</p>
+      <div className="flex flex-wrap items-end gap-x-8 gap-y-5">
+        <div>
+          <label htmlFor="blk-date" className="block text-sm font-semibold">
+            날짜
+          </label>
+          <div className="mt-2 flex items-center gap-3">
+            <input id="blk-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="m3-field m3-field-sm w-48" />
+            {warn && <span className="text-[12px] font-bold text-warn">{warn}</span>}
+          </div>
         </div>
-        <label className="mt-3 block text-sm font-semibold">
+        <div>
+          <p className="text-sm font-semibold">교시</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              onClick={() => setPs([])}
+              aria-pressed={ps.length === 0}
+              className={`h-9 rounded-md px-4 text-[13px] font-bold ${ps.length === 0 ? 'bg-plum text-white' : 'border border-line bg-surface'}`}
+            >
+              하루 전체
+            </button>
+            {periods.map((p) => (
+              <button
+                key={p}
+                onClick={() => toggleP(p)}
+                aria-pressed={ps.includes(p)}
+                aria-label={`${p}교시`}
+                className={`h-9 w-10 rounded-md text-[13px] font-bold ${ps.includes(p) ? 'bg-plum text-white' : 'border border-dashed border-line bg-surface hover:border-plum'}`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-end gap-4">
+        <label className="block min-w-0 flex-1 text-sm font-semibold">
           메모 (선택)
           <input
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && add()}
             placeholder="예: 교육청 출장, 학부모 상담"
-            className="m3-field m3-field-sm mt-1.5 w-full"
+            className="m3-field m3-field-sm mt-2 w-full"
           />
         </label>
-        <button onClick={add} disabled={!date} className="m3-btn m3-btn-sm m3-outlined mt-3">
-          + 이 날짜 추가
+        <button onClick={add} disabled={!date} className="m3-btn m3-btn-sm m3-outlined shrink-0">
+          + 추가
         </button>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-3">
+      <div className="flex min-w-0 flex-col gap-3 border-t border-line pt-5">
         <p className="text-sm font-semibold">추가한 날짜 {dates.length}일</p>
         {dates.length === 0 ? (
           <p className="border border-dashed border-line px-3 py-4 text-[13px] text-subtle">아직 없어요.</p>
@@ -636,7 +642,9 @@ function DateBlocks({
           </ul>
         )}
         <p className="text-[12px] leading-5 text-subtle">
-          그 날짜·교시에는 보강이 추천되지 않습니다. 이미 잡힌 확정 전 배정은 저장할 때 다른 선생님으로 바뀝니다.
+          선택한 날짜·교시에는 보강이 추천되지 않음
+          <br />
+          이미 그 시간에 배정된 보강(확정 전)은 저장 시 다른 선생님으로 자동 변경됨
         </p>
         <div className="flex flex-wrap gap-2">
           <button onClick={onSave} className="m3-btn m3-btn-sm m3-filled">
