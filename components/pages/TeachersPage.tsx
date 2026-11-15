@@ -128,30 +128,32 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       <PageHeader
         eyebrow="Faculty"
         title="교사 관리"
-        desc={`시간표에서 담당 학년을 자동으로 계산합니다. 담임 반(${homeroomCount}명 입력)과 출생 연도(${birthCount}명 입력)는 직접 넣어 주세요.`}
-        action={
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => openBulk('homeroom')} className={`m3-btn m3-btn-sm ${bulkMode === 'homeroom' ? 'm3-filled' : 'm3-outlined'}`}>
-              담임 반 일괄 입력
-            </button>
-            <button onClick={() => openBulk('birth')} className={`m3-btn m3-btn-sm ${bulkMode === 'birth' ? 'm3-filled' : 'm3-outlined'}`}>
-              출생 연도 일괄 입력
-            </button>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="이름 검색"
-              className="m3-field m3-field-sm w-36"
-            />
-            <select value={grade} onChange={(e) => setGrade(e.target.value)} className="m3-field m3-field-sm">
-              <option value="all">전체 학년</option>
-              <option value="1">1학년</option>
-              <option value="2">2학년</option>
-              <option value="3">3학년</option>
-            </select>
-          </div>
-        }
+        desc={`담당 학년은 시간표에서 자동으로 계산돼요. 담임 반(${homeroomCount}명 입력)과 출생 연도(${birthCount}명 입력)는 직접 넣어 주세요.`}
       />
+      <div className="-mt-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => openBulk('homeroom')} className={`m3-btn m3-btn-sm ${bulkMode === 'homeroom' ? 'm3-filled' : 'm3-outlined'}`}>
+            담임 반 일괄 입력
+          </button>
+          <button onClick={() => openBulk('birth')} className={`m3-btn m3-btn-sm ${bulkMode === 'birth' ? 'm3-filled' : 'm3-outlined'}`}>
+            출생 연도 일괄 입력
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="이름 검색"
+            className="m3-field m3-field-sm w-40"
+          />
+          <select value={grade} onChange={(e) => setGrade(e.target.value)} className="m3-field m3-field-sm">
+            <option value="all">전체 학년</option>
+            <option value="1">1학년</option>
+            <option value="2">2학년</option>
+            <option value="3">3학년</option>
+          </select>
+        </div>
+      </div>
       {bulkMode && (
         <Card className="mb-6">
           <h2 className="text-lg font-bold">{BULK[bulkMode].title}</h2>
