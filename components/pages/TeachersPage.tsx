@@ -432,8 +432,9 @@ function BlockedEditor({
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div>
         <p className="mb-2 text-[13px] text-subtle">
-          <b className="text-ink">{teacher.name}</b> 선생님이 보강에 들어갈 수 없는 칸을 눌러 고르세요. 요일 이름을 누르면
-          하루 전체가 선택됩니다.
+          <b className="text-ink">{teacher.name}</b> 선생님이 보강에 들어갈 수 없는 시간을 눌러 선택하세요.
+          <br />
+          요일 이름을 누르면 그날 전체가 선택돼요.
         </p>
         <table className="border-collapse text-[13px]">
           <thead>
@@ -491,7 +492,9 @@ function BlockedEditor({
           />
         </label>
         <p className="text-[12px] leading-5 text-subtle">
-          선택한 칸에는 매주 보강이 추천되지 않습니다. 이미 그 시간에 잡힌 확정 전 배정은 저장할 때 다른 선생님으로 바뀝니다.
+          선택한 시간에는 매주 보강이 추천되지 않아요.
+          <br />
+          이미 배정된 확정 전 보강은 저장할 때 다른 선생님으로 바뀌어요.
         </p>
         <div className="flex flex-wrap gap-2">
           <button onClick={saveAll} className="m3-btn m3-btn-sm m3-filled">
@@ -560,8 +563,9 @@ function DateBlocks({
     <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
       <div className="min-w-0 lg:w-[460px]">
         <p className="mb-3 text-[13px] text-subtle">
-          <b className="text-ink">{teacher.name}</b> 선생님이 그날만 보강에 들어갈 수 없는 날짜를 넣으세요. 출장·연수·행사 등
-          결강까지는 아닌 날에 써요.
+          <b className="text-ink">{teacher.name}</b> 선생님이 보강에 들어갈 수 없는 날짜를 추가하세요.
+          <br />
+          출장, 연수, 행사처럼 결강은 아니지만 그날만 어려운 경우에 쓰면 돼요.
         </p>
         <label className="block text-sm font-semibold">
           날짜
