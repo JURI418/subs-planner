@@ -241,8 +241,9 @@ thead th {
 tbody tr:hover > td {
   background-color: color-mix(in srgb, var(--color-point-soft) 70%, transparent);
 }
-.card {
-  border-top: 5px solid var(--color-point);
+.card h2 {
+  border-left: 5px solid var(--color-point);
+  padding-left: 0.6rem;
 }
 
 @layer base {
