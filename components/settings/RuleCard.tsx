@@ -75,7 +75,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
               className={`border p-3 text-left transition-colors ${on ? 'border-ink bg-ink text-paper' : 'border-line bg-surface hover:border-ink/50'}`}
             >
               <span className="flex items-center gap-1.5 text-[14px] font-bold">
-                {on && <span className="size-2 rounded-full bg-point" aria-hidden />}
+                {on && <span className="size-2 rounded-full bg-point-lt" aria-hidden />}
                 {PRESETS[k].label}
               </span>
               <span className={`mt-1 block text-[11.5px] leading-4 ${on ? 'text-paper/70' : 'text-subtle'}`}>{PRESETS[k].desc}</span>
@@ -86,7 +86,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
           className={`border border-dashed p-3 ${rule.preset === 'custom' ? 'border-ink bg-ink text-paper' : 'border-line text-subtle'}`}
         >
           <span className="flex items-center gap-1.5 text-[14px] font-bold">
-            {rule.preset === 'custom' && <span className="size-2 rounded-full bg-point" aria-hidden />}
+            {rule.preset === 'custom' && <span className="size-2 rounded-full bg-point-lt" aria-hidden />}
             직접 설정
           </span>
           <span className={`mt-1 block text-[11.5px] leading-4 ${rule.preset === 'custom' ? 'text-paper/70' : ''}`}>

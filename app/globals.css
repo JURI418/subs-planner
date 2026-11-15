@@ -4,14 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 결보강 매니저 디자인 토큰 — 부티크 편집 디자인
+/* 결보강 매니저 디자인 토큰 — 신문 편집 디자인
    따뜻한 미색 바탕, 검정 잉크, 각진 면과 가는 선, 선택은 타원 테두리, 영문은 이탤릭 세리프 */
 @theme {
-  --color-paper: #f6f5f1;
-  --color-surface: #fcfbf8;
+  --color-paper: #faf9f6;
+  --color-surface: #faf9f6;
   --color-wash: #efede7;
   --color-wash-2: #e7e4dc;
-  --color-line: #e2dfd7;
+  --color-line: #cfccc3;
   --color-line-strong: #1b1a18;
   --color-ink: #1b1a18;
   --color-ink-2: #3c3a36;
@@ -24,8 +24,10 @@
   --color-on-iris-container: #1b1a18;
   --color-gold: #d8c08c;
   /* 포인트 색 */
-  --color-point: #c6f432;
-  --color-on-point: #1b1a18;
+  --color-point: #1f5f4a;
+  --color-on-point: #ffffff;
+  /* 어두운 바탕 위에서 쓰는 밝은 포인트 */
+  --color-point-lt: #c6f432;
   /* 예비 교사 표시(자주), 연속 수업 표시(청회색) */
   --color-plum: #6a3f7a;
   --color-plum-soft: #efe5f2;
@@ -38,15 +40,15 @@
   --color-bad: #96382f;
   --color-bad-soft: #f3e3df;
   --color-bad-line: #96382f;
-  --font-sans: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
-  --font-mono: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
 @layer components {
   .m3-btn {
-    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold tracking-[.01em] transition-[background-color,color,border-color] duration-200 disabled:pointer-events-none disabled:opacity-35;
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-none px-6 text-sm font-bold tracking-[.01em] transition-[background-color,color,border-color] duration-200 disabled:pointer-events-none disabled:opacity-35;
   }
   .m3-btn-sm {
     @apply h-8 px-4 text-[13px];
@@ -76,7 +78,7 @@
     @apply py-1.5 text-sm;
   }
   .m3-chip {
-    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-ink;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-none border border-line bg-surface px-4 text-sm text-ink-2 transition-colors hover:border-ink;
   }
   .m3-chip-on {
     @apply border-ink bg-ink text-paper hover:border-ink;
@@ -149,7 +151,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);

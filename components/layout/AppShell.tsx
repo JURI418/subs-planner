@@ -234,7 +234,7 @@ export function AppShell() {
         {/* 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내 · 학기. 홈에서만 검정 바탕 */}
         <div className={`px-4 py-1.5 md:px-6 ${home ? 'bg-ink text-paper' : 'bg-paper text-ink'}`}>
           <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[12px] tracking-[.06em]`}>
-            <span className={`font-extrabold tracking-[.18em] ${home ? 'text-point' : ''}`}>//Subs Planner</span>
+            <span className={`font-extrabold tracking-[.18em] ${home ? 'text-point-lt' : ''}`}>//Subs Planner</span>
             <p key={noticeIdx} className={`truncate text-center font-bold ${home ? 'text-paper/90' : 'text-ink-2'}`} aria-live="polite">
               {notice}
             </p>
@@ -269,7 +269,7 @@ export function AppShell() {
       {/* 구글 시트 전송 결과 알림 */}
       {autoSaved && !sheet.status && (
         <div role="status" className="fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] bg-ink px-4 py-3 text-[14px] font-bold text-paper shadow-[0_8px_24px_rgb(0_0_0/.2)]">
-          <span className="mr-2 text-point">●</span>
+          <span className="mr-2 text-point-lt">●</span>
           {autoSaved}
         </div>
       )}
@@ -327,7 +327,7 @@ export function AppShell() {
           role="status"
           className={`fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] px-4 py-3 text-[14px] font-bold shadow-[0_8px_24px_rgb(0_0_0/.2)] ${sheet.status.ok ? 'bg-ink text-paper' : 'bg-bad text-white'}`}
         >
-          {sheet.status.ok && <span className="mr-2 text-point">●</span>}
+          {sheet.status.ok && <span className="mr-2 text-point-lt">●</span>}
           {sheet.status.text}
         </div>
       )}

@@ -76,7 +76,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
         <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
           <div className="min-w-0">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point">
+            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point-lt">
               Today · {englishDate(today)}
             </p>
             <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
@@ -97,11 +97,11 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                     const sub = data.teachers.find((t) => t.id === a?.substituteTeacherId)?.name
                     return (
                       <li key={s.id} className="flex items-center gap-2 rounded-md border border-paper/25 px-3 py-1.5 text-[13px]">
-                        <b className="text-point">{s.period}교시</b>
+                        <b className="text-point-lt">{s.period}교시</b>
                         <span>{s.room}{s.group ?? ''} {s.subject}</span>
                         <span className="text-paper/60">·</span>
                         <span className="text-paper/80">{absent} →</span>
-                        <span className={sub ? 'font-bold' : 'font-bold text-point'}>
+                        <span className={sub ? 'font-bold' : 'font-bold text-point-lt'}>
                           {sub ?? '미정'}
                           {a?.status === '제안' && <span className="ml-1 text-[11px] font-normal text-paper/50">제안</span>}
                         </span>
@@ -128,7 +128,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               onClick={() => router.push('/absence')}
-              className="m3-btn h-11 border border-point bg-point px-6 text-on-point hover:bg-transparent hover:text-point"
+              className="m3-btn h-11 border border-point bg-point px-6 text-on-point hover:bg-transparent hover:text-paper"
             >
               <Plus size={18} /> 결강 등록
             </button>
@@ -152,14 +152,14 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                 const off = data.settings.holidays.includes(b.date)
                 return (
                   <div key={b.date} className="flex h-full w-7 flex-col items-center justify-end gap-1.5 md:w-8" title={`${b.label} ${b.count}개`}>
-                    <span className={`text-[13px] font-bold tabular-nums ${isToday ? 'text-point' : 'text-paper/85'}`}>
+                    <span className={`text-[13px] font-bold tabular-nums ${isToday ? 'text-point-lt' : 'text-paper/85'}`}>
                       {off ? '휴' : b.count}
                     </span>
                     <span
-                      className={`w-full rounded-[3px] transition-[height] duration-500 ${isToday ? 'bg-point' : off ? 'bg-paper/[.06]' : 'bg-paper/20'}`}
+                      className={`w-full rounded-[3px] transition-[height] duration-500 ${isToday ? 'bg-point-lt' : off ? 'bg-paper/[.06]' : 'bg-paper/20'}`}
                       style={{ height: `${Math.max(4, (b.count / barMax) * 72)}px` }}
                     />
-                    <span className={`text-[12px] ${isToday ? 'font-bold text-point' : 'text-paper/60'}`}>{b.label}</span>
+                    <span className={`text-[12px] ${isToday ? 'font-bold text-point-lt' : 'text-paper/60'}`}>{b.label}</span>
                   </div>
                 )
               })}
@@ -183,7 +183,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 {title}
                 {hot && (
-                  <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-point">확인 필요</span>
+                  <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-point-lt">확인 필요</span>
                 )}
               </span>
               <ChevronRight size={18} className={`shrink-0 transition-transform group-hover:translate-x-1 ${hot ? 'text-on-point' : 'text-subtle group-hover:text-ink'}`} />
