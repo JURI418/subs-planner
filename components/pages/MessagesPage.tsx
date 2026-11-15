@@ -66,7 +66,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
       <PageHeader
         eyebrow="Messages"
         title="시간강사 안내 문자"
-        desc="학사일정에서 다음 달 휴업일·방학·행사를 골라, 시간강사 선생님께 보낼 문자를 만듭니다. 매월 말에 복사해서 보내세요."
+        desc="학사일정에서 다음 달 휴업일, 방학, 행사를 골라, 시간강사 선생님께 보낼 문자를 만듭니다. 매월 말에 복사해서 보내세요."
       />
 
       <div className="grid gap-6 xl:grid-cols-[.9fr_1.1fr]">
@@ -111,7 +111,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
             {items.length === 0 ? (
               <p className="mt-5 text-sm text-subtle">
                 {data.events.length
-                  ? `${ym.m}월 평일에는 휴업일·행사가 없습니다.`
+                  ? `${ym.m}월 평일에는 휴업일, 행사가 없습니다.`
                   : '학사일정이 없습니다. 왼쪽 메뉴의 ‘학사일정 올리기’에서 먼저 올려 주세요.'}
               </p>
             ) : (
@@ -136,7 +136,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
               </ul>
             )}
             <p className="mt-3 text-[0.7059rem] leading-5 text-subtle">
-              휴업일·방학은 기본으로 선택돼요. 체육대회처럼 수업이 없는 행사는 직접 체크하세요. 행사에는 ‘(수업 없음)’이 붙어요.
+              휴업일, 방학은 기본으로 선택돼요. 체육대회처럼 수업이 없는 행사는 직접 체크하세요. 행사에는 ‘(수업 없음)’이 붙어요.
               ‹ › 로 다른 달로 넘겨 ‘+ 이 달도 넣기’를 누르면 여러 달을 한 문자로 모을 수 있어요.
             </p>
           </Card>
@@ -177,7 +177,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
             </div>
 
             <MessageBox
-              title="공통 문자 (단체방·전체 발송용)"
+              title="공통 문자 (단체방, 전체 발송용)"
               text={common}
               copied={copied === 'common'}
               onCopy={(t) => copy('common', t)}
@@ -196,7 +196,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                     <MessageBox
                       key={t.id}
                       title={`${t.name} 선생님`}
-                      sub={`${t.subject} · ${mine.length}건`}
+                      sub={`${t.subject}, ${mine.length}건`}
                       schedule={weekSummary(data, t.id)}
                       grid={<MiniWeek data={data} teacherId={t.id} />}
                       text={text}

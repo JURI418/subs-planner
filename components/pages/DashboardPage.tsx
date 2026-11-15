@@ -50,7 +50,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
     const text = exportText({ ...data, assignments: data.assignments.filter((a) => ids.has(a.slotId)) })
     if (!text) return alert('복사할 보강 내역이 없습니다.')
     navigator.clipboard?.writeText(text)
-    alert(`오늘 이후 보강 ${text.split('\n').length}건을 나이스·메신저 붙여넣기 형식으로 복사했습니다.`)
+    alert(`오늘 이후 보강 ${text.split('\n').length}건을 나이스, 메신저 붙여넣기 형식으로 복사했습니다.`)
   }
   const upcomingCount = data.assignments.filter((a) => {
     const s = data.slots.find((x) => x.id === a.slotId)
@@ -59,8 +59,8 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
   const actions = [
     { key: 'absence', hot: false, en: 'Absence', title: '결강 등록', value: todayAbsences, unit: '건 오늘', mark: 'bg-ink', desc: `${weekend ? '다음 주' : '이번 주'} 결강 수업 ${weekSlots}개`, run: () => router.push('/absence') },
     { key: 'assignments', hot: pending > 0, en: 'Assignments', title: '배정 확인', value: pending, unit: '건 미확정', mark: pending ? 'bg-warn' : 'bg-faint', desc: pending ? '확정을 기다리는 배정이 있어요' : '모든 배정을 확정했어요', run: () => router.push('/assignments') },
-    { key: 'stats', hot: false, en: 'Statistics', title: '결보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '보강 순위 · 결강 순위 확인', run: () => router.push('/stats') },
-    { key: 'copy', hot: false, en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강 · 나이스·메신저용', run: copyUpcoming },
+    { key: 'stats', hot: false, en: 'Statistics', title: '결보강 통계', value: monthDone, unit: '건 이번 달', mark: 'bg-ok', desc: '보강 순위, 결강 순위 확인', run: () => router.push('/stats') },
+    { key: 'copy', hot: false, en: 'Copy', title: '보강 내역 복사', value: upcomingCount, unit: '건 예정', mark: 'bg-ink-2', desc: '오늘 이후 보강, 나이스, 메신저용', run: copyUpcoming },
   ]
   const checklist: [string, string, boolean, string][] = [
     ['시간표 등록', `교사 ${new Set(data.timetable.map((e) => e.teacherId)).size}명의 시간표가 있습니다.`, data.timetable.length > 0, '/timetable'],
@@ -77,7 +77,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           <div className="min-w-0">
           <div className="min-w-0">
             <p className="text-[0.6471rem] font-bold uppercase tracking-[.25em] text-point">
-              Today · {englishDate(today)}
+              Today, {englishDate(today)}
             </p>
             <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
               결보강 확인
@@ -87,7 +87,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
               <>
                 {todayEvents.length > 0 && (
                   <p className="mt-1.5 truncate text-[0.7647rem] text-paper/70">
-                    {todayEvents.slice(0, 3).map((e) => `· ${e.title}`).join('  ')}
+                    {todayEvents.slice(0, 3).map((e) => `- ${e.title}`).join('  ')}
                   </p>
                 )}
                 {/* 오늘의 보강: 교시 · 반 · 결강 → 보강 */}
@@ -99,7 +99,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                       <li key={s.id} className="flex items-center gap-2 rounded-md border border-paper/25 px-3 py-1.5 text-[0.7647rem]">
                         <b className="text-point">{s.period}교시</b>
                         <span>{s.room}{s.group ?? ''} {s.subject}</span>
-                        <span className="text-paper/60">·</span>
+                        <span className="text-paper/60">, </span>
                         <span className="text-paper/80">{absent} →</span>
                         <span className={sub ? 'font-bold' : 'font-bold text-point'}>
                           {sub ?? '미정'}
@@ -116,11 +116,11 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             ) : (
               <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[0.8235rem]">
                 {todayOff ? (
-                  <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? ` · ${todayEvents[0].title}` : ''}</li>
+                  <li className="font-bold">오늘은 휴업일입니다{todayEvents[0] ? `, ${todayEvents[0].title}` : ''}</li>
                 ) : todayEvents.length ? (
-                  todayEvents.slice(0, 4).map((e, i) => <li key={i}>· {e.title}</li>)
+                  todayEvents.slice(0, 4).map((e, i) => <li key={i}>- {e.title}</li>)
                 ) : (
-                  <li className="text-paper/60">오늘 등록된 학사일정 · 보강이 없습니다</li>
+                  <li className="text-paper/60">오늘 등록된 학사일정, 보강이 없습니다</li>
                 )}
               </ul>
             )}
@@ -136,7 +136,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
               onClick={() => router.push('/assignments')}
               className="m3-btn h-11 border border-paper/60 px-6 text-paper hover:border-paper hover:bg-paper hover:text-ink"
             >
-              배정 확인 {pending > 0 && `· ${pending}건`}
+              배정 확인 {pending > 0 && `(${pending}건)`}
             </button>
           </div>
           </div>
@@ -144,7 +144,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           {/* 이번 주 요일별 결강 수업 막대그래프: 오늘만 포인트 색 */}
           <div className="shrink-0" aria-label="요일별 결강 수업 수">
             <p className="mb-3 text-[0.5882rem] font-bold uppercase tracking-[.22em] text-paper/55">
-              {weekend ? 'Next week' : 'This week'} · 결강 수업 {weekSlots}
+              {weekend ? 'Next week' : 'This week'}, 결강 수업 {weekSlots}
             </p>
             <div className="flex h-28 items-end gap-3 md:gap-4">
               {weekBars.map((b) => {
@@ -177,7 +177,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             className={`group flex flex-col items-stretch p-5 text-left transition-colors md:p-6 ${hot ? 'bg-point text-on-point hover:brightness-95' : 'bg-surface hover:bg-wash'}`}
           >
             <span className={`truncate text-[0.6471rem] font-bold uppercase tracking-[.14em] md:tracking-[.2em] ${hot ? 'text-on-point/70' : 'text-subtle'}`}>
-              {String(i + 1).padStart(2, '0')} · {en}
+              {String(i + 1).padStart(2, '0')} / {en}
             </span>
             <span className="mt-2 flex items-center justify-between gap-2 text-[1.059rem] font-bold md:text-[1.118rem]">
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
@@ -250,7 +250,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                       <span className="font-mono text-sm">{s.period}교시</span>
                       <span className="min-w-0">
                         <span className="block text-[0.8824rem]">
-                          {s.grade}학년 {s.room} · {s.subject}
+                          {s.grade}학년 {s.room}, {s.subject}
                         </span>
                         <span className="mt-0.5 block text-[0.7647rem] text-subtle">{absent} 선생님 결강</span>
                       </span>

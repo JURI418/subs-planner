@@ -56,7 +56,7 @@ export function monthOffItems(data: AppData, ym: string): OffItem[] {
 
 export function itemLine(it: OffItem) {
   const when = it.start === it.end ? shortDate(it.start) : `${shortDate(it.start)}~${shortDate(it.end)}`
-  return `· ${when} ${it.title}${it.kind === '행사' ? ' (수업 없음)' : ''}`
+  return `- ${when} ${it.title}${it.kind === '행사' ? ' (수업 없음)' : ''}`
 }
 
 /** 선생님이 수업하는 요일과 겹치는 항목만 (기간은 겹치는 날이 하루라도 있으면 포함) */
@@ -91,8 +91,8 @@ export function weekSummary(data: AppData, teacherId: string) {
   const own = data.timetable.filter((e) => e.teacherId === teacherId)
   return DAY.map((d) => {
     const ps = [...new Set(own.filter((e) => e.dayOfWeek === d).map((e) => e.period))].sort((a, b) => a - b)
-    return ps.length ? `${d} ${ps.join('·')}교시` : null
+    return ps.length ? `${d} ${ps.join(', ')}교시` : null
   })
     .filter(Boolean)
-    .join(' · ')
+    .join(', ')
 }

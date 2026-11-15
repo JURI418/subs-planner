@@ -21,7 +21,7 @@ export const RULES: Record<RuleKey, { label: string; desc: string }> = {
 export const ALL_RULES = Object.keys(RULES) as RuleKey[]
 
 export const PRESETS: Record<PresetKey, { label: string; desc: string; on: RuleKey[] }> = {
-  homeroom: { label: '담임·학년 우선', desc: '해당 학급 담임과 동일 학년 교사 우선', on: ['homeroom', 'grade', 'daily', 'fairness', 'run'] },
+  homeroom: { label: '담임/학년 우선', desc: '해당 학급 담임과 동일 학년 교사 우선', on: ['homeroom', 'grade', 'daily', 'fairness', 'run'] },
   fair: { label: '균등 배정 우선', desc: '누적 보강이 적은 교사 우선', on: ['fairness', 'daily', 'grade', 'run'] },
   subject: { label: '동일 교과 우선', desc: '같은 교과 교사가 수업 진행 (자습 대신)', on: ['subject', 'grade', 'fairness', 'daily', 'run'] },
   free: { label: '당일 여유 우선', desc: '당일 수업이 적은 교사 우선 (시험 기간 등)', on: ['daily', 'run', 'fairness', 'grade'] },

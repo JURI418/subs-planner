@@ -24,7 +24,7 @@ export function StatsPage({ data }: { data: AppData }) {
       data.absences
         .filter((a) => a.teacherId === t.id)
         .forEach((a) => {
-          const k = a.reason.split(' · ')[0] || '기타'
+          const k = a.reason.split(/, |, /)[0] || '기타'
           reasons.set(k, (reasons.get(k) ?? 0) + 1)
         })
       const topReason = [...reasons.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
@@ -60,7 +60,7 @@ export function StatsPage({ data }: { data: AppData }) {
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Card>
           <h2 className="text-lg font-extrabold">보강 순위</h2>
-          <p className="mt-1 text-[0.7647rem] text-subtle">확정된 보강 기준 · 학기 누적</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">확정된 보강 기준, 학기 누적</p>
           {coverRank.length === 0 ? (
             <p className="mt-6 text-sm text-subtle">아직 확정된 보강이 없습니다.</p>
           ) : (
@@ -81,7 +81,7 @@ export function StatsPage({ data }: { data: AppData }) {
 
         <Card>
           <h2 className="text-lg font-extrabold">결강 순위</h2>
-          <p className="mt-1 text-[0.7647rem] text-subtle">등록된 결강 기준 · 결강 수업 수가 많은 순</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">등록된 결강 기준, 결강 수업 수가 많은 순</p>
           {absence.length === 0 ? (
             <p className="mt-6 text-sm text-subtle">등록된 결강이 없습니다.</p>
           ) : (
@@ -91,7 +91,7 @@ export function StatsPage({ data }: { data: AppData }) {
                 <span>교사</span>
                 <span>결강 수업</span>
                 <span className="text-right">수업</span>
-                <span className="text-right">일수 · 주된 사유</span>
+                <span className="text-right">일수, 주된 사유</span>
               </div>
               <div className="mt-2 flex flex-col gap-3.5">
                 {absence.slice(0, limit).map((x, i) => (
@@ -103,7 +103,7 @@ export function StatsPage({ data }: { data: AppData }) {
                     </div>
                     <span className="text-right text-sm font-bold tabular-nums">{x.classes}</span>
                     <span className="truncate text-right text-[0.7059rem] text-subtle">
-                      {x.days}일{x.topReason ? ` · ${x.topReason}` : ''}
+                      {x.days}일{x.topReason ? `, ${x.topReason}` : ''}
                     </span>
                   </div>
                 ))}

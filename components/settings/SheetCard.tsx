@@ -31,7 +31,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
       return { ok: false, old: true, text: '시트에 붙여넣은 코드가 예전 버전이에요. 아래 ①~③을 다시 해 주세요 (③은 ‘배포 관리 → 연필 → 새 버전’).' }
     if (sheetId && r.id !== sheetId)
       return { ok: false, text: `코드가 다른 파일(“${r.file}”)을 가리키고 있어요. ① 주소를 확인하고 코드를 다시 복사해 붙여넣으세요.` }
-    return { ok: true, text: `연결 정상 · 파일 “${r.file}”의 “${r.sheet}” 탭에 기록합니다.`, file: r.file, id: r.id } as Health & {
+    return { ok: true, text: `연결 정상, 파일 “${r.file}”의 “${r.sheet}” 탭에 기록합니다.`, file: r.file, id: r.id } as Health & {
       file?: string
       id?: string
     }
@@ -86,7 +86,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
         이미 배포했다면 <b>배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포</b>. 이렇게 하면 웹 앱 주소가 그대로 유지돼요.
       </li>
       <li>
-        <b>④ 웹 앱 주소 연결</b> — 웹 앱 URL(…/exec)을 붙여넣고 연결하세요. 연결되면 어느 파일·탭에 기록하는지 이름으로 보여드려요.
+        <b>④ 웹 앱 주소 연결</b> — 웹 앱 URL(…/exec)을 붙여넣고 연결하세요. 연결되면 어느 파일, 탭에 기록하는지 이름으로 보여드려요.
         <div className="mt-2 flex flex-wrap gap-2">
           <input
             id="sheet-url"
@@ -110,7 +110,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
         {s.sheetUrl && !needsUpdate ? <Badge tone="green">연결됨</Badge> : needsUpdate ? <Badge tone="yellow">업데이트 필요</Badge> : <Badge>연결 안 됨</Badge>}
       </div>
       <p className="mt-2 text-[0.8235rem] leading-6 text-ink-2">
-        <b>배정 확인</b>에서 체크하고 <b>‘구글 시트에 올리기’</b>를 누르면, 지정한 시트의 <b>‘보강’ 탭</b> 맨 아래에 한 줄씩 추가됩니다. (B 결강 교사 · C 보강 날짜(날짜 형식) · D 교시 · E 보강 교사 · F 대상 학급 · G 과목)
+        <b>배정 확인</b>에서 체크하고 <b>‘구글 시트에 올리기’</b>를 누르면, 지정한 시트의 <b>‘보강’ 탭</b> 맨 아래에 한 줄씩 추가됩니다. (B 결강 교사, C 보강 날짜(날짜 형식), D 교시, E 보강 교사, F 대상 학급, G 과목)
       </p>
 
       {s.sheetUrl && !needsUpdate && (

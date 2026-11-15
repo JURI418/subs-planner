@@ -136,13 +136,13 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
       <PageHeader
         eyebrow="Calendar"
         title="학사일정 올리기"
-        desc="학사일정 PDF를 올리면 공휴일·재량휴업일·방학을 찾아 결강 수업 계산에서 자동으로 뺍니다."
+        desc="학사일정 PDF를 올리면 공휴일, 재량휴업일, 방학을 찾아 결강 수업 계산에서 자동으로 뺍니다."
       />
       <div className="grid gap-6 xl:grid-cols-[1.15fr_1fr]">
         <Card>
           <h2 className="font-display text-lg font-semibold">학사일정 PDF 올리기</h2>
           <p className="mt-1 text-[0.7647rem] text-subtle">
-            구글 시트·엑셀·한글에서 PDF로 저장한 학사일정 (예: &ldquo;3(화) 입학식&rdquo; 형식)
+            구글 시트, 엑셀, 한글에서 PDF로 저장한 학사일정 (예: &ldquo;3(화) 입학식&rdquo; 형식)
           </p>
           <div className="mt-4">
             <FileDrop

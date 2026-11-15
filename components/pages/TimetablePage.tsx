@@ -127,7 +127,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
           {preview && (
             <div className="mt-4 rounded-none bg-wash p-4 text-sm">
               <p className="font-semibold">
-                교사 {new Set(preview.entries.map((e) => e.teacherId)).size}명 · 수업 {preview.entries.length}개를 읽었습니다
+                교사 {new Set(preview.entries.map((e) => e.teacherId)).size}명, 수업 {preview.entries.length}개를 읽었습니다
               </p>
               {preview.newTeachers.length > 0 && (
                 <p className="mt-2 text-iris-deep">
@@ -143,7 +143,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
                     onChange={(e) => setClearSample(e.target.checked)}
                     className="mt-0.5 accent-iris"
                   />
-                  샘플 교사(교사01~)와 샘플 결강·배정을 지우고 이 시간표로 시작하기
+                  샘플 교사(교사01~)와 샘플 결강, 배정을 지우고 이 시간표로 시작하기
                 </label>
               )}
               {preview.errors.length > 0 && (
@@ -176,7 +176,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
             >
               {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.name} · {t.subject}
+                  {t.name}, {t.subject}
                 </option>
               ))}
             </select>

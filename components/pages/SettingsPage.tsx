@@ -22,7 +22,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
       return
     }
     const b = result.data
-    const summary = `교사 ${b.teachers.length}명 · 시간표 ${b.timetable.length}건 · 결강 ${b.absences.length}건 · 배정 ${b.assignments.length}건`
+    const summary = `교사 ${b.teachers.length}명, 시간표 ${b.timetable.length}건, 결강 ${b.absences.length}건, 배정 ${b.assignments.length}건`
     if (
       !confirm(
         `현재 데이터를 백업 파일 내용으로 바꿉니다.\n${summary}\n현재 데이터는 사라집니다. 계속할까요?`,
@@ -107,7 +107,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
             ))}
           </div>
           <div className="mt-5 bg-wash p-4 text-[0.7647rem] leading-6 text-ink-2">
-            그 밖에 항상 빠지는 선생님: 같은 교시 수업·보강, 그날 결강·출장, 보강 불가 시간, 보강 후보 ‘제외’(시간강사 등).
+            그 밖에 항상 빠지는 선생님: 같은 교시 수업, 보강, 그날 결강, 출장, 보강 불가 시간, 보강 후보 ‘제외’(시간강사 등).
             <br />
             누구를 먼저 추천할지는 아래 <b className="text-ink">보강 추천 방식</b>에서 정해요.
           </div>
@@ -187,7 +187,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               className={`m3-btn m3-btn-sm ${data.settings.backupMode !== 'download' && data.settings.backupFileName ? 'm3-filled' : 'm3-outlined'}`}
             >
               {data.settings.backupMode !== 'download' && data.settings.backupFileName
-                ? `같은 파일에 덮어쓰기 · ${data.settings.backupFileName} (위치 바꾸기)`
+                ? `같은 파일에 덮어쓰기, ${data.settings.backupFileName} (위치 바꾸기)`
                 : '같은 파일에 덮어쓰기 (위치 정하기)'}
             </button>
             <button

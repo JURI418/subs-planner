@@ -82,7 +82,7 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
               {preview.diffs.map(({ slot, from, to }) => (
                 <li key={slot.id} className="flex items-center justify-between gap-3 border-b border-line py-2">
                   <span className="text-ink-2">
-                    {formatDate(slot.date)} {slot.dayOfWeek} {slot.period}교시 · {slotClass(slot) || slot.room}
+                    {formatDate(slot.date)} {slot.dayOfWeek} {slot.period}교시, {slotClass(slot) || slot.room}
                   </span>
                   {from === to ? (
                     <span className="text-subtle">{name(to)} 그대로</span>

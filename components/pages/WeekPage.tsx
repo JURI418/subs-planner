@@ -89,7 +89,7 @@ export function WeekPage({ data }: { data: AppData }) {
       <PageHeader
         eyebrow="This week"
         title="이번 주 시간표"
-        desc="교사별로 한 주의 수업과 결강·보강을 함께 봅니다. 주말에는 다음 주를 먼저 보여줍니다."
+        desc="교사별로 한 주의 수업과 결강, 보강을 함께 봅니다. 주말에는 다음 주를 먼저 보여줍니다."
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -99,7 +99,7 @@ export function WeekPage({ data }: { data: AppData }) {
             id="week-search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="이름·교과 검색"
+            placeholder="이름, 교과 검색"
             className="m3-field m3-field-sm w-44 pl-9"
           />
         </div>
@@ -113,7 +113,7 @@ export function WeekPage({ data }: { data: AppData }) {
           {filtered.length === 0 && <option value="">검색 결과 없음</option>}
           {filtered.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.name} · {t.subject}
+              {t.name}, {t.subject}
             </option>
           ))}
         </select>
@@ -144,7 +144,7 @@ export function WeekPage({ data }: { data: AppData }) {
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="mr-2 text-xl font-extrabold">{teacher.name}</h2>
             <span className="text-[0.8235rem] text-subtle">
-              {teacher.subject} · {teacher.grades.map((g) => `${g}학년`).join('·')}
+              {teacher.subject}, {teacher.grades.map((g) => `${g}학년`).join(', ')}
             </span>
             <span className="ml-auto flex flex-wrap gap-1.5">
               <Badge>수업 {classCount}</Badge>
@@ -199,7 +199,7 @@ export function WeekPage({ data }: { data: AppData }) {
                             <div className="h-full rounded-md bg-warn-soft px-2 py-1.5 text-xs leading-5 text-warn">
                               <b>보강 {c.room}</b> {c.subject}
                               <span className="block truncate">
-                                {c.forName} 대신{c.status !== '확정' ? ` · ${c.status}` : ''}
+                                {c.forName} 대신{c.status !== '확정' ? `, ${c.status}` : ''}
                               </span>
                             </div>
                           )}

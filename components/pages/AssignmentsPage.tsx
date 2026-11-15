@@ -32,7 +32,7 @@ function ReasonList({ reasons }: { reasons: string[] }) {
   const plain = reasons.filter((r) => reasonKind(r) === 'plain')
   const rows = [
     ...order.flatMap((k) => reasons.filter((r) => reasonKind(r) === k).map((r) => ({ k, text: r }))),
-    ...(plain.length ? [{ k: 'plain', text: plain.join(' · ') }] : []),
+    ...(plain.length ? [{ k: 'plain', text: plain.join(', ') }] : []),
   ]
   return (
     <span className="flex flex-col gap-1">
@@ -206,7 +206,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
     const text = exportText(data)
     if (!text) return alert('복사할 배정이 없습니다.')
     navigator.clipboard?.writeText(text)
-    alert('엑셀·나이스 붙여넣기 형식으로 복사했습니다.')
+    alert('엑셀, 나이스 붙여넣기 형식으로 복사했습니다.')
   }
   return (
     <>
@@ -262,7 +262,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
           </span>
           {selProposed.length > 0 && (
             <button onClick={confirmSelected} className="m3-btn m3-btn-sm border border-paper/40 text-paper hover:bg-paper hover:text-ink">
-              <CheckCheck size={15} /> 선택 확정 · {selProposed.length}
+              <CheckCheck size={15} /> 선택 확정 ({selProposed.length})
             </button>
           )}
           <button onClick={sendSelected} className="m3-btn m3-btn-sm bg-point text-on-point hover:brightness-95">
@@ -272,7 +272,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
             <Trash2 size={15} /> 선택 삭제
           </button>
           {selNoTeacher.length > 0 && (
-            <span className="text-[0.7059rem] text-paper/60">보강 교사 없는 {selNoTeacher.length}건은 확정·올리기에서 빠져요</span>
+            <span className="text-[0.7059rem] text-paper/60">보강 교사 없는 {selNoTeacher.length}건은 확정, 올리기에서 빠져요</span>
           )}
           <button onClick={() => pickAll(false)} aria-label="선택 해제" className="ml-auto grid size-8 place-items-center rounded-full text-paper/70 hover:text-paper">
             <X size={17} />
@@ -332,7 +332,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         {s?.grade}학년 {s?.room}
                         <br />
                         <span className="text-xs text-subtle">
-                          {s?.group || '일반'} · {s?.subject}
+                          {s?.group || '일반'}, {s?.subject}
                         </span>
                       </td>
                       <td className="p-3">{data.teachers.find((t) => t.id === s?.absentTeacherId)?.name}</td>
@@ -355,7 +355,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                         {(a.backups[0] || a.backups[1]) && (
                           <span className="mt-1.5 block text-xs leading-5 text-subtle">
                             {a.backups[0] && <><b className="font-bold text-plum">예비1</b> {nameOf(a.backups[0])}</>}
-                            {a.backups[0] && a.backups[1] && ' · '}
+                            {a.backups[0] && a.backups[1] && ', '}
                             {a.backups[1] && <><b className="font-bold text-plum">예비2</b> {nameOf(a.backups[1])}</>}
                           </span>
                         )}

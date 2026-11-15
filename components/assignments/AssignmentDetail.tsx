@@ -53,7 +53,7 @@ export function AssignmentDetail({
   const WHY: [RegExp, string][] = [
     [/해당 교시 수업/, '같은 교시 수업'],
     [/해당 교시 다른 보강/, '같은 교시 다른 보강'],
-    [/결강/, '그날 결강·출장'],
+    [/결강/, '그날 결강, 출장'],
     [/보강 불가/, '보강 불가 시간'],
     [/총 수업/, `하루 수업 한도(${data.settings.maxDaily}개 미만)`],
     [/연속/, `연속 수업 한도(${data.settings.maxConsecutive}교시 미만)`],
@@ -63,7 +63,7 @@ export function AssignmentDetail({
     const label = WHY.find(([re]) => b.reasons.some((r) => re.test(r)))?.[1] ?? '기타'
     whyCount.set(label, (whyCount.get(label) ?? 0) + 1)
   }
-  const whyText = [...whyCount.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}명`).join(' · ')
+  const whyText = [...whyCount.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}명`).join(', ')
   // 후보가 모자라면: 하루 한도를 1 올렸을 때 늘어나는 후보 수
   const looser =
     others.length < 3 && data.settings.maxDaily < 8
@@ -152,11 +152,11 @@ export function AssignmentDetail({
             {mine.length > 0 && !a.backups[0] && !a.backups[1] && (
               <tr className="border-b border-line">
                 <td colSpan={cols} className="px-3 py-2 text-[0.7059rem] text-subtle">
-                  <b className="text-plum">예비1·2</b> 없음 · 아래 후보에서 지정할 수 있습니다.
+                  <b className="text-plum">예비1과 예비2</b>가 없어요. 아래 후보에서 지정할 수 있습니다.
                 </td>
               </tr>
             )}
-            <Section cols={cols} label={`다른 후보 · 추천 점수 순 · 조건 때문에 빠진 교사 ${rec.blocked.length}명`} />
+            <Section cols={cols} label={`다른 후보, 추천 점수 순, 조건 때문에 빠진 교사 ${rec.blocked.length}명`} />
             {whyText && (
               <tr className="border-b border-line">
                 <td colSpan={cols} className="px-3 py-2 text-[0.7059rem] text-ink-2">
@@ -184,7 +184,7 @@ export function AssignmentDetail({
       <p className="mt-2 text-[0.7059rem] text-subtle">
         추천 방식: <b className="text-ink-2">{a.isManual ? '직접 고름' : (a.ruleName ?? '예전 방식')}</b>
         {!a.isManual && !confirmed && a.ruleName && a.ruleName !== ruleLabel(data.settings.rule) && (
-          <> · 지금 방식({ruleLabel(data.settings.rule)})과 달라요. 설정이나 위 ‘추천 방식’에서 다시 추천할 수 있어요.</>
+          <>, 지금 방식({ruleLabel(data.settings.rule)})과 달라요. 설정이나 위 ‘추천 방식’에서 다시 추천할 수 있어요.</>
         )}
       </p>
       {confirmed && (
@@ -245,7 +245,7 @@ function Line({
       <td className="px-2 py-2">
         <span className="text-[0.8235rem] font-bold">{t?.name ?? '알 수 없음'}</span>{' '}
         <span className="text-[0.6765rem] text-subtle">
-          {t?.subject} · {t?.grades.map((g) => `${g}학년`).join('·') || '학년 정보 없음'}
+          {t?.subject}, {t?.grades.map((g) => `${g}학년`).join(', ') || '학년 정보 없음'}
         </span>
         {note && <span className="mt-0.5 block text-[0.6765rem] font-bold text-bad">{note}</span>}
       </td>

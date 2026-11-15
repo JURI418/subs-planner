@@ -20,7 +20,7 @@ const specialLeaves = [
   '경조사',
   '출산',
   '배우자 출산',
-  '유산·사산',
+  '유산/사산',
   '임신검진',
   '모성보호시간',
   '육아시간',
@@ -38,7 +38,7 @@ const specialLeaves = [
 function periodLabel(ps: number[]) {
   const sorted = [...ps].sort((a, b) => a - b)
   const run = sorted.every((p, i) => i === 0 || p === sorted[i - 1] + 1)
-  return run && sorted.length > 1 ? `${sorted[0]}~${sorted[sorted.length - 1]}교시` : `${sorted.join('·')}교시`
+  return run && sorted.length > 1 ? `${sorted[0]}~${sorted[sorted.length - 1]}교시` : `${sorted.join(', ')}교시`
 }
 
 export function AbsencePage({ data, setData }: { data: AppData; setData: SetData }) {
@@ -58,7 +58,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
   const [end, setEnd] = useState(todayISO)
   const [kind, setKind] = useState('병가')
   const [detail, setDetail] = useState('')
-  const reason = [kind, detail.trim()].filter(Boolean).join(' · ')
+  const reason = [kind, detail.trim()].filter(Boolean).join(', ')
   // 결강 범위: 하루 전체 또는 교시 선택 (조퇴·외출·지각은 교시 선택이 기본)
   const [scope, setScope] = useState<'day' | 'periods'>('day')
   const [periods, setPeriods] = useState<number[]>([])
@@ -180,7 +180,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 <optgroup label="선생님">
                   {data.teachers.filter((t) => !isVirtual(t)).map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.name} · {t.subject}
+                      {t.name}, {t.subject}
                     </option>
                   ))}
                 </optgroup>
@@ -188,7 +188,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   <optgroup label="가상 교사 (담당 선생님이 없는 수업)">
                     {virtuals.map((t) => (
                       <option key={t.id} value={t.id}>
-                        {t.name} · {t.subject} · 주 {data.timetable.filter((e) => e.teacherId === t.id).length}시간
+                        {t.name}, {t.subject}, 주 {data.timetable.filter((e) => e.teacherId === t.id).length}시간
                       </option>
                     ))}
                   </optgroup>
@@ -198,7 +198,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
             {pickedVirtual && (
               <div className="border-l-[3px] border-point bg-wash px-3 py-2.5 text-[0.7647rem] leading-5 text-ink-2">
                 <b className="text-ink">가상 교사 수업</b>은 담당 선생님이 없는 수업이에요. 기간을 길게 잡아 한 번에 등록하면
-                그 기간의 수업마다 보강 교사를 추천해요. 휴업일·방학은 자동으로 빠져요.
+                그 기간의 수업마다 보강 교사를 추천해요. 휴업일, 방학은 자동으로 빠져요.
                 <span className="mt-2 flex flex-wrap gap-2">
                   <button type="button" onClick={() => rangeTo('week')} className="m3-btn m3-btn-sm m3-outlined">
                     이번 주 금요일까지
@@ -323,7 +323,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     <button onClick={() => setPeriods([])} className="m3-btn m3-btn-sm m3-text h-7 px-2">
                       지우기
                     </button>
-                    {dayTeaching && <span className="text-subtle">· 점은 그날 수업 있는 교시</span>}
+                    {dayTeaching && <span className="text-subtle">(점은 그날 수업 있는 교시)</span>}
                   </div>
                 </div>
               )}
@@ -372,7 +372,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     </span>
                     <Badge>{s.period}교시</Badge>
                     <span className="text-sm">
-                      {s.grade}학년 {s.room} · {s.subject}
+                      {s.grade}학년 {s.room}, {s.subject}
                     </span>
                   </label>
                 ))}
@@ -411,7 +411,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                   <span className="text-sm text-ink-2">
                     {formatDate(a.startDate)}
                     {a.endDate !== a.startDate && ` ~ ${formatDate(a.endDate)}`}
-                    {a.mode === '교시선택' && a.periods?.length ? ` · ${periodLabel(a.periods)}` : ''}
+                    {a.mode === '교시선택' && a.periods?.length ? `, ${periodLabel(a.periods)}` : ''}
                   </span>
                   <span className="text-sm text-subtle">{a.reason}</span>
                   <span className="ml-auto flex items-center gap-2">

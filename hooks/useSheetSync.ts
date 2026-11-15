@@ -37,7 +37,7 @@ export function useSheetSync(data: AppData, setData: SetData) {
         setData((x) => ({ ...x, assignments: x.assignments.map((a) => (sent.has(a.slotId) ? { ...a, sheetSent: now } : a)) }))
         setStatus({
           ok: true,
-          text: `구글 시트에 ${r.added ?? list.length}건 올렸어요${r.skipped ? ` · 이미 있던 ${r.skipped}건은 건너뜀` : ''}`,
+          text: `구글 시트에 ${r.added ?? list.length}건 올렸어요${r.skipped ? `, 이미 있던 ${r.skipped}건은 건너뜀` : ''}`,
         })
       } catch {
         setStatus({ ok: false, text: '구글 시트에 연결하지 못했어요. 인터넷 연결이나 시트 연결 주소를 확인하세요.' })

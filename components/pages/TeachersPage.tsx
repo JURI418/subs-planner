@@ -173,10 +173,10 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                 {missed.length > 0 && (
                   <>
                     {' '}
-                    · <b className="text-bad">{missed.length}줄</b>은 {BULK[bulkMode].miss}을 못 찾았어요
+                   , <b className="text-bad">{missed.length}줄</b>은 {BULK[bulkMode].miss}을 못 찾았어요
                   </>
                 )}
-                {BULK[bulkMode].already > 0 && <span className="text-subtle"> · 이미 넣은 값은 새 값으로 바뀌어요</span>}
+                {BULK[bulkMode].already > 0 && <span className="text-subtle">, 이미 넣은 값은 새 값으로 바뀌어요</span>}
               </p>
               <p className="mt-1 flex flex-wrap gap-1.5">
                 {found.map((f) => (
@@ -343,7 +343,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
 /** 버튼 글자: '매주 3칸 · 11.20 외 1일' */
 function blockedLabel(t: Teacher) {
   const parts: string[] = []
-  if (t.blocked?.length) parts.push(`매주 ${t.blocked.length}칸${t.blockedNote ? ` · ${t.blockedNote}` : ''}`)
+  if (t.blocked?.length) parts.push(`매주 ${t.blocked.length}칸${t.blockedNote ? `, ${t.blockedNote}` : ''}`)
   const ds = [...(t.blockedDates ?? [])].sort((a, b) => a.date.localeCompare(b.date))
   if (ds.length) parts.push(`${ds[0].date.slice(5).replace('-', '.')}${ds.length > 1 ? ` 외 ${ds.length - 1}일` : ''}`)
   return parts.length ? parts.join(' / ') : '설정'
@@ -626,7 +626,7 @@ function DateBlocks({
               >
                 <b className="w-28 shrink-0">{formatDotDate(d.date).slice(5)}</b>
                 <span className="shrink-0 bg-plum-soft px-2 py-0.5 text-[0.7059rem] font-bold text-plum">
-                  {d.periods.length ? `${d.periods.join('·')}교시` : '하루 전체'}
+                  {d.periods.length ? `${d.periods.join(', ')}교시` : '하루 전체'}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-ink-2">
                   {d.note}
@@ -644,7 +644,7 @@ function DateBlocks({
           </ul>
         )}
         <p className="text-[0.7059rem] leading-5 text-subtle">
-          선택한 날짜·교시에는 보강이 추천되지 않음
+          선택한 날짜, 교시에는 보강이 추천되지 않음
           <br />
           이미 그 시간에 배정된 보강(확정 전)은 저장 시 다른 선생님으로 자동 변경됨
         </p>

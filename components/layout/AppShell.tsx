@@ -132,11 +132,11 @@ export function AppShell() {
   const nextOff = data.events.find((e) => e.date > today && e.kind !== '행사' && e.kind !== '방학')
   const notices = [
     data.settings.holidays.includes(today)
-      ? `오늘은 휴업일입니다${todayEvent ? ` · ${todayEvent.title}` : ''}`
-      : `${formatDotDate(today)}${todayEvent ? ` · ${todayEvent.title}` : ''}`,
+      ? `오늘은 휴업일입니다${todayEvent ? `, ${todayEvent.title}` : ''}`
+      : `${formatDotDate(today)}${todayEvent ? `, ${todayEvent.title}` : ''}`,
     pending ? `확정을 기다리는 배정 ${pending}건이 있습니다` : '모든 배정이 확정되었습니다',
     ...(Number(today.slice(8)) >= 24 && data.teachers.some((t) => t.employmentType === '시간강사')
-      ? ['월말이에요 · 시간강사 선생님께 다음 달 안내 문자를 보내세요']
+      ? ['월말이에요, 시간강사 선생님께 다음 달 안내 문자를 보내세요']
       : []),
     nextOff ? `다음 휴업일 ${formatDotDate(nextOff.date)} ${nextOff.title}` : '학사일정을 올리면 휴업일이 자동으로 반영됩니다',
   ]
