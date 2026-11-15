@@ -3,6 +3,8 @@ import { defaultRule, normalizeRule, type RuleSettings } from './rules'
 export type EmploymentType = '정규' | '시간강사'
 export type PoolStatus = '기본' | '제외' | '추가포함'
 export type Day = '월' | '화' | '수' | '목' | '금'
+export type BlockedDate = { date: string; periods: number[]; note?: string }
+
 export type Teacher = {
   id: string
   name: string
@@ -14,6 +16,8 @@ export type Teacher = {
   /** 보강 불가 시간 (요일·교시). 회의, 육아시간 등 */
   blocked?: { day: Day; period: number }[]
   blockedNote?: string
+  /** 특정 날짜에만 보강 불가 (periods가 비어 있으면 하루 전체) */
+  blockedDates?: BlockedDate[]
   /** 담임 반 ('2-3'). 없으면 담임 아님 */
   homeroom?: string
   /** 출생 연도 (연령순 추천에만 사용, 날짜는 저장하지 않음) */

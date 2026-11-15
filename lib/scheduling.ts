@@ -56,6 +56,10 @@ export function recommend(
       const reasons: string[] = []
       if (t.blocked?.some((b) => b.day === slot.dayOfWeek && b.period === slot.period))
         reasons.push(`보강 불가 시간${t.blockedNote ? ` (${t.blockedNote})` : ''}`)
+      const onDate = t.blockedDates?.find(
+        (b) => b.date === slot.date && (b.periods.length === 0 || b.periods.includes(slot.period)),
+      )
+      if (onDate) reasons.push(`보강 불가 날짜${onDate.note ? ` (${onDate.note})` : ''}`)
       if (absent) reasons.push('해당 일자 결강')
       if (samePeriod) reasons.push('해당 교시 수업 있음')
       if (sameAssigned) reasons.push('해당 교시 다른 보강 있음')

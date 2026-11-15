@@ -14,7 +14,7 @@ export function GuidePage({ data }: { data: AppData }) {
   const real = data.teachers.filter((t) => !isVirtual(t))
   const lecturers = real.filter((t) => t.employmentType === '시간강사').length
   const excluded = real.filter((t) => t.poolStatus === '제외').length
-  const blocked = data.teachers.filter((t) => t.blocked?.length).length
+  const blocked = data.teachers.filter((t) => t.blocked?.length || t.blockedDates?.length).length
 
   const flows: { when: string; steps: [string, string, string][] }[] = [
     {
@@ -53,7 +53,7 @@ export function GuidePage({ data }: { data: AppData }) {
     ['다른 컴퓨터에서 쓰기', '설정 → ‘JSON 백업 불러오기’로 백업 파일을 불러오면 그대로 이어서 쓸 수 있어요.'],
     ['확정된 보강 바꾸기', '확정을 취소하거나, 예비 교사를 ‘보강으로’ 올리세요. 추천 방식을 바꿔도 확정된 배정은 그대로예요.'],
     ['보강 교사가 결강하게 되면', '그 선생님 결강을 등록하면 확정 전 보강은 자동으로 다른 교사로 바뀌고, 확정된 보강은 알림으로 알려 줘요.'],
-    ['특정 시간 보강 막기', '교사 관리 → ‘보강 불가 시간’에서 요일·교시를 막아 두면 그 시간엔 추천하지 않아요.'],
+    ['특정 시간 보강 막기', '교사 관리 → ‘보강 불가 시간’에서 매주 반복되는 요일·교시나, 출장·연수 같은 특정 날짜를 막아 두면 그때는 추천하지 않아요.'],
   ]
 
   const hard = [

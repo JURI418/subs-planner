@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import { Card } from '@/components/common/Card'
 import { Badge } from '@/components/common/Badge'
 import { PageHeader } from '@/components/common/PageHeader'
-import { days, formatDate, isVirtual, type AppData, type Day, type SetData, type Teacher } from '@/lib/types'
+import { days, formatDate, formatDotDate, isVirtual, type AppData, type BlockedDate, type Day, type SetData, type Teacher } from '@/lib/types'
 import { excludeTeacher } from '@/lib/dataOps'
 import { CLASS_OPTIONS, classLabel, parseBirthYears, parseHomerooms } from '@/lib/rules'
 
@@ -31,16 +31,22 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
   const [grade, setGrade] = useState('all')
   const [openId, setOpenId] = useState<string | null>(null)
   // 보강 불가 시간 저장: 그 시간에 이미 들어가 있는 확정 전 배정은 다시 추천
-  const saveBlocked = (id: string, blocked: { day: Day; period: number }[], note: string) => {
+  const saveBlocked = (id: string, blocked: { day: Day; period: number }[], note: string, dates: BlockedDate[]) => {
     const t = data.teachers.find((x) => x.id === id)
     let next: AppData = {
       ...data,
-      teachers: data.teachers.map((x) => (x.id === id ? { ...x, blocked, blockedNote: note.trim() || undefined } : x)),
+      teachers: data.teachers.map((x) =>
+        x.id === id
+          ? { ...x, blocked, blockedNote: note.trim() || undefined, blockedDates: dates.length ? dates : undefined }
+          : x,
+      ),
     }
-    const hit = (s: { dayOfWeek: Day; period: number }) => blocked.some((b) => b.day === s.dayOfWeek && b.period === s.period)
+    const hit = (s: { date: string; dayOfWeek: Day; period: number }) =>
+      blocked.some((b) => b.day === s.dayOfWeek && b.period === s.period) ||
+      dates.some((b) => b.date === s.date && (b.periods.length === 0 || b.periods.includes(s.period)))
     const r = excludeTeacher(next, id, hit)
     next = r.data
-    const lines = [`${t?.name} 선생님의 보강 불가 시간을 저장했습니다 (${blocked.length}칸).`]
+    const lines = [`${t?.name} 선생님의 보강 불가 시간을 저장했습니다 (매주 ${blocked.length}칸, 날짜 ${dates.length}개).`]
     if (r.replaced) lines.push(`그 시간에 잡혀 있던 확정 전 배정 ${r.replaced}건을 다른 교사로 다시 추천했습니다.`)
     if (r.conflicts.length)
       lines.push(
@@ -298,9 +304,9 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                     <button
                       onClick={() => setOpenId(openId === t.id ? null : t.id)}
                       aria-expanded={openId === t.id}
-                      className={`m3-btn m3-btn-sm ${t.blocked?.length ? 'border border-plum text-plum' : 'm3-outlined'}`}
+                      className={`m3-btn m3-btn-sm ${t.blocked?.length || t.blockedDates?.length ? 'border border-plum text-plum' : 'm3-outlined'}`}
                     >
-                      {t.blocked?.length ? `${t.blocked.length}칸${t.blockedNote ? ` · ${t.blockedNote}` : ''}` : '설정'}
+                      {blockedLabel(t)}
                     </button>
                   </td>
                   <td className="p-3 text-right font-semibold">{t.totalAssignments}회</td>
@@ -311,10 +317,11 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                       <BlockedEditor
                         teacher={t}
                         periodCount={data.settings.periodCount}
+                        holidays={data.settings.holidays}
                         own={data.timetable.filter((e) => e.teacherId === t.id)}
                         onCancel={() => setOpenId(null)}
-                        onSave={(blocked, note) => {
-                          saveBlocked(t.id, blocked, note)
+                        onSave={(blocked, note, dates) => {
+                          saveBlocked(t.id, blocked, note, dates)
                           setOpenId(null)
                         }}
                       />
@@ -331,22 +338,41 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
   )
 }
 
-/** 요일 × 교시 칸을 눌러 보강 불가 시간을 고른다. 자기 수업 칸은 원래 보강이 안 되므로 회색으로 표시 */
+/** 버튼 글자: '매주 3칸 · 11.20 외 1일' */
+function blockedLabel(t: Teacher) {
+  const parts: string[] = []
+  if (t.blocked?.length) parts.push(`매주 ${t.blocked.length}칸${t.blockedNote ? ` · ${t.blockedNote}` : ''}`)
+  const ds = [...(t.blockedDates ?? [])].sort((a, b) => a.date.localeCompare(b.date))
+  if (ds.length) parts.push(`${ds[0].date.slice(5).replace('-', '.')}${ds.length > 1 ? ` 외 ${ds.length - 1}일` : ''}`)
+  return parts.length ? parts.join(' / ') : '설정'
+}
+
+const todayIso = () => {
+  const n = new Date()
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`
+}
+
+/** 보강 불가 시간: '매주 반복'(요일 × 교시)과 '특정 날짜'를 함께 고른다 */
 function BlockedEditor({
   teacher,
   periodCount,
+  holidays,
   own,
   onSave,
   onCancel,
 }: {
   teacher: Teacher
   periodCount: number
+  holidays: string[]
   own: { dayOfWeek: Day; period: number }[]
-  onSave: (blocked: { day: Day; period: number }[], note: string) => void
+  onSave: (blocked: { day: Day; period: number }[], note: string, dates: BlockedDate[]) => void
   onCancel: () => void
 }) {
+  const [mode, setMode] = useState<'week' | 'date'>(teacher.blockedDates?.length && !teacher.blocked?.length ? 'date' : 'week')
   const [sel, setSel] = useState(() => new Set((teacher.blocked ?? []).map((b) => `${b.day}-${b.period}`)))
   const [note, setNote] = useState(teacher.blockedNote ?? '')
+  // 지난 날짜는 저장할 때 정리
+  const [dates, setDates] = useState<BlockedDate[]>(() => [...(teacher.blockedDates ?? [])])
   const periods = Array.from({ length: periodCount }, (_, i) => i + 1)
   const toggle = (k: string) =>
     setSel((s) => {
@@ -363,7 +389,46 @@ function BlockedEditor({
       keys.forEach((k) => (all ? n.delete(k) : n.add(k)))
       return n
     })
+  const saveAll = () =>
+    onSave(
+      [...sel].map((k) => {
+        const [day, p] = k.split('-')
+        return { day: day as Day, period: Number(p) }
+      }),
+      note,
+      dates.filter((d) => d.date >= todayIso()).sort((a, b) => a.date.localeCompare(b.date)),
+    )
   return (
+    <div>
+      <div className="mb-4 inline-flex border border-line bg-surface" role="tablist" aria-label="보강 불가 시간 종류">
+        {(
+          [
+            ['week', `매주 반복${sel.size ? ` (${sel.size}칸)` : ''}`],
+            ['date', `특정 날짜${dates.length ? ` (${dates.length}일)` : ''}`],
+          ] as const
+        ).map(([k, label]) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={mode === k}
+            onClick={() => setMode(k)}
+            className={`px-4 py-2 text-[13px] font-bold ${mode === k ? 'bg-ink text-paper' : 'text-ink-2 hover:bg-wash'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    {mode === 'date' ? (
+      <DateBlocks
+        teacher={teacher}
+        periodCount={periodCount}
+        holidays={holidays}
+        dates={dates}
+        setDates={setDates}
+        onSave={saveAll}
+        onCancel={onCancel}
+      />
+    ) : (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div>
         <p className="mb-2 text-[13px] text-subtle">
@@ -426,21 +491,10 @@ function BlockedEditor({
           />
         </label>
         <p className="text-[12px] leading-5 text-subtle">
-          선택한 칸에는 보강이 추천되지 않습니다. 이미 그 시간에 잡힌 확정 전 배정은 저장할 때 다른 선생님으로 바뀝니다.
+          선택한 칸에는 매주 보강이 추천되지 않습니다. 이미 그 시간에 잡힌 확정 전 배정은 저장할 때 다른 선생님으로 바뀝니다.
         </p>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() =>
-              onSave(
-                [...sel].map((k) => {
-                  const [day, p] = k.split('-')
-                  return { day: day as Day, period: Number(p) }
-                }),
-                note,
-              )
-            }
-            className="m3-btn m3-btn-sm m3-filled"
-          >
+          <button onClick={saveAll} className="m3-btn m3-btn-sm m3-filled">
             저장
           </button>
           {sel.size > 0 && (
@@ -448,6 +502,144 @@ function BlockedEditor({
               모두 지우기
             </button>
           )}
+          <button onClick={onCancel} className="m3-btn m3-btn-sm m3-text">
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+    )}
+    </div>
+  )
+}
+
+/** 특정 날짜 보강 불가: 날짜 + 교시(또는 하루 전체) + 메모를 추가해 목록으로 관리 */
+function DateBlocks({
+  teacher,
+  periodCount,
+  holidays,
+  dates,
+  setDates,
+  onSave,
+  onCancel,
+}: {
+  teacher: Teacher
+  periodCount: number
+  holidays: string[]
+  dates: BlockedDate[]
+  setDates: (f: (d: BlockedDate[]) => BlockedDate[]) => void
+  onSave: () => void
+  onCancel: () => void
+}) {
+  const [date, setDate] = useState(todayIso())
+  const [ps, setPs] = useState<number[]>([])
+  const [memo, setMemo] = useState('')
+  const periods = Array.from({ length: periodCount }, (_, i) => i + 1)
+  const dow = (() => {
+    const [y, m, d] = date.split('-').map(Number)
+    return y ? new Date(y, m - 1, d).getDay() : -1
+  })()
+  const warn = dow === 0 || dow === 6 ? '주말이에요' : holidays.includes(date) ? '휴업일이에요' : date < todayIso() ? '지난 날짜예요' : ''
+  const add = () => {
+    if (!date) return
+    setDates((list) => {
+      const rest = list.filter((x) => x.date !== date)
+      const prev = list.find((x) => x.date === date)
+      // 같은 날짜를 다시 넣으면 교시를 합친다 (둘 중 하나라도 하루 전체면 하루 전체)
+      const merged =
+        prev && prev.periods.length && ps.length ? [...new Set([...prev.periods, ...ps])].sort((a, b) => a - b) : prev ? [] : ps
+      return [...rest, { date, periods: prev ? merged : [...ps].sort((a, b) => a - b), note: memo.trim() || prev?.note }].sort(
+        (a, b) => a.date.localeCompare(b.date),
+      )
+    })
+    setPs([])
+    setMemo('')
+  }
+  const toggleP = (p: number) => setPs((x) => (x.includes(p) ? x.filter((y) => y !== p) : [...x, p]))
+  return (
+    <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+      <div className="min-w-0 lg:w-[460px]">
+        <p className="mb-3 text-[13px] text-subtle">
+          <b className="text-ink">{teacher.name}</b> 선생님이 그날만 보강에 들어갈 수 없는 날짜를 넣으세요. 출장·연수·행사 등
+          결강까지는 아닌 날에 써요.
+        </p>
+        <label className="block text-sm font-semibold">
+          날짜
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="m3-field m3-field-sm mt-1.5 w-48" />
+          {warn && <span className="ml-2 text-[12px] font-bold text-warn">{warn}</span>}
+        </label>
+        <p className="mt-3 text-sm font-semibold">교시</p>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          <button
+            onClick={() => setPs([])}
+            aria-pressed={ps.length === 0}
+            className={`h-8 rounded-md px-3 text-[12px] font-bold ${ps.length === 0 ? 'bg-plum text-white' : 'border border-line bg-surface'}`}
+          >
+            하루 전체
+          </button>
+          {periods.map((p) => (
+            <button
+              key={p}
+              onClick={() => toggleP(p)}
+              aria-pressed={ps.includes(p)}
+              aria-label={`${p}교시`}
+              className={`h-8 w-9 rounded-md text-[12px] font-bold ${ps.includes(p) ? 'bg-plum text-white' : 'border border-dashed border-line bg-surface hover:border-plum'}`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+        <label className="mt-3 block text-sm font-semibold">
+          메모 (선택)
+          <input
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && add()}
+            placeholder="예: 교육청 출장, 학부모 상담"
+            className="m3-field m3-field-sm mt-1.5 w-full"
+          />
+        </label>
+        <button onClick={add} disabled={!date} className="m3-btn m3-btn-sm m3-outlined mt-3">
+          + 이 날짜 추가
+        </button>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <p className="text-sm font-semibold">추가한 날짜 {dates.length}일</p>
+        {dates.length === 0 ? (
+          <p className="border border-dashed border-line px-3 py-4 text-[13px] text-subtle">아직 없어요.</p>
+        ) : (
+          <ul className="border-t border-line">
+            {dates.map((d) => (
+              <li
+                key={d.date}
+                className={`flex items-center gap-3 border-b border-line py-2 text-[13px] ${d.date < todayIso() ? 'text-faint' : ''}`}
+              >
+                <b className="w-28 shrink-0">{formatDotDate(d.date).slice(5)}</b>
+                <span className="shrink-0 bg-plum-soft px-2 py-0.5 text-[12px] font-bold text-plum">
+                  {d.periods.length ? `${d.periods.join('·')}교시` : '하루 전체'}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-ink-2">
+                  {d.note}
+                  {d.date < todayIso() && ' (지난 날짜, 저장하면 정리돼요)'}
+                </span>
+                <button
+                  onClick={() => setDates((list) => list.filter((x) => x.date !== d.date))}
+                  aria-label={`${d.date} 삭제`}
+                  className="grid size-7 place-items-center rounded-full text-subtle hover:bg-ink/[.08]"
+                >
+                  ✕
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="text-[12px] leading-5 text-subtle">
+          그 날짜·교시에는 보강이 추천되지 않습니다. 이미 잡힌 확정 전 배정은 저장할 때 다른 선생님으로 바뀝니다.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={onSave} className="m3-btn m3-btn-sm m3-filled">
+            저장
+          </button>
           <button onClick={onCancel} className="m3-btn m3-btn-sm m3-text">
             닫기
           </button>
