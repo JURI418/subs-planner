@@ -125,9 +125,9 @@ export function AssignmentDetail({
   return (
     <div className="bg-wash p-3 md:p-4">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[860px] border-collapse bg-surface text-[13px]">
+        <table className="w-full min-w-[860px] border-collapse bg-surface text-[0.7647rem]">
           <thead>
-            <tr className="border-b border-line text-left text-[11px] font-bold text-subtle">
+            <tr className="border-b border-line text-left text-[0.6471rem] font-bold text-subtle">
               <th className="w-16 px-3 py-2.5">역할</th>
               <th className="w-52 px-2 py-2.5">교사</th>
               <th className="px-2 py-2.5">그날 시간표 (1~{data.settings.periodCount}교시)</th>
@@ -151,7 +151,7 @@ export function AssignmentDetail({
             )}
             {mine.length > 0 && !a.backups[0] && !a.backups[1] && (
               <tr className="border-b border-line">
-                <td colSpan={cols} className="px-3 py-2 text-[12px] text-subtle">
+                <td colSpan={cols} className="px-3 py-2 text-[0.7059rem] text-subtle">
                   <b className="text-plum">예비1·2</b> 없음 · 아래 후보에서 지정할 수 있습니다.
                 </td>
               </tr>
@@ -159,7 +159,7 @@ export function AssignmentDetail({
             <Section cols={cols} label={`다른 후보 · 추천 점수 순 · 조건 때문에 빠진 교사 ${rec.blocked.length}명`} />
             {whyText && (
               <tr className="border-b border-line">
-                <td colSpan={cols} className="px-3 py-2 text-[12px] text-ink-2">
+                <td colSpan={cols} className="px-3 py-2 text-[0.7059rem] text-ink-2">
                   <b className="text-ink">빠진 이유</b> {whyText}
                   {looser > 0 && (
                     <span className="mt-1 block font-bold text-warn">
@@ -181,14 +181,14 @@ export function AssignmentDetail({
           </tbody>
         </table>
       </div>
-      <p className="mt-2 text-[12px] text-subtle">
+      <p className="mt-2 text-[0.7059rem] text-subtle">
         추천 방식: <b className="text-ink-2">{a.isManual ? '직접 고름' : (a.ruleName ?? '예전 방식')}</b>
         {!a.isManual && !confirmed && a.ruleName && a.ruleName !== ruleLabel(data.settings.rule) && (
           <> · 지금 방식({ruleLabel(data.settings.rule)})과 달라요. 설정이나 위 ‘추천 방식’에서 다시 추천할 수 있어요.</>
         )}
       </p>
       {confirmed && (
-        <p className="mt-2 text-[12px] text-subtle">
+        <p className="mt-2 text-[0.7059rem] text-subtle">
           확정된 배정입니다. 보강 교사를 바꾸려면 예비 교사를 &lsquo;보강으로&rsquo; 올리거나 확정을 취소하세요.
         </p>
       )}
@@ -201,7 +201,7 @@ function Section({ cols, label, right }: { cols: number; label: string; right?: 
     <tr className="bg-wash-2/60">
       <td colSpan={cols} className="px-3 py-1.5">
         <span className="flex items-center justify-between gap-3">
-          <span className="text-[11px] font-bold tracking-[.08em] text-subtle">{label}</span>
+          <span className="text-[0.6471rem] font-bold tracking-[.08em] text-subtle">{label}</span>
           {right}
         </span>
       </td>
@@ -231,23 +231,23 @@ function Line({
   return (
     <tr className="border-b border-line align-middle">
       <td className="px-3 py-2">
-        {row.role === '보강' && <span className="bg-ink px-2 py-0.5 text-[11px] font-bold text-paper">보강</span>}
-        {row.role === '예비1' && <span className="bg-plum px-2 py-0.5 text-[11px] font-bold text-white">예비1</span>}
+        {row.role === '보강' && <span className="bg-ink px-2 py-0.5 text-[0.6471rem] font-bold text-paper">보강</span>}
+        {row.role === '예비1' && <span className="bg-plum px-2 py-0.5 text-[0.6471rem] font-bold text-white">예비1</span>}
         {row.role === '예비2' && (
-          <span className="border border-plum bg-plum-soft px-2 py-0.5 text-[11px] font-bold text-plum">예비2</span>
+          <span className="border border-plum bg-plum-soft px-2 py-0.5 text-[0.6471rem] font-bold text-plum">예비2</span>
         )}
         {row.rank && (
-          <span className="grid size-6 place-items-center rounded-full border border-ink/40 text-[11px] font-bold text-ink-2">
+          <span className="grid size-6 place-items-center rounded-full border border-ink/40 text-[0.6471rem] font-bold text-ink-2">
             {row.rank}
           </span>
         )}
       </td>
       <td className="px-2 py-2">
-        <span className="text-[14px] font-bold">{t?.name ?? '알 수 없음'}</span>{' '}
-        <span className="text-[11.5px] text-subtle">
+        <span className="text-[0.8235rem] font-bold">{t?.name ?? '알 수 없음'}</span>{' '}
+        <span className="text-[0.6765rem] text-subtle">
           {t?.subject} · {t?.grades.map((g) => `${g}학년`).join('·') || '학년 정보 없음'}
         </span>
-        {note && <span className="mt-0.5 block text-[11.5px] font-bold text-bad">{note}</span>}
+        {note && <span className="mt-0.5 block text-[0.6765rem] font-bold text-bad">{note}</span>}
       </td>
       <td className="px-2 py-2">
         <div className="flex gap-0.5">
@@ -255,23 +255,23 @@ function Line({
             <span
               key={c.period}
               title={`${c.period}교시 ${c.kind === 'class' ? `수업 ${c.label}` : c.kind === 'cover' ? '다른 보강' : c.kind === 'this' ? '이번 보강' : '빈 시간'}`}
-              className={`grid h-7 w-9 shrink-0 place-items-center rounded-[3px] text-[10.5px] leading-none ${CELL[candidate && c.kind === 'this' ? 'maybe' : c.kind]}`}
+              className={`grid h-7 w-9 shrink-0 place-items-center rounded-[3px] text-[0.6176rem] leading-none ${CELL[candidate && c.kind === 'this' ? 'maybe' : c.kind]}`}
             >
               {c.kind === 'free' ? '' : c.kind === 'this' ? (candidate ? '후보' : '보강') : c.kind === 'cover' ? '보강' : c.label}
             </span>
           ))}
         </div>
       </td>
-      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${heavy ? 'text-bad' : ''}`}>
+      <td className={`px-2 py-2 text-center text-[0.8824rem] font-bold tabular-nums ${heavy ? 'text-bad' : ''}`}>
         {day.total}
-        <span className="text-[11px] font-normal text-subtle">/{data.settings.maxDaily}</span>
+        <span className="text-[0.6471rem] font-normal text-subtle">/{data.settings.maxDaily}</span>
       </td>
-      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${longRun ? 'text-bad' : 'text-sky'}`}>{day.maxRun}</td>
-      <td className={`px-2 py-2 text-center text-[15px] font-bold tabular-nums ${many ? 'text-warn' : ''}`}>
+      <td className={`px-2 py-2 text-center text-[0.8824rem] font-bold tabular-nums ${longRun ? 'text-bad' : 'text-sky'}`}>{day.maxRun}</td>
+      <td className={`px-2 py-2 text-center text-[0.8824rem] font-bold tabular-nums ${many ? 'text-warn' : ''}`}>
         {day.totalAssignments}
-        <span className="text-[11px] font-normal text-subtle">회</span>
+        <span className="text-[0.6471rem] font-normal text-subtle">회</span>
       </td>
-      <td className="px-2 py-2 text-center text-[15px] font-bold tabular-nums">{row.score ?? <span className="text-faint">–</span>}</td>
+      <td className="px-2 py-2 text-center text-[0.8824rem] font-bold tabular-nums">{row.score ?? <span className="text-faint">–</span>}</td>
       <td className="px-3 py-2">
         <span className="flex justify-end gap-1">{row.actions}</span>
       </td>
@@ -281,7 +281,7 @@ function Line({
 
 function Legend() {
   return (
-    <span className="flex flex-wrap gap-3 text-[11px] font-normal text-subtle">
+    <span className="flex flex-wrap gap-3 text-[0.6471rem] font-normal text-subtle">
       <span className="flex items-center gap-1">
         <span className="size-2.5 rounded-sm bg-iris-soft" /> 수업
       </span>

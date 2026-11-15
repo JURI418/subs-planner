@@ -155,17 +155,17 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
       {bulkMode && (
         <Card className="mb-6">
           <h2 className="text-lg font-bold">{BULK[bulkMode].title}</h2>
-          <p className="mt-1 text-[13px] leading-5 text-subtle">{BULK[bulkMode].help}</p>
+          <p className="mt-1 text-[0.7647rem] leading-5 text-subtle">{BULK[bulkMode].help}</p>
           <textarea
             value={bulk}
             onChange={(e) => setBulk(e.target.value)}
             rows={6}
             placeholder={BULK[bulkMode].placeholder}
             aria-label={BULK[bulkMode].title}
-            className="m3-field mt-3 w-full font-mono text-[13px]"
+            className="m3-field mt-3 w-full font-mono text-[0.7647rem]"
           />
           {bulk.trim() && (
-            <div className="mt-3 text-[13px]">
+            <div className="mt-3 text-[0.7647rem]">
               <p>
                 <b className="text-ok">{found.length}명</b> 찾음
                 {missed.length > 0 && (
@@ -183,7 +183,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                   </span>
                 ))}
               </p>
-              {missed.length > 0 && <p className="mt-1 text-[12px] text-bad">못 찾은 줄: {missed.slice(0, 5).join(' / ')}</p>}
+              {missed.length > 0 && <p className="mt-1 text-[0.7059rem] text-bad">못 찾은 줄: {missed.slice(0, 5).join(' / ')}</p>}
             </div>
           )}
           <div className="mt-3 flex gap-2">
@@ -247,7 +247,7 @@ export function TeachersPage({ data, setData }: { data: AppData; setData: SetDat
                       ))}
                     </select>
                     {t.homeroom && dupOf(t) && (
-                      <span className="mt-1 block text-[11.5px] font-bold text-bad">{dupOf(t)} 선생님과 겹쳐요</span>
+                      <span className="mt-1 block text-[0.6765rem] font-bold text-bad">{dupOf(t)} 선생님과 겹쳐요</span>
                     )}
                   </td>
                   <td className="p-3">
@@ -412,7 +412,7 @@ function BlockedEditor({
             role="tab"
             aria-selected={mode === k}
             onClick={() => setMode(k)}
-            className={`px-4 py-2 text-[13px] font-bold ${mode === k ? 'bg-ink text-paper' : 'text-ink-2 hover:bg-wash'}`}
+            className={`px-4 py-2 text-[0.7647rem] font-bold ${mode === k ? 'bg-ink text-paper' : 'text-ink-2 hover:bg-wash'}`}
           >
             {label}
           </button>
@@ -431,12 +431,12 @@ function BlockedEditor({
     ) : (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div>
-        <p className="mb-2 text-[13px] text-subtle">
+        <p className="mb-2 text-[0.7647rem] text-subtle">
           보강 불가 시간 선택
           <br />
           요일 이름을 누르면 그날 전체가 선택됨
         </p>
-        <table className="border-collapse text-[13px]">
+        <table className="border-collapse text-[0.7647rem]">
           <thead>
             <tr>
               <th className="w-10 p-1 text-xs font-normal text-subtle">교시</th>
@@ -463,7 +463,7 @@ function BlockedEditor({
                         onClick={() => toggle(k)}
                         aria-pressed={on}
                         aria-label={`${d} ${p}교시`}
-                        className={`h-8 w-14 rounded-md text-[11px] transition-colors ${
+                        className={`h-8 w-14 rounded-md text-[0.6471rem] transition-colors ${
                           on
                             ? 'bg-plum font-bold text-white'
                             : cls
@@ -491,7 +491,7 @@ function BlockedEditor({
             className="m3-field m3-field-sm mt-2 w-full"
           />
         </label>
-        <p className="text-[12px] leading-5 text-subtle">
+        <p className="text-[0.7059rem] leading-5 text-subtle">
           선택한 시간에는 보강이 추천되지 않음
           <br />
           이미 그 시간에 배정된 보강(확정 전)은 저장 시 다른 선생님으로 자동 변경됨
@@ -561,7 +561,7 @@ function DateBlocks({
   const toggleP = (p: number) => setPs((x) => (x.includes(p) ? x.filter((y) => y !== p) : [...x, p]))
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-[13px] text-subtle">보강 불가 시간 선택</p>
+      <p className="text-[0.7647rem] text-subtle">보강 불가 시간 선택</p>
       <div className="flex flex-wrap items-end gap-x-8 gap-y-5">
         <div>
           <label htmlFor="blk-date" className="block text-sm font-semibold">
@@ -569,7 +569,7 @@ function DateBlocks({
           </label>
           <div className="mt-2 flex items-center gap-3">
             <input id="blk-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="m3-field m3-field-sm w-48" />
-            {warn && <span className="text-[12px] font-bold text-warn">{warn}</span>}
+            {warn && <span className="text-[0.7059rem] font-bold text-warn">{warn}</span>}
           </div>
         </div>
         <div>
@@ -578,7 +578,7 @@ function DateBlocks({
             <button
               onClick={() => setPs([])}
               aria-pressed={ps.length === 0}
-              className={`h-9 rounded-md px-4 text-[13px] font-bold ${ps.length === 0 ? 'bg-plum text-white' : 'border border-line bg-surface'}`}
+              className={`h-9 rounded-md px-4 text-[0.7647rem] font-bold ${ps.length === 0 ? 'bg-plum text-white' : 'border border-line bg-surface'}`}
             >
               하루 전체
             </button>
@@ -588,7 +588,7 @@ function DateBlocks({
                 onClick={() => toggleP(p)}
                 aria-pressed={ps.includes(p)}
                 aria-label={`${p}교시`}
-                className={`h-9 w-10 rounded-md text-[13px] font-bold ${ps.includes(p) ? 'bg-plum text-white' : 'border border-dashed border-line bg-surface hover:border-plum'}`}
+                className={`h-9 w-10 rounded-md text-[0.7647rem] font-bold ${ps.includes(p) ? 'bg-plum text-white' : 'border border-dashed border-line bg-surface hover:border-plum'}`}
               >
                 {p}
               </button>
@@ -614,16 +614,16 @@ function DateBlocks({
       <div className="flex min-w-0 flex-col gap-3 border-t border-line pt-5">
         <p className="text-sm font-semibold">추가한 날짜 {dates.length}일</p>
         {dates.length === 0 ? (
-          <p className="border border-dashed border-line px-3 py-4 text-[13px] text-subtle">아직 없어요.</p>
+          <p className="border border-dashed border-line px-3 py-4 text-[0.7647rem] text-subtle">아직 없어요.</p>
         ) : (
           <ul className="border-t border-line">
             {dates.map((d) => (
               <li
                 key={d.date}
-                className={`flex items-center gap-3 border-b border-line py-2 text-[13px] ${d.date < todayIso() ? 'text-faint' : ''}`}
+                className={`flex items-center gap-3 border-b border-line py-2 text-[0.7647rem] ${d.date < todayIso() ? 'text-faint' : ''}`}
               >
                 <b className="w-28 shrink-0">{formatDotDate(d.date).slice(5)}</b>
-                <span className="shrink-0 bg-plum-soft px-2 py-0.5 text-[12px] font-bold text-plum">
+                <span className="shrink-0 bg-plum-soft px-2 py-0.5 text-[0.7059rem] font-bold text-plum">
                   {d.periods.length ? `${d.periods.join('·')}교시` : '하루 전체'}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-ink-2">
@@ -641,7 +641,7 @@ function DateBlocks({
             ))}
           </ul>
         )}
-        <p className="text-[12px] leading-5 text-subtle">
+        <p className="text-[0.7059rem] leading-5 text-subtle">
           선택한 날짜·교시에는 보강이 추천되지 않음
           <br />
           이미 그 시간에 배정된 보강(확정 전)은 저장 시 다른 선생님으로 자동 변경됨

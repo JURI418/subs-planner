@@ -196,7 +196,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
               </select>
             </label>
             {pickedVirtual && (
-              <div className="border-l-[3px] border-point bg-wash px-3 py-2.5 text-[13px] leading-5 text-ink-2">
+              <div className="border-l-[3px] border-point bg-wash px-3 py-2.5 text-[0.7647rem] leading-5 text-ink-2">
                 <b className="text-ink">가상 교사 수업</b>은 담당 선생님이 없는 수업이에요. 기간을 길게 잡아 한 번에 등록하면
                 그 기간의 수업마다 보강 교사를 추천해요. 휴업일·방학은 자동으로 빠져요.
                 <span className="mt-2 flex flex-wrap gap-2">
@@ -285,7 +285,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                     role="radio"
                     aria-checked={scope === v}
                     onClick={() => setScope(v)}
-                    className={`py-2 text-[14px] ${scope === v ? 'bg-ink font-bold text-paper' : 'font-normal text-ink-2 hover:bg-wash'}`}
+                    className={`py-2 text-[0.8235rem] ${scope === v ? 'bg-ink font-bold text-paper' : 'font-normal text-ink-2 hover:bg-wash'}`}
                   >
                     {l}
                   </button>
@@ -303,7 +303,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                           onClick={() => togglePeriod(p)}
                           aria-pressed={on}
                           aria-label={`${p}교시`}
-                          className={`relative grid h-10 w-full place-items-center rounded-md text-[14px] font-bold transition-colors ${
+                          className={`relative grid h-10 w-full place-items-center rounded-md text-[0.8235rem] font-bold transition-colors ${
                             on ? 'bg-ink text-paper' : 'border border-line bg-surface text-ink-2 hover:border-ink'
                           }`}
                         >
@@ -313,7 +313,7 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                       )
                     })}
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px]">
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[0.7059rem]">
                     <button onClick={() => setPeriods(allPeriods.filter((p) => p <= 4))} className="m3-btn m3-btn-sm m3-text h-7 px-2">
                       오전 1~4
                     </button>

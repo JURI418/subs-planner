@@ -88,21 +88,21 @@ export function GuidePage({ data }: { data: AppData }) {
       <div className="grid gap-6 xl:grid-cols-3">
         {flows.map((f, fi) => (
           <Card key={f.when}>
-            <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Step {String(fi + 1).padStart(2, '0')}</p>
+            <p className="text-[0.6471rem] font-bold uppercase tracking-[.2em] text-subtle">Step {String(fi + 1).padStart(2, '0')}</p>
             <h2 className="mt-1 text-lg font-extrabold">{f.when}</h2>
             <ol className="mt-4 flex flex-col divide-y divide-line">
               {f.steps.map(([title, desc, href], i) => (
                 <li key={title}>
                   <button onClick={() => router.push(href)} className="group flex w-full gap-3 py-3 text-left">
-                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-point text-[12px] font-bold text-on-point">
+                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-point text-[0.7059rem] font-bold text-on-point">
                       {i + 1}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1 text-[15px] font-bold">
+                      <span className="flex items-center gap-1 text-[0.8824rem] font-bold">
                         {title}
                         <ChevronRight size={15} className="text-subtle transition-transform group-hover:translate-x-0.5" />
                       </span>
-                      <span className="mt-0.5 block text-[13px] leading-5 text-ink-2 [word-break:keep-all]">{desc}</span>
+                      <span className="mt-0.5 block text-[0.7647rem] leading-5 text-ink-2 [word-break:keep-all]">{desc}</span>
                     </span>
                   </button>
                 </li>
@@ -115,8 +115,8 @@ export function GuidePage({ data }: { data: AppData }) {
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Card>
           <h2 className="text-lg font-extrabold">보강 후보에서 빠지는 경우</h2>
-          <p className="mt-1 text-[13px] text-subtle">아래 중 하나라도 해당하면 추천하지 않아요.</p>
-          <ul className="mt-4 flex flex-col gap-2 text-[14px]">
+          <p className="mt-1 text-[0.7647rem] text-subtle">아래 중 하나라도 해당하면 추천하지 않아요.</p>
+          <ul className="mt-4 flex flex-col gap-2 text-[0.8235rem]">
             {hard.map((h) => (
               <li key={h} className="flex gap-2">
                 <span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-bad" aria-hidden />
@@ -127,12 +127,12 @@ export function GuidePage({ data }: { data: AppData }) {
         </Card>
         <Card>
           <h2 className="text-lg font-extrabold">추천 순서</h2>
-          <p className="mt-1 text-[13px] text-subtle">
+          <p className="mt-1 text-[0.7647rem] text-subtle">
             지금 방식: <b className="text-ink">{ruleLabel(st.rule)}</b>. 남은 후보 중 점수가 가장 높은 교사가 보강, 2·3위가 예비1·예비2가 돼요.
           </p>
           <dl className="mt-4 flex flex-col divide-y divide-line">
             {soft.map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[110px_1fr] gap-3 py-2.5 text-[14px]">
+              <div key={k} className="grid grid-cols-[110px_1fr] gap-3 py-2.5 text-[0.8235rem]">
                 <dt className="font-bold">{k}</dt>
                 <dd className="text-ink-2">{v}</dd>
               </div>
@@ -147,9 +147,9 @@ export function GuidePage({ data }: { data: AppData }) {
         <h2 className="text-lg font-extrabold">알아 두면 좋은 것</h2>
         <dl className="mt-3 grid gap-x-8 md:grid-cols-2">
           {tips.map(([k, v]) => (
-            <div key={k} className="border-t border-line py-3 text-[14px]">
+            <div key={k} className="border-t border-line py-3 text-[0.8235rem]">
               <dt className="font-bold">{k}</dt>
-              <dd className="mt-0.5 text-[13px] leading-5 text-ink-2">{v}</dd>
+              <dd className="mt-0.5 text-[0.7647rem] leading-5 text-ink-2">{v}</dd>
             </div>
           ))}
         </dl>

@@ -121,7 +121,7 @@ export function WeekPage({ data }: { data: AppData }) {
           <button onClick={() => setOffset((o) => o - 1)} aria-label="이전 주" className="grid size-9 place-items-center rounded-full hover:bg-ink/[.06]">
             <ChevronLeft size={18} />
           </button>
-          <span className="min-w-52 text-center text-[15px] font-bold tabular-nums">
+          <span className="min-w-52 text-center text-[0.8824rem] font-bold tabular-nums">
             {formatDotDate(dates[0]).slice(5)} ~ {formatDotDate(dates[4]).slice(5)}
           </span>
           <button onClick={() => setOffset((o) => o + 1)} aria-label="다음 주" className="grid size-9 place-items-center rounded-full hover:bg-ink/[.06]">
@@ -143,7 +143,7 @@ export function WeekPage({ data }: { data: AppData }) {
         <Card>
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="mr-2 text-xl font-extrabold">{teacher.name}</h2>
-            <span className="text-[14px] text-subtle">
+            <span className="text-[0.8235rem] text-subtle">
               {teacher.subject} · {teacher.grades.map((g) => `${g}학년`).join('·')}
             </span>
             <span className="ml-auto flex flex-wrap gap-1.5">
@@ -177,7 +177,7 @@ export function WeekPage({ data }: { data: AppData }) {
               <tbody>
                 {periods.map((p, pi) => (
                   <tr key={p} className="border-t border-line">
-                    <td className="p-2 align-top text-[13px] font-bold text-subtle">{p}</td>
+                    <td className="p-2 align-top text-[0.7647rem] font-bold text-subtle">{p}</td>
                     {dates.map((date, di) => {
                       const c = grid[di][pi]
                       const off = holidayOf(date)

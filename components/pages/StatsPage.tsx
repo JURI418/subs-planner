@@ -48,10 +48,10 @@ export function StatsPage({ data }: { data: AppData }) {
           ['결강한 교사', String(absence.length), '명'],
         ].map(([label, value, unit]) => (
           <div key={label} className="bg-surface p-5 md:p-6">
-            <p className="text-[13px] text-subtle">{label}</p>
+            <p className="text-[0.7647rem] text-subtle">{label}</p>
             <p className="mt-2 flex items-baseline gap-1">
               <span className="text-[2.5rem] font-bold leading-none tabular-nums">{value}</span>
-              <span className="text-[13px] text-subtle">{unit}</span>
+              <span className="text-[0.7647rem] text-subtle">{unit}</span>
             </p>
           </div>
         ))}
@@ -60,7 +60,7 @@ export function StatsPage({ data }: { data: AppData }) {
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Card>
           <h2 className="text-lg font-extrabold">보강 순위</h2>
-          <p className="mt-1 text-[13px] text-subtle">확정된 보강 기준 · 학기 누적</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">확정된 보강 기준 · 학기 누적</p>
           {coverRank.length === 0 ? (
             <p className="mt-6 text-sm text-subtle">아직 확정된 보강이 없습니다.</p>
           ) : (
@@ -81,12 +81,12 @@ export function StatsPage({ data }: { data: AppData }) {
 
         <Card>
           <h2 className="text-lg font-extrabold">결강 순위</h2>
-          <p className="mt-1 text-[13px] text-subtle">등록된 결강 기준 · 결강 수업 수가 많은 순</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">등록된 결강 기준 · 결강 수업 수가 많은 순</p>
           {absence.length === 0 ? (
             <p className="mt-6 text-sm text-subtle">등록된 결강이 없습니다.</p>
           ) : (
             <>
-              <div className="mt-6 grid grid-cols-[24px_88px_1fr_36px_88px] gap-3 text-[11px] font-bold uppercase tracking-[.12em] text-subtle">
+              <div className="mt-6 grid grid-cols-[24px_88px_1fr_36px_88px] gap-3 text-[0.6471rem] font-bold uppercase tracking-[.12em] text-subtle">
                 <span>순위</span>
                 <span>교사</span>
                 <span>결강 수업</span>
@@ -102,7 +102,7 @@ export function StatsPage({ data }: { data: AppData }) {
                       <div className="h-2.5 rounded-full bg-bad/80" style={{ width: `${(x.classes / absMax) * 100}%` }} />
                     </div>
                     <span className="text-right text-sm font-bold tabular-nums">{x.classes}</span>
-                    <span className="truncate text-right text-[12px] text-subtle">
+                    <span className="truncate text-right text-[0.7059rem] text-subtle">
                       {x.days}일{x.topReason ? ` · ${x.topReason}` : ''}
                     </span>
                   </div>
@@ -131,7 +131,7 @@ function rankOf(values: number[], i: number) {
 function Rank({ n }: { n: number }) {
   return (
     <span
-      className={`grid size-6 place-items-center rounded-full text-[12px] font-bold tabular-nums ${n <= 3 ? 'bg-point text-on-point' : 'text-subtle'}`}
+      className={`grid size-6 place-items-center rounded-full text-[0.7059rem] font-bold tabular-nums ${n <= 3 ? 'bg-point text-on-point' : 'text-subtle'}`}
     >
       {n}
     </span>

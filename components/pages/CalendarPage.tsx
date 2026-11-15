@@ -141,7 +141,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
       <div className="grid gap-6 xl:grid-cols-[1.15fr_1fr]">
         <Card>
           <h2 className="font-display text-lg font-semibold">학사일정 PDF 올리기</h2>
-          <p className="mt-1 text-[13px] text-subtle">
+          <p className="mt-1 text-[0.7647rem] text-subtle">
             구글 시트·엑셀·한글에서 PDF로 저장한 학사일정 (예: &ldquo;3(화) 입학식&rdquo; 형식)
           </p>
           <div className="mt-4">
@@ -164,7 +164,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
                 <Badge tone="yellow">휴업일 {groups.filter((g) => g.kind === '휴업일').length}일</Badge>
                 <Badge tone="blue">방학 {groups.filter((g) => g.kind === '방학').length}기간</Badge>
               </div>
-              <p className="mt-3 text-[13px] leading-5 text-subtle">
+              <p className="mt-3 text-[0.7647rem] leading-5 text-subtle">
                 아래 날짜를 휴업일로 등록합니다. 수업이 있는 날이면 체크를 해제하세요.
               </p>
               <ul className="mt-3 max-h-80 divide-y divide-line overflow-y-auto rounded-none bg-surface">
@@ -186,7 +186,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
                           }
                           className="accent-iris"
                         />
-                        <span className="w-44 shrink-0 font-mono text-[13px] text-ink">
+                        <span className="w-44 shrink-0 font-mono text-[0.7647rem] text-ink">
                           {formatDotDate(g.dates[0])}
                           {g.dates.length > 1 && ` ~ ${formatDotDate(g.dates[g.dates.length - 1]).slice(5)}`}
                         </span>
@@ -217,7 +217,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
             <h2 className="font-display text-lg font-semibold">등록된 휴업일</h2>
             <Badge>{data.settings.holidays.length}일</Badge>
           </div>
-          <p className="mt-1 text-[13px] text-subtle">이 날짜의 수업은 결강 슬롯을 만들 때 자동으로 빠집니다.</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">이 날짜의 수업은 결강 슬롯을 만들 때 자동으로 빠집니다.</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <input
               id="holiday-date"
@@ -247,7 +247,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
                 const last = r.dates[r.dates.length - 1]
                 return (
                   <li key={first} className={`flex items-center gap-3 py-2 ${last < todayISO() ? 'opacity-50' : ''}`}>
-                    <span className="w-44 shrink-0 font-mono text-[13px]">
+                    <span className="w-44 shrink-0 font-mono text-[0.7647rem]">
                       {formatDotDate(first)}
                       {r.dates.length > 1 && ` ~ ${formatDotDate(last).slice(5)}`}
                     </span>
@@ -297,7 +297,7 @@ export function CalendarPage({ data, setData }: { data: AppData; setData: SetDat
             {monthEvents.map((e, i) => (
               <li key={i} className="flex items-start gap-3 border-b border-line py-2.5">
                 <span
-                  className={`w-24 shrink-0 font-mono text-[13px] ${e.date === todayISO() ? 'font-semibold text-iris' : 'text-ink'}`}
+                  className={`w-24 shrink-0 font-mono text-[0.7647rem] ${e.date === todayISO() ? 'font-semibold text-iris' : 'text-ink'}`}
                 >
                   {formatDotDate(e.date).slice(5)}
                 </span>

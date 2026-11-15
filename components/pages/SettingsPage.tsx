@@ -106,7 +106,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
               </label>
             ))}
           </div>
-          <div className="mt-5 bg-wash p-4 text-[13px] leading-6 text-ink-2">
+          <div className="mt-5 bg-wash p-4 text-[0.7647rem] leading-6 text-ink-2">
             그 밖에 항상 빠지는 선생님: 같은 교시 수업·보강, 그날 결강·출장, 보강 불가 시간, 보강 후보 ‘제외’(시간강사 등).
             <br />
             누구를 먼저 추천할지는 아래 <b className="text-ink">보강 추천 방식</b>에서 정해요.
@@ -159,7 +159,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
             }}
           />
         </div>
-        <label className="mt-4 flex items-center gap-2 text-[14px]">
+        <label className="mt-4 flex items-center gap-2 text-[0.8235rem]">
           <input
             type="checkbox"
             checked={data.settings.autoBackup !== false}
@@ -172,7 +172,7 @@ export function SettingsPage({ data, setData }: { data: AppData; setData: SetDat
           </span>
         </label>
         {data.settings.autoBackup !== false && canOverwrite() && (
-          <div className="ml-6 mt-2 flex flex-wrap items-center gap-2 text-[13px]">
+          <div className="ml-6 mt-2 flex flex-wrap items-center gap-2 text-[0.7647rem]">
             <span className="text-subtle">저장 방식</span>
             <button
               onClick={async () => {

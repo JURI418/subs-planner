@@ -74,22 +74,22 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
               aria-pressed={on}
               className={`border p-3 text-left transition-colors ${on ? 'border-ink bg-ink text-paper' : 'border-line bg-surface hover:border-ink/50'}`}
             >
-              <span className="flex items-center gap-1.5 text-[14px] font-bold">
+              <span className="flex items-center gap-1.5 text-[0.8235rem] font-bold">
                 {on && <span className="size-2 rounded-full bg-point" aria-hidden />}
                 {PRESETS[k].label}
               </span>
-              <span className={`mt-1 block text-[11.5px] leading-4 ${on ? 'text-paper/70' : 'text-subtle'}`}>{PRESETS[k].desc}</span>
+              <span className={`mt-1 block text-[0.6765rem] leading-4 ${on ? 'text-paper/70' : 'text-subtle'}`}>{PRESETS[k].desc}</span>
             </button>
           )
         })}
         <div
           className={`border border-dashed p-3 ${rule.preset === 'custom' ? 'border-ink bg-ink text-paper' : 'border-line text-subtle'}`}
         >
-          <span className="flex items-center gap-1.5 text-[14px] font-bold">
+          <span className="flex items-center gap-1.5 text-[0.8235rem] font-bold">
             {rule.preset === 'custom' && <span className="size-2 rounded-full bg-point" aria-hidden />}
             직접 설정
           </span>
-          <span className={`mt-1 block text-[11.5px] leading-4 ${rule.preset === 'custom' ? 'text-paper/70' : ''}`}>
+          <span className={`mt-1 block text-[0.6765rem] leading-4 ${rule.preset === 'custom' ? 'text-paper/70' : ''}`}>
             아래에서 조건을 바꾸면 자동으로 선택돼요
           </span>
         </div>
@@ -98,7 +98,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
       <div className="mt-4 overflow-x-auto border border-line">
         <table className="w-full min-w-[560px] border-collapse text-sm">
           <thead>
-            <tr className="bg-wash text-left text-[11px] font-bold text-subtle">
+            <tr className="bg-wash text-left text-[0.6471rem] font-bold text-subtle">
               <th className="w-14 px-3 py-2">순서</th>
               <th className="w-16 px-2 py-2">사용</th>
               <th className="px-2 py-2">조건</th>
@@ -114,7 +114,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
                 <tr key={k} className={`border-t border-line ${on ? 'bg-surface' : 'bg-wash/50 text-faint'}`}>
                   <td className="px-3 py-2.5">
                     <span
-                      className={`grid size-6 place-items-center rounded-full text-[12px] font-bold ${on ? 'bg-point text-on-point' : 'bg-wash text-faint'}`}
+                      className={`grid size-6 place-items-center rounded-full text-[0.7059rem] font-bold ${on ? 'bg-point text-on-point' : 'bg-wash text-faint'}`}
                     >
                       {rank ?? '–'}
                     </span>
@@ -133,8 +133,8 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
                     </button>
                   </td>
                   <td className="px-2 py-2.5">
-                    <span className={`block text-[14px] font-bold ${on ? 'text-ink' : ''}`}>{RULES[k].label}</span>
-                    <span className="block text-[12px] text-subtle">{RULES[k].desc}</span>
+                    <span className={`block text-[0.8235rem] font-bold ${on ? 'text-ink' : ''}`}>{RULES[k].label}</span>
+                    <span className="block text-[0.7059rem] text-subtle">{RULES[k].desc}</span>
                     {k === 'age' && (
                       <span className="mt-1.5 inline-flex border border-line" role="group" aria-label="연령순 방향">
                         {(['young', 'old'] as const).map((dir) => (
@@ -142,7 +142,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
                             key={dir}
                             onClick={() => save({ ...rule, ageDir: dir })}
                             aria-pressed={(rule.ageDir ?? 'young') === dir}
-                            className={`px-2.5 py-1 text-[12px] font-bold ${(rule.ageDir ?? 'young') === dir ? 'bg-ink text-paper' : 'bg-surface text-ink-2 hover:bg-wash'}`}
+                            className={`px-2.5 py-1 text-[0.7059rem] font-bold ${(rule.ageDir ?? 'young') === dir ? 'bg-ink text-paper' : 'bg-surface text-ink-2 hover:bg-wash'}`}
                           >
                             {AGE_DIR_LABEL[dir]}
                           </button>
@@ -150,19 +150,19 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
                       </span>
                     )}
                     {on && k === 'age' && births === 0 && (
-                      <span className="mt-0.5 block text-[12px] font-bold text-warn">교사 관리에서 출생 연도를 넣어야 적용돼요</span>
+                      <span className="mt-0.5 block text-[0.7059rem] font-bold text-warn">교사 관리에서 출생 연도를 넣어야 적용돼요</span>
                     )}
                     {on && (k === 'homeroom' || k === 'homeroomLast') && homerooms === 0 && (
-                      <span className="mt-0.5 block text-[12px] font-bold text-warn">
+                      <span className="mt-0.5 block text-[0.7059rem] font-bold text-warn">
                         교사 관리에서 담임 반을 넣어야 적용돼요
                       </span>
                     )}
                   </td>
                   <td className="px-2 py-2.5 text-right">
                     {on ? (
-                      <span className="text-[15px] font-bold tabular-nums text-ink">+{points[k]}</span>
+                      <span className="text-[0.8824rem] font-bold tabular-nums text-ink">+{points[k]}</span>
                     ) : (
-                      <span className="text-[12px]">사용 안 함</span>
+                      <span className="text-[0.7059rem]">사용 안 함</span>
                     )}
                   </td>
                   <td className="px-3 py-2.5">
@@ -191,7 +191,7 @@ export function RuleCard({ data, setData }: { data: AppData; setData: SetData })
           </tbody>
         </table>
       </div>
-      <p className="mt-2 text-[12px] text-subtle">
+      <p className="mt-2 text-[0.7059rem] text-subtle">
         켜진 조건에 순서대로 점수가 매겨져요 (1번이 가장 높고 10점씩 줄어듦). 같은 날 이미 맡은 보강이 있으면 1건마다 −5점.
       </p>
 

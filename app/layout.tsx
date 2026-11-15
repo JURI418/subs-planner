@@ -1,8 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import '@fontsource/nanum-gothic/400.css'
-import '@fontsource/nanum-gothic/700.css'
-import '@fontsource/nanum-gothic/800.css'
+import '@fontsource/gothic-a1/400.css'
+import '@fontsource/gothic-a1/500.css'
+import '@fontsource/gothic-a1/700.css'
 import './globals.css'
 
 export const metadata: Metadata = {

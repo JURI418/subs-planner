@@ -37,7 +37,7 @@ function ReasonList({ reasons }: { reasons: string[] }) {
   return (
     <span className="flex flex-col gap-1">
       {rows.map(({ k, text }) => (
-        <span key={text} className={`border-l-[3px] pl-2 text-[12.5px] leading-[1.35] ${BAR[k]}`}>
+        <span key={text} className={`border-l-[3px] pl-2 text-[0.7353rem] leading-[1.35] ${BAR[k]}`}>
           {text}
         </span>
       ))}
@@ -257,7 +257,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
       {/* 선택 도구 막대: 체크한 것이 있을 때만 */}
       {sel.length > 0 && (
         <div className="sticky top-16 z-[5] mb-3 flex flex-wrap items-center gap-2 bg-ink px-4 py-2.5 text-paper shadow-[0_6px_18px_rgb(0_0_0/.18)] lg:top-3">
-          <span className="mr-2 text-[14px] font-bold">
+          <span className="mr-2 text-[0.8235rem] font-bold">
             <span className="text-point">{sel.length}건</span> 선택
           </span>
           {selProposed.length > 0 && (
@@ -272,7 +272,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
             <Trash2 size={15} /> 선택 삭제
           </button>
           {selNoTeacher.length > 0 && (
-            <span className="text-[12px] text-paper/60">보강 교사 없는 {selNoTeacher.length}건은 확정·올리기에서 빠져요</span>
+            <span className="text-[0.7059rem] text-paper/60">보강 교사 없는 {selNoTeacher.length}건은 확정·올리기에서 빠져요</span>
           )}
           <button onClick={() => pickAll(false)} aria-label="선택 해제" className="ml-auto grid size-8 place-items-center rounded-full text-paper/70 hover:text-paper">
             <X size={17} />
@@ -383,7 +383,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
                           {a.status}
                         </Badge>
                         {data.settings.sheetUrl && a.sheetSent && a.sheetSent !== 'skip' && (
-                          <span className="mt-1 block text-[11px] font-bold text-ok" title="구글 시트에 올림">시트 ✓</span>
+                          <span className="mt-1 block text-[0.6471rem] font-bold text-ok" title="구글 시트에 올림">시트 ✓</span>
                         )}
                       </td>
                       <td className="p-3">

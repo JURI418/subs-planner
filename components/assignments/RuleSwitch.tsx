@@ -35,7 +35,7 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-3 border border-line bg-surface px-4 py-2.5">
-        <label htmlFor="rule-switch" className="text-[12px] font-bold text-subtle">
+        <label htmlFor="rule-switch" className="text-[0.7059rem] font-bold text-subtle">
           추천 방식
         </label>
         <select
@@ -51,11 +51,11 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
           ))}
           <option value="custom">{rule.preset === 'custom' ? '직접 설정' : '직접 설정… (설정으로 이동)'}</option>
         </select>
-        <span className="hidden text-[12px] text-subtle sm:inline">
+        <span className="hidden text-[0.7059rem] text-subtle sm:inline">
           {rule.preset === 'custom' ? '설정에서 조건과 순서를 직접 정한 방식' : PRESETS[rule.preset].desc}
         </span>
         <span className="ml-auto flex items-center gap-2">
-          <span className="border border-line bg-wash px-2 py-0.5 text-[11.5px] font-bold text-ink-2">확정 전 {pending}건</span>
+          <span className="border border-line bg-wash px-2 py-0.5 text-[0.6765rem] font-bold text-ink-2">확정 전 {pending}건</span>
           <button onClick={() => router.push('/settings')} className="m3-btn m3-btn-sm m3-text" aria-label="추천 조건 자세히 설정">
             <Settings2 size={15} /> 조건 설정
           </button>
@@ -71,14 +71,14 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
           onClick={(e) => e.target === e.currentTarget && setAsk(null)}
         >
           <div className="w-full max-w-lg bg-surface p-5 shadow-[0_16px_40px_rgb(0_0_0/.25)]">
-            <h3 id="rule-dlg-title" className="text-[17px] font-bold">
+            <h3 id="rule-dlg-title" className="text-[1rem] font-bold">
               ‘{PRESETS[ask].label}’으로 바꿀까요?
             </h3>
-            <p className="mt-1.5 text-[13px] leading-5 text-ink-2">
+            <p className="mt-1.5 text-[0.7647rem] leading-5 text-ink-2">
               확정 전 배정 {preview.total}건을 새 방식으로 다시 추천해요. 보강 교사가 바뀌는 건{' '}
               <b className="text-ink">{preview.changed}건</b>이에요. 확정된 배정과 직접 고른 배정은 그대로예요.
             </p>
-            <ul className="mt-3 max-h-72 overflow-y-auto border-t border-line text-[13px]">
+            <ul className="mt-3 max-h-72 overflow-y-auto border-t border-line text-[0.7647rem]">
               {preview.diffs.map(({ slot, from, to }) => (
                 <li key={slot.id} className="flex items-center justify-between gap-3 border-b border-line py-2">
                   <span className="text-ink-2">
@@ -96,7 +96,7 @@ export function RuleSwitch({ data, setData }: { data: AppData; setData: SetData 
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-[12px] text-subtle">지금 방식: {ruleLabel(rule)}</p>
+            <p className="mt-2 text-[0.7059rem] text-subtle">지금 방식: {ruleLabel(rule)}</p>
             <div className="mt-4 flex justify-end gap-2">
               <button onClick={() => setAsk(null)} className="m3-btn m3-outlined">
                 취소

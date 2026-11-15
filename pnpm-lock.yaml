@@ -11,10 +11,10 @@ importers:
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@fontsource/ibm-plex-sans-kr':
+      '@fontsource/gothic-a1':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource/nanum-gothic':
+      '@fontsource/ibm-plex-sans-kr':
         specifier: ^5.3.0
         version: 5.3.0
       '@vercel/analytics':
@@ -270,11 +270,11 @@ packages:
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
 
+  '@fontsource/gothic-a1@5.3.0':
+    resolution: {integrity: sha512-0HmmE3YQgdcXkVZd/pRTw7MOc9PffY7tNrR/dovEGO00cno/4ImiHxEXdJoq80Bs2jC52wuvuFRcepJ38mksEw==}
+
   '@fontsource/ibm-plex-sans-kr@5.3.0':
     resolution: {integrity: sha512-Malq1TQAnpPHASG76fAthnCY0E41py2r7pZ5JEjgmGfA5tVGz7gwBfvrkhPvT3ZmyMobQrJakHhKZVuXQp7FjQ==}
-
-  '@fontsource/nanum-gothic@5.3.0':
-    resolution: {integrity: sha512-N1LMFJbcjDSENDs1/U3+mkqFpph0+kHrGB9mCJLdIxUiE96G5lC3XQvceJ4f6WzdevNvzQll4PCpTMwom0u/sw==}
 
   '@hono/node-server@1.19.14':
     resolution: {integrity: sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==}
@@ -2211,9 +2211,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@fontsource/ibm-plex-sans-kr@5.3.0': {}
+  '@fontsource/gothic-a1@5.3.0': {}
 
-  '@fontsource/nanum-gothic@5.3.0': {}
+  '@fontsource/ibm-plex-sans-kr@5.3.0': {}
 
   '@hono/node-server@1.19.14(hono@4.12.25)':
     dependencies:

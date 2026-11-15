@@ -78,7 +78,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                 <button onClick={() => move(-1)} aria-label="이전 달" className="grid size-9 place-items-center rounded-full hover:bg-ink/[.06]">
                   <ChevronLeft size={18} />
                 </button>
-                <span className="min-w-24 text-center text-[16px] font-bold tabular-nums">
+                <span className="min-w-24 text-center text-[0.9412rem] font-bold tabular-nums">
                   {ym.y}년 {ym.m}월
                 </span>
                 <button onClick={() => move(1)} aria-label="다음 달" className="grid size-9 place-items-center rounded-full hover:bg-ink/[.06]">
@@ -88,10 +88,10 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
             </div>
             {/* 문자에 넣을 달: 여러 달을 모아 한 문자로 */}
             <div className="mt-4 flex flex-wrap items-center gap-2 border border-line bg-wash px-3 py-2.5">
-              <span className="text-[13px] font-bold">문자에 넣을 달</span>
-              {sortedMonths.length === 0 && <span className="text-[13px] text-subtle">없음</span>}
+              <span className="text-[0.7647rem] font-bold">문자에 넣을 달</span>
+              {sortedMonths.length === 0 && <span className="text-[0.7647rem] text-subtle">없음</span>}
               {sortedMonths.map((k) => (
-                <span key={k} className={`flex items-center gap-1 rounded-full py-0.5 pl-3 pr-1 text-[13px] font-bold ${k === ymKey ? 'bg-ink text-paper' : 'border border-ink/30 bg-surface'}`}>
+                <span key={k} className={`flex items-center gap-1 rounded-full py-0.5 pl-3 pr-1 text-[0.7647rem] font-bold ${k === ymKey ? 'bg-ink text-paper' : 'border border-ink/30 bg-surface'}`}>
                   {Number(k.slice(5))}월
                   <button onClick={() => toggleMonth(k)} aria-label={`${Number(k.slice(5))}월 빼기`} className="grid size-5 place-items-center rounded-full opacity-70 hover:opacity-100">
                     ×
@@ -106,7 +106,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
               </button>
             </div>
             {!included && (
-              <p className="mt-2 text-[12px] text-warn">지금 보는 {ym.m}월은 문자에 들어가지 않아요. ‘+ {ym.m}월도 넣기’를 누르면 함께 들어가요.</p>
+              <p className="mt-2 text-[0.7059rem] text-warn">지금 보는 {ym.m}월은 문자에 들어가지 않아요. ‘+ {ym.m}월도 넣기’를 누르면 함께 들어가요.</p>
             )}
             {items.length === 0 ? (
               <p className="mt-5 text-sm text-subtle">
@@ -127,7 +127,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                           onChange={(e) => setPicked((p) => ({ ...p, [`${ymKey}|${it.key}`]: e.target.checked }))}
                           className="size-4 accent-ink"
                         />
-                        <span className={`flex-1 text-[14px] ${on ? 'text-ink' : 'text-subtle'}`}>{itemLine(it).slice(2).replace(' (수업 없음)', '')}</span>
+                        <span className={`flex-1 text-[0.8235rem] ${on ? 'text-ink' : 'text-subtle'}`}>{itemLine(it).slice(2).replace(' (수업 없음)', '')}</span>
                         <Badge tone={KIND_TONE[it.kind]}>{it.kind}</Badge>
                       </label>
                     </li>
@@ -135,7 +135,7 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                 })}
               </ul>
             )}
-            <p className="mt-3 text-[12px] leading-5 text-subtle">
+            <p className="mt-3 text-[0.7059rem] leading-5 text-subtle">
               휴업일·방학은 기본으로 선택돼요. 체육대회처럼 수업이 없는 행사는 직접 체크하세요. 행사에는 ‘(수업 없음)’이 붙어요.
               ‹ › 로 다른 달로 넘겨 ‘+ 이 달도 넣기’를 누르면 여러 달을 한 문자로 모을 수 있어요.
             </p>
@@ -159,10 +159,10 @@ export function MessagesPage({ data, setData }: { data: AppData; setData: SetDat
                 value={footer}
                 onChange={(e) => setSetting('smsFooter', e.target.value)}
                 rows={2}
-                className="m3-field mt-2 w-full resize-y text-[14px]"
+                className="m3-field mt-2 w-full resize-y text-[0.8235rem]"
               />
             </label>
-            <label className="mt-4 flex items-center gap-2 text-[14px]">
+            <label className="mt-4 flex items-center gap-2 text-[0.8235rem]">
               <input type="checkbox" checked={perTeacher} onChange={(e) => setPerTeacher(e.target.checked)} className="size-4 accent-ink" />
               선생님별로 <b>수업 있는 요일의 날만</b> 넣기
             </label>
@@ -238,7 +238,7 @@ function MessageBox({
     <div className="mt-4 border-t border-line pt-4">
       <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-bold">{title}</span>
-        {sub && <span className="text-[13px] text-subtle">{sub}</span>}
+        {sub && <span className="text-[0.7647rem] text-subtle">{sub}</span>}
         <span className="ml-auto flex gap-1">
           {edited !== null && (
             <button onClick={() => setEdited(null)} className="m3-btn m3-btn-sm m3-text">
@@ -252,7 +252,7 @@ function MessageBox({
         </span>
       </div>
       {schedule !== undefined && (
-        <details className="mb-2 text-[12.5px]">
+        <details className="mb-2 text-[0.7353rem]">
           <summary className="cursor-pointer text-ink-2">
             <b className="text-ink">수업</b> {schedule || '시간표 없음'}
           </summary>
@@ -264,9 +264,9 @@ function MessageBox({
         onChange={(e) => setEdited(e.target.value)}
         rows={Math.max(5, value.split('\n').length + 1)}
         aria-label={`${title} 문자 (직접 고칠 수 있어요)`}
-        className="w-full resize-y rounded-md border border-transparent bg-wash p-3.5 font-sans text-[13.5px] leading-6 text-ink-2 outline-none focus:border-ink/40 focus:bg-surface"
+        className="w-full resize-y rounded-md border border-transparent bg-wash p-3.5 font-sans text-[0.7941rem] leading-6 text-ink-2 outline-none focus:border-ink/40 focus:bg-surface"
       />
-      {edited !== null && <p className="mt-1 text-[11.5px] text-warn">직접 고친 문자예요. 위에서 날짜를 바꿔도 이 문자는 그대로예요.</p>}
+      {edited !== null && <p className="mt-1 text-[0.6765rem] text-warn">직접 고친 문자예요. 위에서 날짜를 바꿔도 이 문자는 그대로예요.</p>}
     </div>
   )
 }
@@ -277,7 +277,7 @@ function MiniWeek({ data, teacherId }: { data: AppData; teacherId: string }) {
   const periods = Array.from({ length: data.settings.periodCount }, (_, i) => i + 1)
   const D = ['월', '화', '수', '목', '금'] as const
   return (
-    <table className="mt-2 border-collapse text-[11px]">
+    <table className="mt-2 border-collapse text-[0.6471rem]">
       <thead>
         <tr>
           <th className="w-6" />

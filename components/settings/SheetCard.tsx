@@ -49,7 +49,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
   }
 
   const steps = (
-    <ol className="mt-4 flex list-none flex-col gap-4 text-[14px] leading-6">
+    <ol className="mt-4 flex list-none flex-col gap-4 text-[0.8235rem] leading-6">
       <li>
         <b>① 기록할 구글 시트 주소</b> — 보강 기록 시트를 열고 주소창의 주소를 그대로 붙여넣으세요. 코드가 <b>이 파일에만</b> 기록하도록 고정돼요.
         <input
@@ -62,7 +62,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
           placeholder="https://docs.google.com/spreadsheets/d/…/edit"
           className="m3-field m3-field-sm mt-2 w-full"
         />
-        {sheetInput && !sheetId && <span className="mt-1 block text-[12px] text-bad">구글 시트 주소가 아니에요 (…/spreadsheets/d/… 형식).</span>}
+        {sheetInput && !sheetId && <span className="mt-1 block text-[0.7059rem] text-bad">구글 시트 주소가 아니에요 (…/spreadsheets/d/… 형식).</span>}
       </li>
       <li>
         <b>② 코드 복사 → 시트에 붙여넣기</b> — 시트에서 <b>확장 프로그램 → Apps Script</b>를 열고, 원래 내용을 모두 지운 뒤 붙여넣고 저장(💾)하세요.
@@ -109,12 +109,12 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
         <h2 className="font-bold">구글 시트 연결</h2>
         {s.sheetUrl && !needsUpdate ? <Badge tone="green">연결됨</Badge> : needsUpdate ? <Badge tone="yellow">업데이트 필요</Badge> : <Badge>연결 안 됨</Badge>}
       </div>
-      <p className="mt-2 text-[14px] leading-6 text-ink-2">
+      <p className="mt-2 text-[0.8235rem] leading-6 text-ink-2">
         <b>배정 확인</b>에서 체크하고 <b>‘구글 시트에 올리기’</b>를 누르면, 지정한 시트의 <b>‘보강’ 탭</b> 맨 아래에 한 줄씩 추가됩니다. (B 결강 교사 · C 보강 날짜(날짜 형식) · D 교시 · E 보강 교사 · F 대상 학급 · G 과목)
       </p>
 
       {s.sheetUrl && !needsUpdate && (
-        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border border-line bg-wash px-4 py-3 text-[14px]">
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border border-line bg-wash px-4 py-3 text-[0.8235rem]">
           <ShieldCheck size={18} className="text-ok" />
           <span>
             기록 위치: <b>“{s.sheetFile ?? '연결된 파일'}”</b> 파일의 <b>“보강”</b> 탭
@@ -137,7 +137,7 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
       )}
 
       {needsUpdate && (
-        <p className="mt-4 flex gap-2 border border-warn/40 bg-warn-soft px-4 py-3 text-[14px] leading-6 text-warn">
+        <p className="mt-4 flex gap-2 border border-warn/40 bg-warn-soft px-4 py-3 text-[0.8235rem] leading-6 text-warn">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
           <span>
             연결 코드가 새 버전으로 바뀌었어요. 이제 코드가 <b>지정한 파일에만</b> 기록하고, 날짜를 시트의 다른 줄처럼 <b>날짜 형식</b>으로 넣어요. 아래 ①~④를 한 번만 다시 해 주세요. (③은 ‘배포 관리 → 새 버전’이라 웹 앱 주소는 그대로예요)
@@ -147,13 +147,13 @@ export function SheetCard({ data, setData }: { data: AppData; setData: SetData }
 
       {(!s.sheetUrl || needsUpdate || health?.old || (health && !health.ok)) && steps}
       {s.sheetUrl && !needsUpdate && !(health && !health.ok) && (
-        <details className="mt-3 text-[13px] text-subtle">
+        <details className="mt-3 text-[0.7647rem] text-subtle">
           <summary className="cursor-pointer">연결 코드 다시 설정하기</summary>
           {steps}
         </details>
       )}
       {health && <p className={`mt-3 text-sm font-bold ${health.ok ? 'text-ok' : 'text-bad'}`}>{health.text}</p>}
-      <p className="mt-4 text-[12px] leading-5 text-subtle">
+      <p className="mt-4 text-[0.7059rem] leading-5 text-subtle">
         웹 앱 주소와 비밀 키를 함께 알아야만 줄을 추가할 수 있고, 이 연결로는 시트 내용을 읽거나 지울 수 없어요. 시트 자체의 공유 설정은 바뀌지 않습니다.
       </p>
     </Card>

@@ -92,7 +92,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
       <div className="grid gap-6 xl:grid-cols-[1fr_1.3fr]">
         <Card>
           <h2 className="font-display text-lg font-semibold">PDF로 올리기</h2>
-          <p className="mt-1 text-[13px] text-subtle">한글에서 PDF로 저장한 교사별 시간표 (한 쪽에 여러 명도 가능)</p>
+          <p className="mt-1 text-[0.7647rem] text-subtle">한글에서 PDF로 저장한 교사별 시간표 (한 쪽에 여러 명도 가능)</p>
           <div className="mt-4">
             <FileDrop
               id="timetable-pdf"
@@ -136,7 +136,7 @@ export function TimetablePage({ data, setData }: { data: AppData; setData: SetDa
                 </p>
               )}
               {isSample && (
-                <label className="mt-3 flex items-start gap-2 text-[13px] leading-5 text-ink-2">
+                <label className="mt-3 flex items-start gap-2 text-[0.7647rem] leading-5 text-ink-2">
                   <input
                     type="checkbox"
                     checked={clearSample}

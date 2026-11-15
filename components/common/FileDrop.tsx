@@ -38,8 +38,8 @@ export function FileDrop({ id, title, hint, accept = 'application/pdf,.pdf', bus
       <span className="grid size-12 place-items-center rounded-full bg-iris-soft text-on-iris-container">
         {busy ? <LoaderCircle size={22} className="animate-spin" /> : <FileUp size={22} strokeWidth={1.75} />}
       </span>
-      <span className="text-[15px] font-semibold text-ink">{busy ? '파일을 읽는 중…' : title}</span>
-      <span id={`${id}-hint`} className="text-[13px] leading-5 text-subtle">
+      <span className="text-[0.8824rem] font-semibold text-ink">{busy ? '파일을 읽는 중…' : title}</span>
+      <span id={`${id}-hint`} className="text-[0.7647rem] leading-5 text-subtle">
         {hint}
       </span>
       <input

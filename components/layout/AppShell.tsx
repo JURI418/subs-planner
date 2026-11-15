@@ -149,8 +149,8 @@ export function AppShell() {
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
-        <span className="block text-[15px] font-extrabold">결보강 매니저</span>
-        <span className="block text-[10px] font-bold tracking-[.22em] text-subtle">SUBS PLANNER</span>
+        <span className="block text-[0.8824rem] font-extrabold">결보강 매니저</span>
+        <span className="block text-[0.5882rem] font-bold tracking-[.22em] text-subtle">SUBS PLANNER</span>
       </span>
     </button>
   )
@@ -163,7 +163,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`group flex items-center justify-between py-3 text-left text-[0.9412rem] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             {label}
             {isActive(href) ? (
@@ -180,7 +180,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`flex items-center gap-3 py-2.5 text-left text-[14px] ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`flex items-center gap-3 py-2.5 text-left text-[0.8235rem] ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             <Icon size={17} strokeWidth={1.5} />
             {label}
@@ -192,7 +192,7 @@ export function AppShell() {
             navigator.clipboard?.writeText(JSON.stringify(data))
             alert('JSON 데이터를 클립보드에 복사했습니다.')
           }}
-          className="flex items-center gap-3 py-2 text-left text-[13px] text-subtle hover:text-ink"
+          className="flex items-center gap-3 py-2 text-left text-[0.7647rem] text-subtle hover:text-ink"
         >
           <Copy size={15} strokeWidth={1.5} /> 백업 복사
         </button>
@@ -200,11 +200,11 @@ export function AppShell() {
           onClick={() => {
             if (confirm('모든 데이터를 샘플 데이터로 덮어씁니다. 되돌릴 수 없습니다. 계속할까요?')) setData(seedData())
           }}
-          className="flex items-center gap-3 py-2 text-left text-[13px] text-subtle hover:text-ink"
+          className="flex items-center gap-3 py-2 text-left text-[0.7647rem] text-subtle hover:text-ink"
         >
           <RotateCcw size={15} strokeWidth={1.5} /> 샘플 데이터로 초기화
         </button>
-        <p className="mt-3 text-[12px] text-faint">{data.settings.semester}</p>
+        <p className="mt-3 text-[0.7059rem] text-faint">{data.settings.semester}</p>
       </div>
     </>
   )
@@ -221,7 +221,7 @@ export function AppShell() {
       {mobile && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="flex w-[300px] max-w-[85%] flex-col bg-surface px-6 py-6">
-            <button onClick={() => setMobile(false)} className="flex items-center gap-2 text-[14px] font-bold">
+            <button onClick={() => setMobile(false)} className="flex items-center gap-2 text-[0.8235rem] font-bold">
               <X size={20} strokeWidth={1.5} /> MENU
             </button>
             <MenuBody />
@@ -233,7 +233,7 @@ export function AppShell() {
       <div className="lg:pl-[300px]">
         {/* 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내 · 학기. 홈에서만 검정 바탕 */}
         <div className={`px-4 py-1.5 md:px-6 ${home ? 'bg-ink text-paper' : 'bg-paper text-ink'}`}>
-          <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[12px] tracking-[.06em]`}>
+          <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[0.7059rem] tracking-[.06em]`}>
             <span className={`font-extrabold tracking-[.18em] ${home ? 'text-point' : ''}`}>//Subs Planner</span>
             <p key={noticeIdx} className={`truncate text-center font-bold ${home ? 'text-paper/90' : 'text-ink-2'}`} aria-live="polite">
               {notice}
@@ -253,7 +253,7 @@ export function AppShell() {
 
         {/* 휴대폰 상단 */}
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur lg:hidden">
-          <button onClick={() => setMobile(true)} className="flex items-center gap-2 text-[14px] font-bold" aria-label="메뉴 열기">
+          <button onClick={() => setMobile(true)} className="flex items-center gap-2 text-[0.8235rem] font-bold" aria-label="메뉴 열기">
             <Menu size={20} strokeWidth={1.5} /> MENU
           </button>
           <Logo />
@@ -268,7 +268,7 @@ export function AppShell() {
 
       {/* 구글 시트 전송 결과 알림 */}
       {autoSaved && !sheet.status && (
-        <div role="status" className="fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] bg-ink px-4 py-3 text-[14px] font-bold text-paper shadow-[0_8px_24px_rgb(0_0_0/.2)]">
+        <div role="status" className="fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] bg-ink px-4 py-3 text-[0.8235rem] font-bold text-paper shadow-[0_8px_24px_rgb(0_0_0/.2)]">
           <span className="mr-2 text-point">●</span>
           {autoSaved}
         </div>
@@ -276,10 +276,10 @@ export function AppShell() {
       {/* 오늘 백업: 저장 위치를 아직 안 정했거나(처음), 이번 방문에서 덮어쓰기 허락이 필요할 때 */}
       {backupAsk && (
         <div className="fixed bottom-24 right-6 z-30 w-[min(400px,calc(100vw-3rem))] bg-ink p-4 text-paper shadow-[0_8px_24px_rgb(0_0_0/.25)]">
-          <p className="text-[14px] font-bold">
+          <p className="text-[0.8235rem] font-bold">
             {backupAsk === 'choose' ? '백업 파일 저장 위치를 한 번만 정해 주세요' : '오늘 백업을 덮어쓸까요?'}
           </p>
-          <p className="mt-1 text-[12.5px] leading-5 text-paper/70">
+          <p className="mt-1 text-[0.7353rem] leading-5 text-paper/70">
             {backupAsk === 'choose'
               ? '정해 두면 매일 같은 파일 하나에 덮어써서 파일이 쌓이지 않아요.'
               : `${data.settings.backupFileName ?? '백업 파일'}에 오늘 내용을 덮어씁니다. 브라우저가 물으면 ‘방문할 때마다 허용’을 고르면 다음부터는 묻지 않아요.`}
@@ -325,7 +325,7 @@ export function AppShell() {
       {sheet.status && (
         <div
           role="status"
-          className={`fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] px-4 py-3 text-[14px] font-bold shadow-[0_8px_24px_rgb(0_0_0/.2)] ${sheet.status.ok ? 'bg-ink text-paper' : 'bg-bad text-white'}`}
+          className={`fixed bottom-24 right-6 z-30 max-w-[min(420px,calc(100vw-3rem))] px-4 py-3 text-[0.8235rem] font-bold shadow-[0_8px_24px_rgb(0_0_0/.2)] ${sheet.status.ok ? 'bg-ink text-paper' : 'bg-bad text-white'}`}
         >
           {sheet.status.ok && <span className="mr-2 text-point">●</span>}
           {sheet.status.text}
@@ -364,8 +364,8 @@ function BackupNotice({
       <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 border border-line border-l-4 border-l-point bg-surface px-5 py-3 shadow-[0_1px_3px_rgb(0_0_0/.06)]">
         <HardDriveDownload size={18} className="text-ink" />
         <span>
-          <span className="block text-[14px] font-bold">{title}</span>
-          <span className="block text-[12.5px] text-subtle">데이터는 이 브라우저에만 저장돼요. 일주일에 한 번 받아 두세요.</span>
+          <span className="block text-[0.8235rem] font-bold">{title}</span>
+          <span className="block text-[0.7353rem] text-subtle">데이터는 이 브라우저에만 저장돼요. 일주일에 한 번 받아 두세요.</span>
         </span>
         <span className="ml-auto flex gap-1">
           <button onClick={onSnooze} className="m3-btn m3-btn-sm m3-text">내일 다시</button>
