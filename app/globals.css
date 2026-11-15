@@ -245,7 +245,7 @@ tbody tr:hover > td {
   width: fit-content;
   margin-left: -0.25rem;
   padding: 0 0.25rem;
-  background: linear-gradient(transparent 62%, var(--color-point) 62%);
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--color-point) 55%, transparent) 62%);
 }
 
 @layer base {
