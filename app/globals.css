@@ -38,9 +38,9 @@
   --color-bad: #96382f;
   --color-bad-soft: #f3e3df;
   --color-bad-line: #96382f;
-  --font-sans: 'Wanted Sans Variable', 'Wanted Sans', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: 'Wanted Sans Variable', 'Wanted Sans', 'Apple SD Gothic Neo', sans-serif;
-  --font-mono: 'Wanted Sans Variable', 'Wanted Sans', 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: 'Nanum Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Nanum Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'Nanum Gothic', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
