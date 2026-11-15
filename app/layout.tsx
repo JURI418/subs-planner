@@ -1,10 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import '@fontsource/noto-sans-kr/400.css'
-import '@fontsource/noto-sans-kr/500.css'
-import '@fontsource/noto-sans-kr/600.css'
-import '@fontsource/noto-sans-kr/700.css'
-import '@fontsource/noto-sans-kr/800.css'
+import '@fontsource/pretendard/400.css'
+import '@fontsource/pretendard/500.css'
+import '@fontsource/pretendard/600.css'
+import '@fontsource/pretendard/700.css'
 import './globals.css'
 
 export const metadata: Metadata = {

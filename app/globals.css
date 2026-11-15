@@ -20,7 +20,7 @@
   --color-iris: #1b1a18;
   --color-iris-deep: #1b1a18;
   --color-iris-soft: #ebe8e1;
-  --color-iris-container: #e9e5ef;
+  --color-iris-container: #ebe8e1;
   --color-on-iris-container: #1b1a18;
   --color-gold: #d8c08c;
   /* 포인트 색 */
@@ -28,9 +28,9 @@
   --color-on-point: #ffffff;
   /* 어두운 바탕 위에서 쓰는 밝은 포인트 */
   --color-point-lt: #c6f432;
-  /* 예비 교사 표시(자주), 연속 수업 표시(청회색) */
-  --color-plum: #6a3f7a;
-  --color-plum-soft: #efe5f2;
+  /* 예비 교사 표시(황토), 연속 수업 표시(청회색) */
+  --color-plum: #a65e3a;
+  --color-plum-soft: #f6e9e0;
   --color-sky: #2d5f7e;
   --color-sky-soft: #e0ebf2;
   --color-ok: #3e6a4a;
@@ -40,9 +40,9 @@
   --color-bad: #96382f;
   --color-bad-soft: #f3e3df;
   --color-bad-line: #96382f;
-  --font-sans: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-  --font-mono: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 공통 부품 (클래스 이름은 그대로 두고 모양만 부티크 스타일로) */
