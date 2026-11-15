@@ -151,7 +151,6 @@ export function AppShell() {
         <span className="block text-[0.8824rem] font-extrabold">결보강 매니저</span>
         <span className="block text-[0.5882rem] font-bold tracking-[.22em] text-subtle">SUBS PLANNER</span>
       </span>
-      <span className="ml-1 border border-ink px-1.5 py-0.5 text-[0.6471rem] font-bold transition-colors group-hover:bg-point">홈</span>
     </button>
   )
 

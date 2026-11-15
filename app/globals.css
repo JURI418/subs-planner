@@ -242,18 +242,7 @@ tbody tr:hover > td {
   background-color: color-mix(in srgb, var(--color-point-soft) 70%, transparent);
 }
 .card {
-  --card-pad: 1.5rem;
-}
-@media (min-width: 768px) {
-  .card {
-    --card-pad: 1.75rem;
-  }
-}
-.card > h2:first-child {
-  margin: calc(var(--card-pad) * -1) calc(var(--card-pad) * -1) 1rem;
-  padding: 0.85rem var(--card-pad);
-  background: var(--color-point-soft);
-  border-bottom: 1px solid var(--color-ink);
+  border-top: 5px solid var(--color-point);
 }
 
 @layer base {
