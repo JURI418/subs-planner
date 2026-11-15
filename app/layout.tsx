@@ -1,8 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import '@fontsource/gothic-a1/400.css'
-import '@fontsource/gothic-a1/500.css'
-import '@fontsource/gothic-a1/700.css'
+import 'wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css'
 import './globals.css'
 
 export const metadata: Metadata = {
