@@ -21,7 +21,6 @@ import { GuidePage } from '@/components/pages/GuidePage'
 
 // 메뉴: 위쪽은 매일 쓰는 일(› 화살표 목록), 아래쪽은 관리 메뉴(아이콘 목록)
 const primary = [
-  ['/dashboard', '홈'],
   ['/absence', '결강 등록'],
   ['/assignments', '배정 확인'],
   ['/week', '이번 주 시간표'],
@@ -144,7 +143,7 @@ export function AppShell() {
   const notice = notices[noticeIdx % notices.length]
 
   const Logo = () => (
-    <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="첫 화면">
+    <button onClick={() => go('/dashboard')} className="flex items-center gap-2.5 text-left" aria-label="홈으로" title="홈">
       <span className="grid size-9 place-items-center bg-point text-on-point">
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
