@@ -89,7 +89,7 @@ export function GuidePage({ data }: { data: AppData }) {
         {flows.map((f, fi) => (
           <Card key={f.when}>
             <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Step {String(fi + 1).padStart(2, '0')}</p>
-            <h2 className="mt-1 text-lg font-semibold">{f.when}</h2>
+            <h2 className="mt-1 text-lg font-extrabold">{f.when}</h2>
             <ol className="mt-4 flex flex-col divide-y divide-line">
               {f.steps.map(([title, desc, href], i) => (
                 <li key={title}>
@@ -114,7 +114,7 @@ export function GuidePage({ data }: { data: AppData }) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Card>
-          <h2 className="text-lg font-semibold">보강 후보에서 빠지는 경우</h2>
+          <h2 className="text-lg font-extrabold">보강 후보에서 빠지는 경우</h2>
           <p className="mt-1 text-[13px] text-subtle">아래 중 하나라도 해당하면 추천하지 않아요.</p>
           <ul className="mt-4 flex flex-col gap-2 text-[14px]">
             {hard.map((h) => (
@@ -126,7 +126,7 @@ export function GuidePage({ data }: { data: AppData }) {
           </ul>
         </Card>
         <Card>
-          <h2 className="text-lg font-semibold">추천 순서</h2>
+          <h2 className="text-lg font-extrabold">추천 순서</h2>
           <p className="mt-1 text-[13px] text-subtle">
             지금 방식: <b className="text-ink">{ruleLabel(st.rule)}</b>. 남은 후보 중 점수가 가장 높은 교사가 보강, 2·3위가 예비1·예비2가 돼요.
           </p>
@@ -144,7 +144,7 @@ export function GuidePage({ data }: { data: AppData }) {
         </Card>
       </div>
       <Card className="mt-6">
-        <h2 className="text-lg font-semibold">알아 두면 좋은 것</h2>
+        <h2 className="text-lg font-extrabold">알아 두면 좋은 것</h2>
         <dl className="mt-3 grid gap-x-8 md:grid-cols-2">
           {tips.map(([k, v]) => (
             <div key={k} className="border-t border-line py-3 text-[14px]">

@@ -258,7 +258,7 @@ export function AssignmentsPage({ data, setData }: { data: AppData; setData: Set
       {sel.length > 0 && (
         <div className="sticky top-16 z-[5] mb-3 flex flex-wrap items-center gap-2 bg-ink px-4 py-2.5 text-paper shadow-[0_6px_18px_rgb(0_0_0/.18)] lg:top-3">
           <span className="mr-2 text-[14px] font-bold">
-            <span className="text-point-lt">{sel.length}건</span> 선택
+            <span className="text-point">{sel.length}건</span> 선택
           </span>
           {selProposed.length > 0 && (
             <button onClick={confirmSelected} className="m3-btn m3-btn-sm border border-paper/40 text-paper hover:bg-paper hover:text-ink">

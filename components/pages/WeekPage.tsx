@@ -142,7 +142,7 @@ export function WeekPage({ data }: { data: AppData }) {
       ) : (
         <Card>
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="mr-2 text-xl font-semibold">{teacher.name}</h2>
+            <h2 className="mr-2 text-xl font-extrabold">{teacher.name}</h2>
             <span className="text-[14px] text-subtle">
               {teacher.subject} · {teacher.grades.map((g) => `${g}학년`).join('·')}
             </span>

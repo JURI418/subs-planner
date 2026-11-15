@@ -76,10 +76,10 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
         <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
           <div className="min-w-0">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point-lt">
+            <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point">
               Today · {englishDate(today)}
             </p>
-            <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-semibold leading-tight tracking-[-0.03em] md:text-[2.25rem]">
+            <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
               결보강 확인
               <span className="text-[16px] font-bold tracking-normal text-paper/80">{formatDotDate(today)}</span>
             </h1>
@@ -97,11 +97,11 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                     const sub = data.teachers.find((t) => t.id === a?.substituteTeacherId)?.name
                     return (
                       <li key={s.id} className="flex items-center gap-2 rounded-md border border-paper/25 px-3 py-1.5 text-[13px]">
-                        <b className="text-point-lt">{s.period}교시</b>
+                        <b className="text-point">{s.period}교시</b>
                         <span>{s.room}{s.group ?? ''} {s.subject}</span>
                         <span className="text-paper/60">·</span>
                         <span className="text-paper/80">{absent} →</span>
-                        <span className={sub ? 'font-bold' : 'font-bold text-point-lt'}>
+                        <span className={sub ? 'font-bold' : 'font-bold text-point'}>
                           {sub ?? '미정'}
                           {a?.status === '제안' && <span className="ml-1 text-[11px] font-normal text-paper/50">제안</span>}
                         </span>
@@ -128,7 +128,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               onClick={() => router.push('/absence')}
-              className="m3-btn h-11 border border-point bg-point px-6 text-on-point hover:bg-transparent hover:text-paper"
+              className="m3-btn h-11 border border-point bg-point px-6 text-on-point hover:bg-transparent hover:text-point"
             >
               <Plus size={18} /> 결강 등록
             </button>
@@ -152,14 +152,14 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
                 const off = data.settings.holidays.includes(b.date)
                 return (
                   <div key={b.date} className="flex h-full w-7 flex-col items-center justify-end gap-1.5 md:w-8" title={`${b.label} ${b.count}개`}>
-                    <span className={`text-[13px] font-bold tabular-nums ${isToday ? 'text-point-lt' : 'text-paper/85'}`}>
+                    <span className={`text-[13px] font-bold tabular-nums ${isToday ? 'text-point' : 'text-paper/85'}`}>
                       {off ? '휴' : b.count}
                     </span>
                     <span
-                      className={`w-full rounded-[3px] transition-[height] duration-500 ${isToday ? 'bg-point-lt' : off ? 'bg-paper/[.06]' : 'bg-paper/20'}`}
+                      className={`w-full rounded-[3px] transition-[height] duration-500 ${isToday ? 'bg-point' : off ? 'bg-paper/[.06]' : 'bg-paper/20'}`}
                       style={{ height: `${Math.max(4, (b.count / barMax) * 72)}px` }}
                     />
-                    <span className={`text-[12px] ${isToday ? 'font-bold text-point-lt' : 'text-paper/60'}`}>{b.label}</span>
+                    <span className={`text-[12px] ${isToday ? 'font-bold text-point' : 'text-paper/60'}`}>{b.label}</span>
                   </div>
                 )
               })}
@@ -183,13 +183,13 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 {title}
                 {hot && (
-                  <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-point-lt">확인 필요</span>
+                  <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-point">확인 필요</span>
                 )}
               </span>
               <ChevronRight size={18} className={`shrink-0 transition-transform group-hover:translate-x-1 ${hot ? 'text-on-point' : 'text-subtle group-hover:text-ink'}`} />
             </span>
             <span className="mt-5 flex items-baseline gap-2">
-              <span className="text-[2.5rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
+              <span className="text-[2.75rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
               <span className={`flex items-center gap-1.5 text-[13px] ${hot ? 'text-on-point/70' : 'text-subtle'}`}>
                 <span className={`size-1.5 rounded-full ${hot ? 'bg-on-point' : mark}`} aria-hidden />
                 {unit}
@@ -231,7 +231,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Today&rsquo;s cover</p>
-                <h2 className="mt-1 text-xl font-semibold">오늘의 보강</h2>
+                <h2 className="mt-1 text-xl font-extrabold">오늘의 보강</h2>
                 <p className="mt-1 text-[13px] text-subtle">{formatDotDate(today)} 결강 수업과 보강 교사</p>
               </div>
               <button onClick={() => router.push('/assignments')} className="m3-btn m3-btn-sm m3-text">
@@ -268,7 +268,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           </Card>
           <Card>
             <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Checklist</p>
-            <h2 className="mt-1 text-xl font-semibold">운영 체크리스트</h2>
+            <h2 className="mt-1 text-xl font-extrabold">운영 체크리스트</h2>
             <ol className="mt-2 flex flex-col">
               {checklist.map(([title, desc, ok, href], i) => (
                 <li key={title} className="border-b border-line last:border-b-0">
@@ -294,7 +294,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Upcoming</p>
-                <h2 className="mt-1 text-xl font-semibold">다가오는 학사일정</h2>
+                <h2 className="mt-1 text-xl font-extrabold">다가오는 학사일정</h2>
               </div>
               <button onClick={() => router.push('/calendar')} className="m3-btn m3-btn-sm m3-text">
                 전체 일정
