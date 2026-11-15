@@ -79,7 +79,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             <p className="text-[11px] font-bold uppercase tracking-[.25em] text-point-lt">
               Today · {englishDate(today)}
             </p>
-            <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-extrabold leading-tight tracking-[-0.03em] md:text-[2.5rem]">
+            <h1 className="mt-2 flex flex-wrap items-baseline gap-x-4 text-[2rem] font-semibold leading-tight tracking-[-0.03em] md:text-[2.25rem]">
               결보강 확인
               <span className="text-[16px] font-bold tracking-normal text-paper/80">{formatDotDate(today)}</span>
             </h1>
@@ -189,7 +189,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
               <ChevronRight size={18} className={`shrink-0 transition-transform group-hover:translate-x-1 ${hot ? 'text-on-point' : 'text-subtle group-hover:text-ink'}`} />
             </span>
             <span className="mt-5 flex items-baseline gap-2">
-              <span className="text-[2.75rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
+              <span className="text-[2.5rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{value}</span>
               <span className={`flex items-center gap-1.5 text-[13px] ${hot ? 'text-on-point/70' : 'text-subtle'}`}>
                 <span className={`size-1.5 rounded-full ${hot ? 'bg-on-point' : mark}`} aria-hidden />
                 {unit}
@@ -231,7 +231,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Today&rsquo;s cover</p>
-                <h2 className="mt-1 text-xl font-extrabold">오늘의 보강</h2>
+                <h2 className="mt-1 text-xl font-semibold">오늘의 보강</h2>
                 <p className="mt-1 text-[13px] text-subtle">{formatDotDate(today)} 결강 수업과 보강 교사</p>
               </div>
               <button onClick={() => router.push('/assignments')} className="m3-btn m3-btn-sm m3-text">
@@ -268,7 +268,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
           </Card>
           <Card>
             <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Checklist</p>
-            <h2 className="mt-1 text-xl font-extrabold">운영 체크리스트</h2>
+            <h2 className="mt-1 text-xl font-semibold">운영 체크리스트</h2>
             <ol className="mt-2 flex flex-col">
               {checklist.map(([title, desc, ok, href], i) => (
                 <li key={title} className="border-b border-line last:border-b-0">
@@ -294,7 +294,7 @@ export function DashboardPage({ data, setData }: { data: AppData; setData: SetDa
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[.2em] text-subtle">Upcoming</p>
-                <h2 className="mt-1 text-xl font-extrabold">다가오는 학사일정</h2>
+                <h2 className="mt-1 text-xl font-semibold">다가오는 학사일정</h2>
               </div>
               <button onClick={() => router.push('/calendar')} className="m3-btn m3-btn-sm m3-text">
                 전체 일정

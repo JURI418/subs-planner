@@ -149,7 +149,7 @@ export function AppShell() {
         <Sparkles size={17} strokeWidth={1.75} />
       </span>
       <span className="leading-tight">
-        <span className="block text-[15px] font-extrabold">결보강 매니저</span>
+        <span className="block text-[15px] font-semibold">결보강 매니저</span>
         <span className="block text-[10px] font-bold tracking-[.22em] text-subtle">SUBS PLANNER</span>
       </span>
     </button>
@@ -163,7 +163,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`group flex items-center justify-between py-3 text-left text-[16px] transition-colors ${isActive(href) ? 'font-semibold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             {label}
             {isActive(href) ? (
@@ -180,7 +180,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`flex items-center gap-3 py-2.5 text-left text-[14px] ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`flex items-center gap-3 py-2.5 text-left text-[14px] ${isActive(href) ? 'font-semibold text-ink' : 'text-ink-2 hover:text-ink'}`}
           >
             <Icon size={17} strokeWidth={1.5} />
             {label}
@@ -234,7 +234,7 @@ export function AppShell() {
         {/* 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내 · 학기. 홈에서만 검정 바탕 */}
         <div className={`px-4 py-1.5 md:px-6 ${home ? 'bg-ink text-paper' : 'bg-paper text-ink'}`}>
           <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[12px] tracking-[.06em]`}>
-            <span className={`font-extrabold tracking-[.18em] ${home ? 'text-point-lt' : ''}`}>//Subs Planner</span>
+            <span className={`font-semibold tracking-[.18em] ${home ? 'text-point-lt' : ''}`}>//Subs Planner</span>
             <p key={noticeIdx} className={`truncate text-center font-bold ${home ? 'text-paper/90' : 'text-ink-2'}`} aria-live="polite">
               {notice}
             </p>
