@@ -25,6 +25,7 @@
   --color-gold: #d8c08c;
   /* 포인트 색 */
   --color-point: #ffd94a;
+  --color-point-soft: #fff5c8;
   --color-on-point: #1b1a18;
   /* 예비 교사 표시(자주), 연속 수업 표시(청회색) */
   --color-plum: #6a3f7a;
@@ -230,6 +231,21 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
   }
+}
+
+/* 표 머리글은 연한 레몬 바탕, 표 줄에 마우스를 올리면 살짝 강조, 카드 제목은 형광펜 밑줄 */
+thead tr,
+thead th {
+  background-color: var(--color-point-soft);
+}
+tbody tr:hover > td {
+  background-color: color-mix(in srgb, var(--color-point-soft) 70%, transparent);
+}
+.card h2 {
+  width: fit-content;
+  margin-left: -0.25rem;
+  padding: 0 0.25rem;
+  background: linear-gradient(transparent 62%, var(--color-point) 62%);
 }
 
 @layer base {

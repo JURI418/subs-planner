@@ -163,7 +163,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`group flex items-center justify-between py-3 text-left text-[0.9412rem] transition-colors ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`group -mx-3 flex items-center justify-between px-3 py-3 text-left text-[0.9412rem] transition-colors ${isActive(href) ? 'bg-point-soft font-extrabold text-ink' : 'text-ink-2 hover:bg-wash hover:text-ink'}`}
           >
             {label}
             {isActive(href) ? (
@@ -180,7 +180,7 @@ export function AppShell() {
             key={href}
             onClick={() => go(href)}
             aria-current={isActive(href) ? 'page' : undefined}
-            className={`flex items-center gap-3 py-2.5 text-left text-[0.8235rem] ${isActive(href) ? 'font-extrabold text-ink' : 'text-ink-2 hover:text-ink'}`}
+            className={`-mx-3 flex items-center gap-3 px-3 py-2.5 text-left text-[0.8235rem] ${isActive(href) ? 'bg-point-soft font-extrabold text-ink' : 'text-ink-2 hover:bg-wash hover:text-ink'}`}
           >
             <Icon size={17} strokeWidth={1.5} />
             {label}

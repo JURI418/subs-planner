@@ -46,8 +46,8 @@ export function StatsPage({ data }: { data: AppData }) {
           ['최대 보강', String(cover[0]?.totalAssignments ?? 0), '회'],
           ['결강 수업', String(totalAbsClasses), '개'],
           ['결강한 교사', String(absence.length), '명'],
-        ].map(([label, value, unit]) => (
-          <div key={label} className="bg-surface p-5 md:p-6">
+        ].map(([label, value, unit], i) => (
+          <div key={label} className={`border-t-[3px] bg-surface p-5 md:p-6 ${['border-t-point', 'border-t-sky', 'border-t-warn', 'border-t-ok'][i]}`}>
             <p className="text-[0.7647rem] text-subtle">{label}</p>
             <p className="mt-2 flex items-baseline gap-1">
               <span className="text-[2.5rem] font-bold leading-none tabular-nums">{value}</span>
