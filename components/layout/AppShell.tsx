@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, BookOpen, HardDriveDownload, MessageSquareText, ChevronRight, Copy, Menu, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
+import { BarChart3, BookOpen, HardDriveDownload, MessageSquareText, ChevronRight, Copy, Menu, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, RotateCcw, Settings, Sparkles, Users, X } from 'lucide-react'
 import { formatDotDate, seedData, todayISO } from '@/lib/types'
 import { daysSinceBackup, downloadBackup } from '@/lib/backup'
 import { canOverwrite, chooseBackupFile, overwriteBackup } from '@/lib/fileBackup'
@@ -67,6 +67,20 @@ export function AppShell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
   const [mobile, setMobile] = useState(false)
+  // 넓은 화면에서도 왼쪽 메뉴를 접어 둘 수 있다 (이 브라우저에 기억)
+  const [collapsed, setCollapsedState] = useState(false)
+  useEffect(() => {
+    try {
+      setCollapsedState(localStorage.getItem('sidebar-collapsed') === '1')
+    } catch {}
+  }, [])
+  const setCollapsed = (v: boolean) => {
+    setCollapsedState(v)
+    setMobile(false)
+    try {
+      localStorage.setItem('sidebar-collapsed', v ? '1' : '0')
+    } catch {}
+  }
   const [noticeIdx, setNoticeIdx] = useState(0)
   const [paused, setPaused] = useState(false)
   useEffect(() => {
@@ -211,25 +225,37 @@ export function AppShell() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       {/* 왼쪽 메뉴 (넓은 화면) */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-[300px] flex-col border-r border-line bg-surface px-7 py-7 lg:flex">
-        <Logo />
+      <aside className={`fixed inset-y-0 left-0 z-20 hidden w-[300px] flex-col overflow-y-auto border-r border-line bg-surface px-7 py-7 ${collapsed ? '' : 'lg:flex'}`}>
+        <div className="flex items-start justify-between gap-2">
+          <Logo />
+          <button onClick={() => setCollapsed(true)} aria-label="왼쪽 메뉴 접기" title="메뉴 접기" className="grid size-8 shrink-0 place-items-center text-subtle hover:bg-wash hover:text-ink">
+            <PanelLeftClose size={18} strokeWidth={1.5} />
+          </button>
+        </div>
         <MenuBody />
       </aside>
 
       {/* 휴대폰 메뉴: ✕ MENU */}
       {mobile && (
-        <div className="fixed inset-0 z-40 flex lg:hidden">
-          <div className="flex w-[300px] max-w-[85%] flex-col bg-surface px-6 py-6">
-            <button onClick={() => setMobile(false)} className="flex items-center gap-2 text-[0.8235rem] font-bold">
-              <X size={20} strokeWidth={1.5} /> MENU
-            </button>
+        <div className={`fixed inset-0 z-40 flex ${collapsed ? '' : 'lg:hidden'}`}>
+          <div className="flex w-[300px] max-w-[85%] flex-col overflow-y-auto bg-surface px-6 py-6">
+            <div className="flex items-center justify-between">
+              <button onClick={() => setMobile(false)} className="flex items-center gap-2 text-[0.8235rem] font-bold">
+                <X size={20} strokeWidth={1.5} /> MENU
+              </button>
+              {collapsed && (
+                <button onClick={() => setCollapsed(false)} className="hidden items-center gap-1.5 text-[0.7647rem] font-bold text-subtle hover:text-ink lg:flex">
+                  <PanelLeftOpen size={16} strokeWidth={1.5} /> 항상 펼쳐 두기
+                </button>
+              )}
+            </div>
             <MenuBody />
           </div>
           <button aria-label="메뉴 닫기" onClick={() => setMobile(false)} className="flex-1 bg-ink/40" />
         </div>
       )}
 
-      <div className="lg:pl-[300px]">
+      <div className={collapsed ? '' : 'lg:pl-[300px]'}>
         {/* 안내 띠: 위아래 가는 줄 사이에 //Subs Planner · 안내 · 학기. 홈에서만 검정 바탕 */}
         <div className={`px-4 py-1.5 md:px-6 ${home ? 'bg-ink text-paper' : 'bg-paper text-ink'}`}>
           <div className={`grid h-9 grid-cols-[auto_1fr_auto] items-center gap-4 border-y ${home ? 'border-paper/30' : 'border-ink/25'} text-[0.7059rem] tracking-[.06em]`}>
@@ -251,7 +277,7 @@ export function AppShell() {
         </div>
 
         {/* 휴대폰 상단 */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur lg:hidden">
+        <header className={`sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur ${collapsed ? '' : 'lg:hidden'}`}>
           <button onClick={() => setMobile(true)} className="flex items-center gap-2 text-[0.8235rem] font-bold" aria-label="메뉴 열기">
             <Menu size={20} strokeWidth={1.5} /> MENU
           </button>
