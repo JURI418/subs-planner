@@ -46,7 +46,16 @@ function ReasonList({ reasons }: { reasons: string[] }) {
 }
 
 export function AssignmentsPage({ data, setData }: { data: AppData; setData: SetData }) {
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState(() => {
+    // 결강을 등록하고 넘어온 경우에는 ‘제안’ 목록부터 보여 준다
+    try {
+      const f = sessionStorage.getItem('assign-filter')
+      sessionStorage.removeItem('assign-filter')
+      return f || 'all'
+    } catch {
+      return 'all'
+    }
+  })
   const [open, setOpen] = useState<Set<string>>(new Set())
   const toggle = (id: string) =>
     setOpen((s) => {

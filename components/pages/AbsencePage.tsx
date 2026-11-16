@@ -133,6 +133,10 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
         .join('\n')
       alert(`확정된 보강 ${conflicts.length}건의 보강 교사가 결강입니다:\n${list}`)
     }
+    // 만든 배정을 바로 확인하도록 ‘제안’ 목록으로 연다
+    try {
+      sessionStorage.setItem('assign-filter', '제안')
+    } catch {}
     router.push('/assignments')
   }
   const remove = (a: Absence) => {
@@ -215,7 +219,12 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 <input
                   type="date"
                   value={start}
-                  onChange={(e) => setStart(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    // 시작일을 바꾸면 종료일은 시작일 이후로 맞춘다 (하루짜리였으면 같이 따라감)
+                    if (v && (!end || end < v || end === start)) setEnd(v)
+                    setStart(v)
+                  }}
                   className="m3-field mt-2 w-full"
                 />
               </label>
@@ -224,7 +233,8 @@ export function AbsencePage({ data, setData }: { data: AppData; setData: SetData
                 <input
                   type="date"
                   value={end}
-                  onChange={(e) => setEnd(e.target.value)}
+                  onChange={(e) => setEnd(start && e.target.value && e.target.value < start ? start : e.target.value)}
+                  min={start}
                   className="m3-field mt-2 w-full"
                 />
               </label>
