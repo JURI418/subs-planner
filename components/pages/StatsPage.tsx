@@ -2,10 +2,11 @@
 import { useState } from 'react'
 import { Card } from '@/components/common/Card'
 import { PageHeader } from '@/components/common/PageHeader'
-import { isVirtual, type AppData } from '@/lib/types'
+import { isVirtual, type AppData, type SetData } from '@/lib/types'
+import { ImportCard } from '@/components/stats/ImportCard'
 
 /** 결보강 통계: 보강 순위 + 결강 순위 */
-export function StatsPage({ data }: { data: AppData }) {
+export function StatsPage({ data, setData }: { data: AppData; setData: SetData }) {
   const teachers = data.teachers.filter((t) => !isVirtual(t))
   const [showAll, setShowAll] = useState(false)
 
@@ -24,7 +25,7 @@ export function StatsPage({ data }: { data: AppData }) {
       data.absences
         .filter((a) => a.teacherId === t.id)
         .forEach((a) => {
-          const k = a.reason.split(/, |, /)[0] || '기타'
+          const k = a.reason.split(/ · |, /)[0] || '기타'
           reasons.set(k, (reasons.get(k) ?? 0) + 1)
         })
       const topReason = [...reasons.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
@@ -119,6 +120,7 @@ export function StatsPage({ data }: { data: AppData }) {
           </button>
         </div>
       )}
+      <ImportCard data={data} setData={setData} />
     </>
   )
 }

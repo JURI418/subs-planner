@@ -112,7 +112,7 @@ export function AppShell() {
       case 'teachers':
         return <TeachersPage data={data} setData={setData} />
       case 'stats':
-        return <StatsPage data={data} />
+        return <StatsPage data={data} setData={setData} />
       case 'settings':
         return <SettingsPage data={data} setData={setData} />
       default:
