@@ -1,8 +1,9 @@
 'use client'
+import { useState } from 'react'
 import { ArrowUp, X } from 'lucide-react'
 import { recommend, teacherDay, validateAssignment } from '@/lib/scheduling'
 import type { AppData, Assignment, Slot } from '@/lib/types'
-import { ruleLabel } from '@/lib/rules'
+import { ruleLabel, slotClass } from '@/lib/rules'
 
 export type DetailActions = {
   setMain: (teacherId: string) => void
@@ -42,6 +43,7 @@ export function AssignmentDetail({
 }) {
   const avg = data.teachers.length ? data.teachers.reduce((n, t) => n + t.totalAssignments, 0) / data.teachers.length : 0
   const confirmed = a.status === '확정'
+  const [showBlocked, setShowBlocked] = useState(false)
   const assigned = new Set([a.substituteTeacherId, ...a.backups].filter(Boolean) as string[])
   const rec = recommend(
     slot,
@@ -161,6 +163,32 @@ export function AssignmentDetail({
               <tr className="border-b border-line">
                 <td colSpan={cols} className="px-3 py-2 text-[0.7059rem] text-ink-2">
                   <b className="text-ink">빠진 이유</b> {whyText}
+                  <button onClick={() => setShowBlocked((v) => !v)} className="ml-2 font-bold text-ink underline underline-offset-2">
+                    {showBlocked ? '빠진 교사 닫기' : '빠진 교사 보기'}
+                  </button>
+                  {showBlocked && (
+                    <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                      {[...rec.blocked]
+                        .filter((b) => !assigned.has(b.id))
+                        .map((b) => ({ b, t: data.teachers.find((x) => x.id === b.id)! }))
+                        .sort((x, y) => Number(y.t.homeroom === slotClass(slot) && !!y.t.homeroom) - Number(x.t.homeroom === slotClass(slot) && !!x.t.homeroom) || x.t.name.localeCompare(y.t.name, 'ko'))
+                        .map(({ b, t }) => (
+                          <li key={b.id}>
+                            <b className="text-ink">{t.name}</b>
+                            {t.homeroom && t.homeroom === slotClass(slot) && <span className="ml-1 bg-point px-1 font-bold text-on-point">해당 학급 담임</span>}
+                            <span className="ml-1.5 text-subtle">{b.reasons.join(', ')}</span>
+                          </li>
+                        ))}
+                      {data.teachers
+                        .filter((t) => t.poolStatus === '제외' && !t.name.startsWith('가상') && data.timetable.some((e) => e.teacherId === t.id))
+                        .map((t) => (
+                          <li key={t.id}>
+                            <b className="text-ink">{t.name}</b>
+                            <span className="ml-1.5 text-subtle">보강 후보 제외로 설정됨</span>
+                          </li>
+                        ))}
+                    </ul>
+                  )}
                   {looser > 0 && (
                     <span className="mt-1 block font-bold text-warn">
                       설정 → 보강 한도에서 하루 수업을 {data.settings.maxDaily + 1}개 미만으로 올리면 후보가 {looser}명 더 생겨요.
