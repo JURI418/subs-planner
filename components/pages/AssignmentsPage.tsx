@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useState } from "react";
-import { CheckCheck, ChevronDown, Copy, Sheet, Trash2, X } from "lucide-react";
+import { CheckCheck, ChevronDown, ChevronLeft, ChevronRight, Copy, Sheet, Trash2, X } from "lucide-react";
 import {
   AssignmentDetail,
   type DetailActions,
@@ -363,30 +363,45 @@ export function AssignmentsPage({
         ))}
       </div>
       {dates.length > 1 && (
-        <div
-          className="mb-4 flex flex-wrap items-center gap-1.5"
-          role="group"
-          aria-label="날짜별 보기"
-        >
-          <span className="mr-1 text-[0.7647rem] font-bold text-subtle">
-            날짜
-          </span>
-          {[
-            ["all", `전체 ${byStatus.length}`],
-            ...dates.map((d) => [d, `${formatDate(d)} ${dateCount.get(d)}`]),
-          ].map(([v, l]) => (
-            <button
-              key={v}
-              onClick={() => {
-                setDateF(v);
-                setPicked(new Set());
-              }}
-              className={`m3-chip ${dateNow === v ? "m3-chip-on" : ""}`}
-              aria-pressed={dateNow === v}
-            >
-              {l}
+        <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="날짜별 보기">
+          <span className="mr-1 text-[0.7647rem] font-bold text-subtle">날짜</span>
+          <button
+            aria-label="이전 날짜"
+            disabled={dateNow === 'all' || dates.indexOf(dateNow) <= 0}
+            onClick={() => setDateF(dates[dates.indexOf(dateNow) - 1])}
+            className="grid size-9 place-items-center rounded-full border border-line-strong/30 hover:bg-point-soft disabled:opacity-30"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <select
+            value={dateNow}
+            onChange={(e) => {
+              setDateF(e.target.value)
+              setPicked(new Set())
+            }}
+            className="m3-field m3-field-sm min-w-44"
+            aria-label="날짜 선택"
+          >
+            <option value="all">전체 날짜 ({byStatus.length}건)</option>
+            {dates.map((d) => (
+              <option key={d} value={d}>
+                {formatDate(d)} ({dateCount.get(d)}건)
+              </option>
+            ))}
+          </select>
+          <button
+            aria-label="다음 날짜"
+            disabled={dateNow === 'all' || dates.indexOf(dateNow) >= dates.length - 1}
+            onClick={() => setDateF(dates[dates.indexOf(dateNow) + 1])}
+            className="grid size-9 place-items-center rounded-full border border-line-strong/30 hover:bg-point-soft disabled:opacity-30"
+          >
+            <ChevronRight size={16} />
+          </button>
+          {dateNow !== 'all' && (
+            <button onClick={() => setDateF('all')} className="m3-btn m3-btn-sm m3-text">
+              전체 날짜 보기
             </button>
-          ))}
+          )}
         </div>
       )}
       {/* 선택 도구 막대: 체크한 것이 있을 때만 */}
